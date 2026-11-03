@@ -1,9 +1,16 @@
-# Mohar — interactive prototype
+# Mohar — landing page and interactive prototype
 
 A white-label subscription feature that a bank embeds inside its own mobile banking app.
 University artefact for ICT Business Management (Artefact 3).
 
-**Live prototype:** https://bipin1018.github.io/ICT-Business-Management/prototype/
+- **Landing page (for banks):** https://bipin1018.github.io/ICT-Business-Management/
+- **Live prototype (for customers):** https://bipin1018.github.io/ICT-Business-Management/prototype/
+
+| Folder | What it is |
+|---|---|
+| `index.html` | Bank-facing product landing page. All statistics link to their original sources in the footer. |
+| `prototype/index.html` | The working prototype — the customer's critical journey. |
+| `assets/` | Screenshots taken from the working prototype, used on the landing page. |
 
 ## What it does
 
@@ -17,8 +24,8 @@ It never cancels anything for the customer, never blocks a payment, and gives no
 ## Try it
 
 Open `prototype/index.html` in a browser — no build step, no server, no dependencies (one Google Fonts link).
-On a computer it shows a phone frame with demo controls beside it; on a phone it fills the screen
-and the demo controls sit behind the **Demo** button.
+On a laptop it runs as a full-screen web app with demo controls on the right (a phone-frame view is one click away);
+on a phone it fills the screen and the demo controls sit behind the **Demo** button.
 
 Tester tasks (shown in the demo controls):
 
