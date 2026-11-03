@@ -811,6 +811,81 @@ body.view-laptop .cols > .col > .total:first-child,body.view-laptop .cols > .col
 .push-preview{margin-top:12px;padding:12px;border-radius:14px;background:var(--cream-2)}
 .notif-mini{display:grid;grid-template-columns:34px 1fr;gap:10px;padding:10px 12px;border-radius:16px;background:var(--paper);box-shadow:0 6px 16px -10px rgba(18,36,29,.35)}
 .notif-mini .notif-icon{width:34px;height:34px}
+
+/* =====================================================================
+   16. CALM HUB: header, tabs, focus card, tiles, bar charts, trials
+   ===================================================================== */
+.hub-head{display:flex;align-items:flex-start;gap:8px}
+.hub-head .lead{margin-top:2px}
+.head-btn{margin:-4px -8px 0 0;color:var(--forest-2)}
+.hub-tabs{position:sticky;top:0;z-index:5;display:flex;gap:5px;margin:14px -16px 0;padding:10px 16px;background:var(--cream);overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--line)}
+.hub-tabs::-webkit-scrollbar{display:none}
+.hub-tab{flex:none;display:inline-flex;align-items:center;gap:5px;min-height:40px;padding:0 11px;border:1.5px solid var(--line);border-radius:999px;background:var(--paper);font:600 13.5px var(--sans);color:var(--slate)}
+.hub-tab[aria-current="page"]{background:var(--forest);border-color:var(--forest);color:var(--cream)}
+.tab-count{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--cream-2);color:var(--ink);font:700 11px var(--sans)}
+.tab-count.gold{background:var(--gold);color:var(--ink)}
+.hub-tab[aria-current="page"] .tab-count{background:rgba(255,255,255,.2);color:var(--cream)}
+.hub-tab[aria-current="page"] .tab-count.gold{background:var(--gold);color:var(--ink)}
+.intro-line{display:flex;align-items:center;gap:10px;margin:14px 0 0;padding:10px 12px;border-radius:12px;background:var(--mint);color:var(--forest-2);font-size:13.5px;line-height:1.4}
+.intro-line .i{flex:none}
+.intro-line .link-btn{margin-left:auto;padding:6px 8px;min-height:36px}
+
+.focus-head{display:flex;align-items:flex-end;justify-content:space-between;gap:8px}
+.pager{display:flex;align-items:center;gap:2px;margin-bottom:-6px}
+.pager .icon-btn:disabled{opacity:.3;cursor:not-allowed}
+.pager-n{min-width:46px;text-align:center;font-size:13px;font-weight:700;color:var(--slate)}
+.focus-card .att{margin-top:12px;min-height:170px}
+.dots{display:flex;justify-content:center;gap:6px;margin-top:10px}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--line)}
+.dots i.on{width:20px;border-radius:999px;background:var(--forest-2)}
+
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.tile{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:118px;padding:14px;border:1px solid var(--line);border-radius:16px;background:var(--paper);text-align:left;color:var(--ink);box-shadow:0 1px 2px rgba(18,36,29,.04)}
+.tile:hover{border-color:var(--forest-2)}
+.tile-ico{display:grid;place-items:center;width:32px;height:32px;margin-bottom:6px;border-radius:10px;background:var(--mint);color:var(--forest)}
+.tile.hot{background:var(--gold-wash);border-color:var(--gold-lite)}
+.tile.hot .tile-ico{background:var(--gold);color:var(--ink)}
+.tile-label{font-size:12.5px;font-weight:700;color:var(--slate)}
+.tile-big{font:400 26px/1.1 var(--serif);font-variant-numeric:tabular-nums}
+.tile-sub{font-size:12.5px;color:var(--slate)}
+
+.spend .bars{list-style:none;margin:10px 0 0;padding:0}
+.bar-row{display:block;width:100%;padding:8px 0;border:0;background:none;text-align:left;color:var(--ink)}
+.bar-row:hover .bar-name{text-decoration:underline;text-underline-offset:3px}
+.bar-top{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:14px}
+.bar-name{display:flex;align-items:center;gap:8px;min-width:0;font-weight:600}
+.bar-name i{flex:none;width:10px;height:10px;border-radius:3px}
+.bar-val{font-weight:700;font-variant-numeric:tabular-nums}
+.bar-track{display:block;height:8px;margin-top:6px;border-radius:999px;background:var(--cream-2);overflow:hidden}
+.bar-fill{display:block;height:100%;border-radius:999px;background:var(--forest-2)}
+.bar-fill.trial{background:repeating-linear-gradient(135deg,var(--gold) 0 6px,var(--gold-lite) 6px 12px)}
+.bar-fill.stopping{background:var(--line)}
+
+.weeks .week-svg{display:block;width:100%;height:auto;margin-top:8px;overflow:visible}
+
+.tab-intro{margin:16px 0 0;color:var(--slate);font-size:14.5px}
+.trial-grid{display:grid;gap:14px;margin-top:14px}
+.trial-card{padding:16px;border:1px solid var(--gold-lite);border-radius:18px;background:var(--paper);box-shadow:0 1px 2px rgba(18,36,29,.05)}
+.trial-top{display:flex;align-items:center;gap:12px}
+.trial-name{margin:0;font:400 22px/1.1 var(--serif)}
+.trial-meta{margin:2px 0 0;font-size:13px;color:var(--slate)}
+.trial-card .radar{margin-top:12px}
+.empty-card{margin-top:14px;padding:24px;border:1.5px dashed var(--line);border-radius:18px;text-align:center;color:var(--slate)}
+.empty-card .tile-ico{margin:0 auto 10px}
+.empty-card h3{margin:0;color:var(--ink);font:700 16px var(--sans)}
+.empty-card p{margin:6px 0 0;font-size:14px}
+
+.more-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:52px;margin-top:16px;padding:0 16px;border:1px solid var(--line);border-radius:14px;background:var(--paper);font:700 15px var(--sans);color:var(--forest-2)}
+.more-toggle .i{transition:transform 220ms var(--ease)}
+.more-toggle[aria-expanded="true"] .i{transform:rotate(180deg)}
+
+@media (min-width:900px){
+  body.view-laptop .hub-tabs{margin:18px 0 0;padding:10px 0;border-bottom:1px solid var(--line)}
+  body.view-laptop .trial-grid{grid-template-columns:1fr 1fr}
+  body.view-laptop .tiles{margin-top:16px}
+}
+.total-link{display:inline-flex;align-items:center;min-height:36px;padding:0 2px;border:0;background:none;color:var(--gold-lite);font:700 13px var(--sans);text-decoration:underline;text-underline-offset:3px}
+.week-svg .halo{paint-order:stroke;stroke:var(--paper);stroke-width:4px;stroke-linejoin:round}
 </style>
 </head>
 
@@ -1349,8 +1424,8 @@ function goBack(fallbackName = 'hub', fallbackParam = null) {
 /* Unwind all the way to the hub (used by the Mohar tab, fast-forward and reset) */
 function goHome() {
   const n = nav.stack.length - 1;
-  if (n > 0) history.go(-n);
-  else if (currentRoute().name !== 'hub') showScreen('hub', null, { replace: true });
+  if (n > 0) { nav.homePending = true; history.go(-n); }   // the first entry may be a hub tab; land on Overview
+  else if (location.hash !== '#/hub') showScreen('hub', null, { replace: true });
   else render({ nav: true });
 }
 
@@ -1359,6 +1434,10 @@ window.addEventListener('hashchange', () => {
   const i = nav.stack.lastIndexOf(h);
   if (i === -1) nav.stack.push(h);       // browser Forward, or a typed URL
   else nav.stack.length = i + 1;         // browser Back (or our own push, already recorded)
+  if (nav.homePending) {
+    nav.homePending = false;
+    if (h !== '#/hub') { showScreen('hub', null, { replace: true }); return; }
+  }
   if (h === nav.lastHash) return;        // already on screen
   closeSheet(false);
   render({ nav: true });
@@ -1487,57 +1566,232 @@ function countUp(el, from, to) {
 /* ===== 6a. HUB — timeline first, then the honest total, then the list ===== */
 function renderHub() {
   if (!ui.detected) return renderSkeleton();
-  const live = state.subs.filter(isLive);
-  const stopped = state.subs.filter(s => s.status === 'stopped');
-  const notSubs = state.subs.filter(s => s.status === 'notsub');
-  const lump = openLump();
+  const tab = hubTab();
+  const body = tab === 'upcoming' ? renderUpcomingTab()
+    : tab === 'trials' ? renderTrialsTab()
+    : tab === 'all' ? renderAllTab()
+    : renderOverview();
+  return `
+    <div class="hub-head">
+      <div class="grow">
+        <h1 class="h-title" tabindex="-1">${t('title')}</h1>
+        <p class="lead">${t('todayIs')} ${fmtShort(state.today)}</p>
+      </div>
+      <button class="icon-btn head-btn" data-action="go" data-value="settings" aria-label="${t('settings')}">${icon('sliders', 20)}</button>
+    </div>
+    ${renderHubTabs(tab)}
+    ${body}
+    <p class="fine">Subscriptions only — not rent, loans, insurance or bills. We never cancel or block a payment for you.</p>`;
+}
 
-  const head = `
-    <h1 class="h-title" tabindex="-1">${t('title')}</h1>
-    <div class="top-row">
-      <p class="lead">${live.length} ${t('active')} · ${t('todayIs')} ${fmtShort(state.today)}</p>
-      ${periodToggle()}
+/* Which hub tab is open: #/hub (overview), #/hub/upcoming, #/hub/trials, #/hub/all */
+const HUB_TABS = ['overview', 'upcoming', 'trials', 'all'];
+function hubTab() {
+  const p = currentRoute().param;
+  return HUB_TABS.includes(p) ? p : 'overview';
+}
+const activeTrials = () => state.subs.filter(x => x.status === 'active' && x.trial).sort((a, b) => a.next.localeCompare(b.next));
+const next7 = () => chargesBetween(addDays(state.today, 1), addDays(state.today, 7)).filter(c => !c.stopping);
+
+function renderHubTabs(tab) {
+  const tabs = [['overview', t('tabOverview')], ['upcoming', t('tabUpcoming')], ['trials', t('tabTrials')], ['all', t('tabAll')]];
+  const counts = { trials: activeTrials().length, upcoming: next7().length };
+  return `
+    <nav class="hub-tabs" aria-label="Subscription views">
+      ${tabs.map(([id, label]) => `
+        <button class="hub-tab" data-action="hubTab" data-value="${id}" ${tab === id ? 'aria-current="page"' : ''}>
+          ${label}${counts[id] ? `<span class="tab-count${id === 'trials' ? ' gold' : ''}">${counts[id]}</span>` : ''}
+        </button>`).join('')}
+    </nav>`;
+}
+
+/* ---------------- Overview: the total, where it goes, one thing worth doing, four shortcuts */
+function renderOverview() {
+  const lump = openLump();
+  const intro = ui.introSeen ? '' : `
+    <p class="intro-line">${icon('shield', 16)}<span>We warn you before money leaves and show you the way out. <strong>We never cancel or block anything.</strong></span>
+      <button class="link-btn" data-action="introSeen">OK</button></p>`;
+  if (isWide()) return `${intro}${renderAlerts()}
+    <div class="cols">
+      <div class="col">${renderTotal(lump)}${renderSpendBars()}</div>
+      <div class="col">${renderFocus()}${renderTiles()}</div>
     </div>`;
+  return `${intro}${renderAlerts()}${renderTotal(lump)}${renderFocus()}${renderTiles()}${renderSpendBars()}`;
+}
+
+/* "Where it goes": one horizontal bar per subscription, biggest first */
+function renderSpendBars() {
+  const live = state.subs.filter(isLive).sort((a, b) => monthly(b) - monthly(a));
+  if (!live.length) return '';
+  const max = Math.max(...live.map(monthly));
+  return `
+    <section class="card spend" aria-labelledby="spend-h">
+      <div class="card-head"><h2 class="card-title" id="spend-h">${t('whereGoes')}</h2><span class="muted small">${ui.period === 'year' ? t('perYear') : t('perMonth')}</span></div>
+      <ul class="bars">
+        ${live.map(x => {
+          const m = monthly(x);
+          const tag = x.status === 'stopping' ? ' · stopping' : x.trial ? ' · trial' : '';
+          return `<li><button class="bar-row" data-action="open" data-id="${x.id}" aria-label="${esc(x.name)}: ${eur(inPeriod(m))} a ${perLabel()}${tag}">
+            <span class="bar-top"><span class="bar-name"><i style="background:${x.color}"></i>${esc(x.name)}${x.trial ? ' <span class="pill gold">Trial</span>' : ''}</span><span class="bar-val">${eur(inPeriod(m))}</span></span>
+            <span class="bar-track" aria-hidden="true"><span class="bar-fill${x.trial ? ' trial' : ''}${x.status === 'stopping' ? ' stopping' : ''}" style="width:${Math.max(3, Math.round(m / max * 100))}%"></span></span>
+          </button></li>`;
+        }).join('')}
+      </ul>
+    </section>`;
+}
+
+/* One important card at a time, with previous/next — easy to reach, never a wall of warnings */
+function renderFocus() {
+  const cards = attentionCards();
+  if (!cards.length) return `
+    <h2 class="section-title">${t('attention')}</h2>
+    <p class="calm">${icon('check', 18)} ${t('allGood')}</p>`;
+  const i = Math.min(ui.attIndex || 0, cards.length - 1);
+  return `
+    <div class="focus-head">
+      <h2 class="section-title" id="att-h">${t('attention')}</h2>
+      ${cards.length > 1 ? `
+        <div class="pager">
+          <button class="icon-btn" data-action="attPrev" aria-label="Previous" ${i === 0 ? 'disabled' : ''}>${icon('back', 18)}</button>
+          <span class="pager-n" aria-live="polite">${i + 1} of ${cards.length}</span>
+          <button class="icon-btn" data-action="attNext" aria-label="Next" ${i === cards.length - 1 ? 'disabled' : ''}>${icon('chev', 18)}</button>
+        </div>` : ''}
+    </div>
+    <div class="focus-card">${cards[i]}</div>
+    ${cards.length > 1 ? `<div class="dots" aria-hidden="true">${cards.map((_, k) => `<i class="${k === i ? 'on' : ''}"></i>`).join('')}</div>` : ''}`;
+}
+
+/* Four shortcuts: next 7 days, free trials, money kept, monthly check-up */
+function renderTiles() {
+  const soon = next7(), trials = activeTrials(), sv = savings();
+  const soonSum = soon.reduce((x, c) => x + c.cents, 0);
+  const due = state.checkupMonth !== state.today.slice(0, 7) && state.subs.some(x => x.status === 'active');
+  const tr = trials[0];
+  return `
+    <div class="tiles">
+      <button class="tile" data-action="hubTab" data-value="upcoming">
+        <span class="tile-ico">${icon('calendar', 18)}</span>
+        <span class="tile-label">${t('next7')}</span>
+        <b class="tile-big">${eur(soonSum)}</b>
+        <span class="tile-sub">${soon.length} charge${soon.length === 1 ? '' : 's'}</span>
+      </button>
+      <button class="tile${tr ? ' hot' : ''}" data-action="hubTab" data-value="trials">
+        <span class="tile-ico">${icon('radar', 18)}</span>
+        <span class="tile-label">${t('tabTrials')}</span>
+        <b class="tile-big">${tr ? `<span data-countdown="${tr.next}" data-short>${countdownText(tr.next, true)}</span>` : '0'}</b>
+        <span class="tile-sub">${tr ? `${esc(tr.name)} → ${eur(tr.cents)}` : 'None running'}</span>
+      </button>
+      <button class="tile" data-action="go" data-value="review">
+        <span class="tile-ico">${icon('coin', 18)}</span>
+        <span class="tile-label">${t('moneyKept')}</span>
+        <b class="tile-big">${eur(state.savedCents)}</b>
+        <span class="tile-sub">${sv.count ? `${sv.count} stopped · ${eur(sv.yearly)}/yr` : 'Nothing stopped yet'}</span>
+      </button>
+      <button class="tile" data-action="go" data-value="checkup">
+        <span class="tile-ico">${icon('check', 18)}</span>
+        <span class="tile-label">${t('checkup')}</span>
+        <b class="tile-big">${due ? 'Ready' : 'Done'}</b>
+        <span class="tile-sub">${due ? 'About a minute' : 'See you next month'}</span>
+      </button>
+    </div>`;
+}
+
+/* ---------------- Upcoming: weekly bars against the balance, the 30-day list, the calendar */
+function renderUpcomingTab() {
+  const chart = renderWeekBars();
+  const list = renderTimeline(true);
+  const cal = `<button class="btn btn-ghost btn-block mt" data-action="go" data-value="calendar">${icon('calendar', 18)} ${t('openCalendar')}</button>`;
+  if (isWide()) return `<div class="cols"><div class="col">${chart}${renderClash()}${cal}</div><div class="col">${list}</div></div>`;
+  return `${chart}${renderClash()}${list}${cal}`;
+}
+
+/* Four weekly bars with the balance as a dashed reference line (only a bank can draw this line) */
+function renderWeekBars() {
+  const weeks = [0, 1, 2, 3].map(k => {
+    const from = addDays(state.today, k * 7 + 1), to = addDays(state.today, k * 7 + 7);
+    const list = chargesBetween(from, to).filter(c => !c.stopping);
+    return { from, to, cents: list.reduce((x, c) => x + c.cents, 0), n: list.length };
+  });
+  const W = 340, H = 190, L = 4, R = 62, T = 26, B = 40;   // right margin holds the balance label
+  const max = Math.max(state.balanceCents, ...weeks.map(w => w.cents)) * 1.12;
+  const slot = (W - L - R) / 4, bw = 40, r = 6;
+  const y = v => T + (H - T - B) * (1 - v / max);
+  const base = y(0), bal = y(state.balanceCents);
+  const labels = ['This week', 'Next week', 'Week 3', 'Week 4'];
+  const bars = weeks.map((w, i) => {
+    const x = L + i * slot + (slot - bw) / 2, top = Math.min(base - 2, y(w.cents));
+    const over = w.cents > state.balanceCents;
+    const d = `M${x},${base} V${top + r} Q${x},${top} ${x + r},${top} H${x + bw - r} Q${x + bw},${top} ${x + bw},${top + r} V${base} Z`;
+    return `<g role="img" aria-label="${labels[i]}: ${eur(w.cents)} in ${w.n} charge${w.n === 1 ? '' : 's'}${over ? ', more than your balance' : ''}">
+      <path d="${d}" style="fill:${over ? 'var(--gold)' : 'var(--forest-2)'}"/>
+      <text x="${x + bw / 2}" y="${top - 7}" text-anchor="middle" font-size="12" font-weight="700" class="halo" style="fill:var(--ink)">${eurShort(w.cents)}</text>
+      <text x="${x + bw / 2}" y="${H - 22}" text-anchor="middle" font-size="11" style="fill:var(--slate)">${labels[i]}</text>
+      <text x="${x + bw / 2}" y="${H - 8}" text-anchor="middle" font-size="10" style="fill:var(--slate)">${fmtDM(w.from)}</text>
+    </g>`;
+  }).join('');
+  return `
+    <section class="card weeks" aria-labelledby="wk-h">
+      <div class="card-head"><h2 class="card-title" id="wk-h">${t('byWeek')}</h2><span class="muted small">${t('next4w')}</span></div>
+      <svg class="week-svg" viewBox="0 0 ${W} ${H}" aria-label="Charges per week for the next four weeks">
+        <line x1="${L}" x2="${W - R}" y1="${base}" y2="${base}" style="stroke:var(--line)" stroke-width="1"/>
+        ${bars}
+        <line x1="${L}" x2="${W - R}" y1="${bal}" y2="${bal}" style="stroke:var(--danger)" stroke-width="1.5" stroke-dasharray="5 4"/>
+        <text x="${W - R + 6}" y="${bal - 3}" font-size="10.5" font-weight="700" style="fill:var(--danger)">Balance</text>
+        <text x="${W - R + 6}" y="${bal + 10}" font-size="10.5" font-weight="700" style="fill:var(--danger)">${eur(state.balanceCents)}</text>
+      </svg>
+      <p class="tiny muted" style="margin:6px 0 0">Gold weeks take more than today's balance. Your ${state.incomeLabel} arrives ${fmtShort(nextIncome())}.</p>
+    </section>`;
+}
+
+/* ---------------- Free trials: their own place, with a countdown for each */
+function renderTrialsTab() {
+  const trials = activeTrials();
+  const past = state.subs.filter(x => x.trialStart && (!x.trial || x.status !== 'active') && x.status !== 'notsub');
+  return `
+    <p class="tab-intro">Free trials turn into paid subscriptions on their own. We count down so you can decide in time.</p>
+    ${trials.length ? `<div class="trial-grid">${trials.map(trialCard).join('')}</div>` : `
+      <div class="empty-card">
+        <span class="tile-ico">${icon('radar', 22)}</span>
+        <h3>No free trials running</h3>
+        <p>Started one? Add it and we'll count down to the first charge.</p>
+      </div>`}
+    <button class="btn btn-gold btn-block mt" data-action="addStart" data-from="trial">${icon('plus', 18)} ${t('addTrial')}</button>
+    ${past.length ? `
+      <h2 class="section-title">${t('endedTrials')}</h2>
+      <section class="card"><ul class="list">${past.map(x => `
+        <li><button class="sub-row" data-action="open" data-id="${x.id}">${logo(x)}
+          <span class="sub-main"><span class="sub-name">${esc(x.name)}</span>
+          <span class="sub-meta">${x.status === 'stopping' ? "Stopping — it won't charge" : x.status === 'stopped' ? 'Stopped before it charged' : `Now paid · ${eur(x.cents)} / ${t('month')}`}</span></span>
+        </button></li>`).join('')}</ul></section>` : ''}`;
+}
+function trialCard(x) {
+  return `
+    <article class="trial-card">
+      <div class="trial-top">${logo(x)}<div class="grow"><h3 class="trial-name">${esc(x.name)}</h3><p class="trial-meta">${chLabel(x.channel)} · then ${eur(x.cents)} / ${t('month')}</p></div></div>
+      ${renderRadar(x)}
+      <div class="att-actions">
+        <button class="btn btn-gold btn-sm" data-action="stop" data-id="${x.id}">Stop before it charges</button>
+        <button class="btn btn-ghost btn-sm" data-action="keep" data-id="${x.id}">Keep after trial</button>
+        <button class="link-btn" data-action="open" data-id="${x.id}">Details</button>
+      </div>
+    </article>`;
+}
+
+/* ---------------- All: the full list, stopped ones and the export */
+function renderAllTab() {
+  const stopped = state.subs.filter(x => x.status === 'stopped');
+  const notSubs = state.subs.filter(x => x.status === 'notsub');
   const stoppedHtml = stopped.length ? `
     <h2 class="section-title" id="stopped-h">${t('stopped')} <small>${stopped.length}</small></h2>
     <section class="card" aria-labelledby="stopped-h">
       <p class="tiny muted" style="margin:0">Changed your mind? You can rejoin any time.</p>
       <ul class="list stopped">${stopped.map(subRow).join('')}</ul>
     </section>` : '';
-  const tail = `
-    ${notSubs.length ? `<p class="fine">Not counted as subscriptions: ${notSubs.map(s =>
-      `${esc(s.name)} <button class="link-btn" data-action="restoreSub" data-id="${s.id}">Restore</button>`).join(' · ')}</p>` : ''}
-    <p class="fine">Subscriptions only — not rent, loans, insurance or bills. We never cancel or block a payment for you.</p>`;
-
-  /* First visit: one card that says what this tab is — and what it never does */
-  const intro = ui.introSeen ? '' : `
-    <section class="intro" aria-label="What this tab does">
-      <div class="grow">
-        <h2 class="intro-h">Every subscription, before it charges</h2>
-        <p>We find your recurring payments, warn you before money leaves and show you the way out. <strong>We never cancel or block anything — you stay in control.</strong></p>
-      </div>
-      <button class="icon-btn" data-action="introSeen" aria-label="Got it, hide this">${icon('x', 18)}</button>
-    </section>`;
-
-  /* Laptop: things to look at and what's coming up on the left, the money picture on the right */
-  if (isWide()) return `${head}${intro}${renderAlerts()}
-    <div class="cols">
-      <div class="col">${renderAttention()}${renderTimeline()}${renderAllList()}${stoppedHtml}</div>
-      <div class="col">${renderTotal(lump)}${renderTools()}${renderSavings()}</div>
-    </div>${tail}`;
-
-  /* Phone: the total first, then what's worth a look, then what's coming */
-  return `${head}
-    ${intro}
-    ${renderAlerts()}
-    ${renderTotal(lump)}
-    ${renderTools()}
-    ${renderAttention()}
-    ${renderTimeline()}
-    ${renderSavings()}
-    ${renderAllList()}
-    ${stoppedHtml}
-    ${tail}`;
+  const rest = `${stoppedHtml}${savings().count ? renderSavings() : ''}
+    ${notSubs.length ? `<p class="fine">Not counted as subscriptions: ${notSubs.map(x =>
+      `${esc(x.name)} <button class="link-btn" data-action="restoreSub" data-id="${x.id}">Restore</button>`).join(' · ')}</p>` : ''}`;
+  if (isWide()) return `<div class="cols"><div class="col">${renderAllList()}</div><div class="col">${rest}</div></div>`;
+  return `${renderAllList()}${rest}`;
 }
 
 /* ---------------------------------------------------------------------
@@ -1554,6 +1808,16 @@ function attentionCards() {
     const h = renderUnusedPrompt(s, clashHere ? c : null);
     if (h) { cards.push(h); if (clashHere) merged = true; }
   });
+  const lump = openLump();
+  if (lump) cards.push(`
+      <article class="att">
+        <span class="att-ico">${icon('help', 20)}</span>
+        <div class="att-body">
+          <h3 class="att-h">Which subscription costs ${eur(lump.cents)}?</h3>
+          <p>We see ${eur(lump.cents)} from your app store every month, but your bank can't see what it's for. Add it so your total is honest.</p>
+          <div class="att-actions"><button class="btn btn-gold btn-sm" data-action="addStart" data-from="lump">Identify this payment</button></div>
+        </div>
+      </article>`);
   if (c && !merged) {
     const sub = c.item.sub;
     const name = sub ? esc(sub.name) : 'An app store payment';
@@ -1568,25 +1832,6 @@ function attentionCards() {
         </div>
       </article>`);
   }
-  const lump = openLump();
-  if (lump) cards.push(`
-      <article class="att">
-        <span class="att-ico">${icon('help', 20)}</span>
-        <div class="att-body">
-          <h3 class="att-h">Which subscription costs ${eur(lump.cents)}?</h3>
-          <p>We see ${eur(lump.cents)} from your app store every month, but your bank can't see what it's for. Add it so your total is honest.</p>
-          <div class="att-actions"><button class="btn btn-gold btn-sm" data-action="addStart" data-from="lump">Identify this payment</button></div>
-        </div>
-      </article>`);
-  state.subs.filter(s => s.status === 'active' && s.trial && daysBetween(state.today, s.next) <= 7).forEach(s => cards.push(`
-      <article class="att warn">
-        <span class="att-ico">${icon('radar', 20)}</span>
-        <div class="att-body">
-          <h3 class="att-h">${esc(s.name)}'s free trial ends ${relDays(s.next)}</h3>
-          <p>Then ${eur(s.cents)} a month. Stop before ${fmtShort(addDays(s.next, -1))} and you pay nothing.</p>
-          <div class="att-actions"><button class="btn btn-ghost btn-sm" data-action="open" data-id="${s.id}">Review ${esc(s.name)}</button></div>
-        </div>
-      </article>`));
   /* Student-plan detector: the audience is students; this is about this subscription, not budgeting */
   state.subs.filter(x => x.status === 'active' && x.studentCents && x.cents > x.studentCents && !x.studentSeen).forEach(x => cards.push(studentCard(x)));
 
@@ -1651,18 +1896,6 @@ function attentionCards() {
   /* (the monthly check-up is offered by the "Ready" badge on its tool button, not as another card here) */
   return cards;
 }
-function renderAttention() {
-  const cards = attentionCards();
-  if (!cards.length) return `
-    <h2 class="section-title">${t('attention')}</h2>
-    <p class="calm">${icon('check', 18)} ${t('allGood')}</p>`;
-  const shown = ui.attAll ? cards : cards.slice(0, 3);
-  return `
-    <h2 class="section-title" id="att-h">${t('attention')} <small>${cards.length}</small></h2>
-    <div aria-labelledby="att-h">${shown.join('')}</div>
-    ${cards.length > 3 ? `<button class="show-more" data-action="toggleAttention">${ui.attAll ? 'Show less' : `Show ${cards.length - 3} more`}</button>` : ''}`;
-}
-
 function studentCard(s) {
   return `
       <article class="att">
@@ -1702,16 +1935,6 @@ function renderUnusedPrompt(s, clash) {
         </div>
       </div>
     </article>`;
-}
-
-/* Quick tools, right under the total. The check-up shows "Ready" once a month. */
-function renderTools() {
-  const due = state.checkupMonth !== state.today.slice(0, 7) && state.subs.some(x => x.status === 'active');
-  const items = [['calendar', 'calendar', t('calendar')], ['checkup', 'check', t('checkup')], ['review', 'sparkle', t('review')], ['settings', 'sliders', t('settings')]];
-  return `
-    <nav class="tools" aria-label="${t('tools')}">
-      ${items.map(([r, ic, l]) => `<button class="tool" data-action="go" data-value="${r}"><span class="tool-ico">${icon(ic, 19)}</span>${l}${r === 'checkup' && due ? '<span class="tool-badge">Ready</span>' : ''}</button>`).join('')}
-    </nav>`;
 }
 
 /* One control that reframes every recurring amount: €23 a month ↔ €276 a year */
@@ -1804,21 +2027,21 @@ function timelineItems() {
   return items.sort((a, b) => a.date.localeCompare(b.date) || order[a.kind] - order[b.kind]);
 }
 
-function renderTimeline() {
+function renderTimeline(full) {
   const items = timelineItems();
   const due = items.reduce((sum, it) => {
     if (it.kind === 'unknown') return sum + it.lump.cents;
     if ((it.kind === 'charge' || it.kind === 'trial') && it.sub.status === 'active') return sum + it.sub.cents;
     return sum;
   }, 0);
-  const shown = ui.tlAll ? items : items.slice(0, 4);
+  const shown = full || ui.tlAll ? items : items.slice(0, 4);
   return `
     <h2 class="section-title" id="tl-h">${t('comingUp')} <small>${t('next30').toLowerCase()} · ${eur(due)}</small></h2>
     <section class="card tl-card" aria-labelledby="tl-h">
       ${state.notifyAll ? '' : `<p class="tiny muted" style="margin:0 0 4px">Warnings are switched off in Settings.</p>`}
       ${items.length ? `<ol class="timeline">${shown.map(timelineRow).join('')}</ol>`
                      : `<p class="empty">Nothing charges in the next 30 days.</p>`}
-      ${items.length > 4 ? `<button class="show-more" data-action="toggleTimeline">${ui.tlAll ? 'Show less' : `Show all ${items.length} charges`}</button>` : ''}
+      ${items.length > 4 && !full ? `<button class="show-more" data-action="toggleTimeline">${ui.tlAll ? 'Show less' : `Show all ${items.length} charges`}</button>` : ''}
     </section>`;
 }
 
@@ -1892,7 +2115,7 @@ function renderTotal(lump) {
                 <div class="bd-row"><span>${esc(s.name)}</span><span class="num">${eur(inPeriod(monthly(s)))}${s.cycle === 'yearly' && ui.period === 'month' ? ' <small>(yearly ÷ 12)</small>' : ''}</span></div>`).join('')}
             </div>`).join('')}
         </div>` : '<div id="breakdown" hidden></div>'}
-      <p class="honesty">${honesty}</p>
+      <p class="honesty">${honesty}${lump ? ` <button class="total-link" data-action="addStart" data-from="lump">Identify it →</button>` : ''}</p>
     </section>`;
 }
 
@@ -2057,14 +2280,17 @@ function renderDetail(id) {
     ${s.trial && active ? renderRadar(s) : ''}
     ${s.cycle === 'yearly' && active ? renderAnnualNote(s) : ''}
 
-    ${wide ? usageHtml + '</div><div class="col">' + factsHtml : factsHtml + usageHtml}
-
+    ${wide ? usageHtml + '</div><div class="col">' : `
+    <button class="more-toggle" data-action="detailMore" aria-expanded="${!!ui.detailMore}">
+      <span>${ui.detailMore ? 'Hide details' : `More about ${esc(s.name)}`}</span>${icon('down', 18)}</button>`}
+    ${wide || ui.detailMore ? `
+    ${factsHtml}
+    ${wide ? '' : usageHtml}
     <section class="card" aria-labelledby="ph-h">
       <h2 class="card-title" id="ph-h">${t('priceHist')}</h2>
       ${priceHistory(s)}
     </section>
-
-    ${renderRecognised(s)}
+    ${renderRecognised(s)}` : ''}
     ${wide ? '</div></div>' : ''}
 
     ${s.source === 'manual' ? `<p class="fine"><button class="link-btn" data-action="removeSub" data-id="${s.id}">Remove from my list</button></p>` : ''}
@@ -2121,11 +2347,11 @@ function renderRadar(s) {
   const used = Math.min(100, Math.max(0, Math.round(daysBetween(s.trialStart || addMonths(s.next, -1), state.today) / span * 100)));
   const left = Math.max(0, n0(daysBetween(state.today, s.next)));
   return `
-    <section class="radar" aria-labelledby="radar-h">
+    <section class="radar" aria-labelledby="radar-h-${s.id}">
       <div class="radar-ring" style="--p:${used}" aria-hidden="true"><span>${left}<small>${left === 1 ? 'day' : 'days'}</small></span></div>
       <div class="grow">
         <p class="eyebrow">${icon('radar', 13)} Trial radar</p>
-        <h2 class="radar-h" id="radar-h">Becomes ${eur(s.cents)} a month in</h2>
+        <h2 class="radar-h" id="radar-h-${s.id}">Becomes ${eur(s.cents)} a month in</h2>
         <p class="radar-count" data-countdown="${s.next}" aria-live="off">${countdownText(s.next)}</p>
         <p class="small" style="margin:0">Stop before ${fmtLong(addDays(s.next, -1))} and you pay nothing. ${used}% of the trial is used.</p>
       </div>
@@ -2626,12 +2852,16 @@ const actions = {
   inert(d) { toast(`${d.label || 'That'} isn't part of this prototype — only the ${feat()} tab works here.`); },
   tab(d) {
     if (d.value !== 'mohar') return toast(`${d.label} isn't part of this prototype — only the ${feat()} tab works here.`);
-    if (currentRoute().name === 'hub') els.screen.scrollTo({ top: 0, behavior: reduceMotion() ? 'auto' : 'smooth' });
+    if (location.hash === '#/hub') els.screen.scrollTo({ top: 0, behavior: reduceMotion() ? 'auto' : 'smooth' });
     else goHome();
   },
 
   /* --- navigation --- */
-  open(d) { closeSheet(false); showScreen('detail', d.id); },
+  open(d) { closeSheet(false); ui.detailMore = false; showScreen('detail', d.id); },
+  hubTab(d) { closeSheet(false); showScreen('hub', d.value === 'overview' ? null : d.value, { replace: currentRoute().name === 'hub' }); },
+  attPrev() { ui.attIndex = Math.max(0, (ui.attIndex || 0) - 1); refresh(); },
+  attNext() { ui.attIndex = (ui.attIndex || 0) + 1; refresh(); },
+  detailMore() { ui.detailMore = !ui.detailMore; refresh(); },
   back() { goBack('hub'); },
   toggleBreakdown() { ui.breakdownOpen = !ui.breakdownOpen; refresh(); },
 
@@ -2687,7 +2917,12 @@ const actions = {
   },
 
   /* --- add what the bank can't see --- */
-  addStart(d) { closeSheet(false); ui.addDraft = newDraft(d.from === 'lump'); showScreen('add'); },
+  addStart(d) {
+    closeSheet(false);
+    ui.addDraft = newDraft(d.from === 'lump');
+    if (d.from === 'trial') ui.addDraft.trial = true;   // from the Free trials tab
+    showScreen('add');
+  },
   addPick(d) {
     ui.addDraft.pick = d.value;
     refresh();
@@ -3376,7 +3611,10 @@ const STR = {
     detecting: 'Detecting your <em>subscriptions…</em>', detectingSub: 'Looking for payments that repeat. This only takes a moment.',
     calTitle: 'Charge <em>days</em>', checkupTitle: 'Monthly <em>check-up</em>', reviewTitle: 'Your year in <em>review</em>',
     warnAll: 'Warn me before charges', warnEach: 'Warnings for each subscription', language: 'Language',
-    attention: 'Worth a look', comingUp: 'Coming up', more: 'More', allGood: 'All good — nothing needs you right now.',
+    attention: 'Worth a look',
+    tabOverview: 'Overview', tabUpcoming: 'Upcoming', tabTrials: 'Free trials', tabAll: 'All',
+    whereGoes: 'Where it goes', perMonth: 'per month', perYear: 'per year', next7: 'Next 7 days', byWeek: 'Leaving your account',
+    next4w: 'next 4 weeks', openCalendar: 'Open the charge calendar', addTrial: 'Add a free trial', endedTrials: 'Ended trials', comingUp: 'Coming up', more: 'More', allGood: 'All good — nothing needs you right now.',
   },
   fi: {
     title: 'Sinun <em>tilauksesi</em>', active: 'aktiivista', todayIs: 'tänään on',
@@ -3397,7 +3635,10 @@ const STR = {
     detecting: 'Etsitään <em>tilauksiasi…</em>', detectingSub: 'Haemme toistuvia maksuja. Tämä vie hetken.',
     calTitle: 'Veloitus<em>päivät</em>', checkupTitle: 'Kuukauden <em>tarkistus</em>', reviewTitle: 'Vuotesi <em>tilauksissa</em>',
     warnAll: 'Varoita ennen veloituksia', warnEach: 'Varoitukset tilauksittain', language: 'Kieli',
-    attention: 'Kannattaa katsoa', comingUp: 'Tulossa', more: 'Lisää', allGood: 'Kaikki kunnossa — mikään ei vaadi sinua nyt.',
+    attention: 'Kannattaa katsoa',
+    tabOverview: 'Yleiskatsaus', tabUpcoming: 'Tulossa', tabTrials: 'Kokeilut', tabAll: 'Kaikki',
+    whereGoes: 'Mihin rahat menevät', perMonth: 'kuukaudessa', perYear: 'vuodessa', next7: 'Seuraavat 7 päivää', byWeek: 'Tililtä lähtee',
+    next4w: 'seuraavat 4 viikkoa', openCalendar: 'Avaa veloituskalenteri', addTrial: 'Lisää ilmainen kokeilu', endedTrials: 'Päättyneet kokeilut', comingUp: 'Tulossa', more: 'Lisää', allGood: 'Kaikki kunnossa — mikään ei vaadi sinua nyt.',
   },
 };
 const t = key => (STR[ui.lang] && STR[ui.lang][key]) || STR.en[key] || key;
