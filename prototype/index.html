@@ -1848,6 +1848,21 @@ function attentionCards() {
           <div class="att-actions"><button class="btn btn-gold btn-sm" data-action="addStart" data-from="lump">Identify this payment</button></div>
         </div>
       </article>`);
+  /* Split suggestion: the priciest shareable subscription that isn't split yet (one card only) */
+  const shareable = state.subs.some(x => x.split) ? null
+    : state.subs.filter(x => x.status === 'active' && canSplit(x) && !x.splitSeen).sort((a, b) => b.cents - a.cents)[0];
+  if (shareable) cards.push(`
+      <article class="att">
+        <span class="att-ico">${icon('users', 20)}</span>
+        <div class="att-body">
+          <h3 class="att-h">Share ${esc(shareable.name)} with flatmates?</h3>
+          <p>Split ${eur(shareable.cents)} — for example ${eur(splitShare(shareable.cents, 2))} each between three. We send the payment requests; nothing is taken automatically.</p>
+          <div class="att-actions">
+            <button class="btn btn-ghost btn-sm" data-action="splitOpen" data-id="${shareable.id}">Split the cost</button>
+            <button class="link-btn" data-action="splitSeen" data-id="${shareable.id}">I don't share it</button>
+          </div>
+        </div>
+      </article>`);
   if (c && !merged) {
     const sub = c.item.sub;
     const name = sub ? esc(sub.name) : 'An app store payment';
@@ -3109,6 +3124,7 @@ const actions = {
     }, 4000);
   },
   splitRemind(d) { toast(`Reminder sent to ${d.value}.`); },
+  splitSeen(d) { findSub(d.id).splitSeen = true; refresh(); },
   splitStop(d) {
     const s = findSub(d.id), before = s.split;
     s.split = null;
