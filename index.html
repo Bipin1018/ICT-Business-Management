@@ -1,0 +1,3315 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mohar — subscription feature prototype</title>
+<meta name="description" content="Interactive prototype of Mohar, a white-label subscription feature embedded in a bank's mobile app. University artefact — all banks, services and figures are fictional.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%23C9A227'/%3E%3Ccircle cx='16' cy='16' r='11' fill='none' stroke='%230E3B2E' stroke-width='1.5' stroke-dasharray='1.5 1.8'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%230E3B2E'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+/* =====================================================================
+   1. DESIGN TOKENS
+   The brief's tokens are used exactly. Three helpers are added:
+   --gold-ink   gold darkened so it passes WCAG AA as small text
+   --danger-wash  background for ghost-charge warnings
+   --bank*      the white-label bank shell colours (themeable later)
+   ===================================================================== */
+:root{
+  --cream:#FBF8F1;      /* app background */
+  --cream-2:#F4EFE3;    /* secondary surface */
+  --forest:#0E3B2E;     /* primary brand */
+  --forest-2:#17543F;
+  --moss:#2E7D5B;       /* positive / success */
+  --mint:#E6F3EB;       /* positive wash */
+  --gold:#C9A227;       /* accent: CTAs, key numbers, warnings */
+  --gold-lite:#F0D98A;
+  --gold-wash:#FBF1D4;  /* warning wash */
+  --ink:#12241D;        /* text */
+  --slate:#5E6F67;      /* secondary text */
+  --line:#E4DCCB;       /* borders */
+  --danger:#C24A2F;     /* use sparingly: ghost charges only */
+
+  --gold-ink:#7A5E0A;
+  --danger-wash:#FBE9E4;
+  --paper:#FFFFFF;
+  --bank:#0E3B2E;
+  --bank-2:#17543F;
+  --bank-ink:#FBF8F1;
+  --bank-wash:#E6F3EB;
+
+  --ease:cubic-bezier(.2,.8,.3,1);
+  --serif:'Instrument Serif', Georgia, 'Times New Roman', serif;
+  --sans:'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --mono:ui-monospace, 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--cream-2);color:var(--ink);font:400 15px/1.45 var(--sans);-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--forest-2);outline-offset:2px}
+[tabindex="-1"]:focus{outline:none}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.i{flex:none;display:block}
+
+/* =====================================================================
+   2. STAGE: demo controls + phone frame (desktop ≥ 900px)
+   ===================================================================== */
+.stage{min-height:100%;display:flex;align-items:flex-start;justify-content:center;gap:40px;padding:24px}
+.device-wrap{flex:none;width:calc(410px * var(--s,1));height:calc(864px * var(--s,1))}
+.device{position:relative;width:410px;height:864px;padding:10px;background:#1B211E;border-radius:50px;
+  box-shadow:0 40px 80px -30px rgba(14,59,46,.45),0 0 0 1px rgba(0,0,0,.25);transform:scale(var(--s,1));transform-origin:top left}
+.island{position:absolute;top:21px;left:50%;width:106px;height:30px;margin-left:-53px;background:#000;border-radius:999px;z-index:80;pointer-events:none}
+.app{position:relative;width:100%;height:100%;border-radius:40px;overflow:hidden;background:var(--cream);isolation:isolate}
+.shell{position:absolute;inset:0;display:flex;flex-direction:column}
+
+/* Bank status bar + header (the host bank app, not Mohar) */
+.statusbar{flex:none;height:48px;display:flex;align-items:center;justify-content:space-between;padding:4px 30px 0 34px;
+  background:var(--bank);color:var(--bank-ink);font:700 14px var(--sans)}
+.statusbar .sb-icons{display:flex;gap:6px;align-items:center}
+.bankbar{flex:none;display:flex;align-items:center;gap:10px;padding:6px 14px 14px 16px;background:var(--bank);color:var(--bank-ink)}
+.bank-name{font:800 16px var(--sans);letter-spacing:-.01em;flex:1}
+.icon-btn{width:44px;height:44px;border:0;border-radius:999px;background:transparent;display:grid;place-items:center;color:inherit}
+.icon-btn:hover{background:rgba(0,0,0,.06)}
+.bankbar .icon-btn:hover{background:rgba(255,255,255,.1)}
+.avatar{width:36px;height:36px;margin:4px;border:0;border-radius:50%;background:var(--bank-2);color:var(--bank-ink);font:700 14px var(--sans)}
+
+.screen{flex:1;overflow-y:auto;overflow-x:hidden;position:relative;overscroll-behavior:contain}
+.view{padding:18px 16px 36px}
+.view.enter-fwd{animation:inFwd 300ms var(--ease)}
+.view.enter-back{animation:inBack 300ms var(--ease)}
+
+/* Bottom tabs: only the Mohar tab works */
+.tabbar{flex:none;display:grid;grid-template-columns:repeat(4,1fr);background:var(--paper);border-top:1px solid var(--line);padding:6px 6px 20px}
+.tab{min-height:52px;border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  font:600 11px var(--sans);color:var(--slate);border-radius:14px}
+.tab .tab-ico{display:grid;place-items:center;width:52px;height:28px;border-radius:999px;transition:background 200ms var(--ease)}
+.tab[aria-current="page"]{color:var(--bank)}
+.tab[aria-current="page"] .tab-ico{background:var(--bank-wash)}
+
+/* =====================================================================
+   3. TYPE + COMMON COMPONENTS
+   ===================================================================== */
+.eyebrow{margin:0;font:700 11px/1.2 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--slate)}
+.h-title{margin:4px 0 4px;font:400 34px/1.05 var(--serif);letter-spacing:-.01em}
+.h-title em,.banner-h em,.sheet-title em,.h-sub em{font-style:italic}
+.h-sub{margin:4px 0 6px;font:400 24px/1.15 var(--serif)}
+.lead{margin:0;color:var(--slate);font-size:14px}
+.muted{color:var(--slate)}
+.small{font-size:13px}
+.tiny{font-size:12px}
+.grow{flex:1;min-width:0}
+.mt{margin-top:16px}
+.num{font-variant-numeric:tabular-nums}
+
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:14px}
+.card-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.card-title{margin:0;font:700 15px var(--sans)}
+.mini-h{margin:18px 0 6px;font:700 13px var(--sans);letter-spacing:.02em}
+
+.btn{min-height:48px;padding:0 22px;border-radius:999px;border:1.5px solid transparent;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font:700 15px var(--sans);text-decoration:none;transition:transform 180ms var(--ease),background 180ms var(--ease)}
+.btn:active{transform:scale(.98)}
+.btn-block{width:100%}
+.btn-gold{background:var(--gold);color:var(--ink)}
+.btn-gold:hover{background:#D4AE35}
+.btn-gold:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn-ghost{background:transparent;border-color:var(--line);color:var(--ink)}
+.btn-ghost:hover{background:var(--cream-2)}
+.btn-danger{background:transparent;border-color:var(--danger);color:var(--danger)}
+.btn-sm{min-height:44px;padding:0 16px;font-size:14px}
+.link-btn{border:0;background:none;padding:10px 4px;min-height:44px;font-weight:700;color:var(--forest-2);text-decoration:underline;text-underline-offset:3px}
+
+.pill{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;font:700 11px/1.35 var(--sans);background:var(--cream-2);color:var(--slate);white-space:nowrap}
+.pill.gold{background:var(--gold-wash);color:var(--gold-ink)}
+.pill.moss{background:var(--mint);color:var(--forest-2)}
+.pill.danger{background:var(--danger-wash);color:var(--danger)}
+
+.logo{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:#fff;font:800 17px var(--sans)}
+
+/* Banners: confirmations (ok), reminders (warn), ghost charges (bad) */
+.banner{display:flex;gap:12px;align-items:flex-start;border-radius:14px;padding:14px 12px 14px 14px;margin-top:14px}
+.banner.ok{background:var(--mint)}
+.banner.warn{background:var(--gold-wash)}
+.banner.bad{background:var(--danger-wash)}
+.banner .b-ico{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#fff;background:var(--moss)}
+.banner.warn .b-ico{background:var(--gold);color:var(--ink)}
+.banner.bad .b-ico{background:var(--danger)}
+.banner-h{margin:2px 0 0;font:400 21px/1.15 var(--serif)}
+.banner p{margin:4px 0 0;font-size:13.5px}
+.banner .icon-btn{margin:-8px -6px 0 0}
+.banner .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.pop{animation:pop 320ms var(--ease)}
+
+/* =====================================================================
+   4. HUB: timeline, total, list
+   ===================================================================== */
+.timeline{list-style:none;margin:8px -6px 0;padding:0}
+.tl-row{width:100%;display:grid;grid-template-columns:40px 14px 1fr auto;gap:10px;align-items:center;padding:8px 8px;min-height:58px;
+  border:0;border-radius:12px;background:none;text-align:left}
+.tl-row:hover{background:var(--cream)}
+.tl-date{text-align:center;line-height:1}
+.tl-date span{display:block;font:700 9.5px/1.2 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--slate)}
+.tl-date b{display:block;font:400 24px/1 var(--serif);margin:1px 0}
+.rail{position:relative;align-self:stretch;display:flex;align-items:center;justify-content:center}
+.rail::before{content:"";position:absolute;left:50%;top:-10px;bottom:-10px;width:2px;margin-left:-1px;background:var(--line)}
+.timeline li:first-child .rail::before{top:50%}
+.timeline li:last-child .rail::before{bottom:50%}
+.timeline li:only-child .rail::before{display:none}
+.dot{position:relative;width:12px;height:12px;border-radius:50%;background:var(--paper);border:2px solid #9AA8A1}
+.tl-name{display:block;font-weight:700;line-height:1.25}
+.tl-meta{display:block;font-size:12.5px;color:var(--slate)}
+.tl-amt{font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
+.tl-row.urgent{background:var(--gold-wash)}
+.tl-row.urgent .dot{background:var(--gold);border-color:var(--gold)}
+.tl-row.urgent .tl-meta{color:var(--gold-ink);font-weight:600}
+.tl-row.is-stopping .tl-amt{text-decoration:line-through;color:var(--slate)}
+.tl-row.is-stopping .dot{background:var(--mint);border-color:var(--moss)}
+.tl-row.reminder .dot{border-style:dashed;border-color:var(--gold)}
+.tl-row.unknown .dot{border-color:var(--gold);border-style:dotted}
+.tl-row.unknown .tl-name{font-family:var(--mono);font-size:13px;letter-spacing:.02em}
+.empty{padding:18px 4px;color:var(--slate);text-align:center}
+
+.total{margin-top:14px;border-radius:14px;padding:18px;background:var(--forest);color:var(--cream)}
+.total-btn{display:block;width:100%;padding:0;border:0;background:none;color:inherit;text-align:left;border-radius:10px}
+.total-btn:focus-visible{outline-color:var(--gold-lite);outline-offset:6px}
+.total .eyebrow{color:#BFD3C8}
+.total-num{display:block;margin:10px 0 2px;font:400 54px/1 var(--serif);color:var(--gold);font-variant-numeric:tabular-nums}
+.total-num small{font:500 15px var(--sans);color:#D8E4DD;margin-left:4px}
+.total-sub{display:block;color:#D8E4DD;font-size:13.5px}
+.segbar{display:flex;gap:2px;height:10px;margin:14px 0 10px;border-radius:999px;overflow:hidden;background:rgba(255,255,255,.08)}
+.seg{display:block;height:100%}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12.5px;color:#E7EEE9}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i,.bd-head i{display:inline-block;width:9px;height:9px;border-radius:50%}
+.expand{display:inline-flex;align-items:center;gap:4px;margin-top:12px;font-weight:700;font-size:13px;color:var(--gold-lite)}
+.expand .i{transition:transform 220ms var(--ease)}
+.total-btn[aria-expanded="true"] .expand .i{transform:rotate(180deg)}
+.breakdown{margin-top:12px;animation:fade 220ms var(--ease)}
+.bd-group{padding:10px 0;border-top:1px solid rgba(255,255,255,.12)}
+.bd-head{display:flex;justify-content:space-between;font-weight:700;font-size:13.5px}
+.bd-head span:first-child{display:inline-flex;align-items:center;gap:8px}
+.bd-row{display:flex;justify-content:space-between;gap:8px;padding:4px 0 0 17px;font-size:13px;color:#D8E4DD}
+.bd-row small{color:#A9BFB3}
+.honesty{margin:14px 0 0;padding-top:12px;border-top:1px solid rgba(255,255,255,.14);font-size:12.5px;color:#C9D9D0}
+
+.lump{margin-top:14px;padding:16px;border:1.5px dashed var(--gold);border-radius:14px;background:var(--gold-wash)}
+.lump .eyebrow{color:var(--gold-ink)}
+.lump p{margin:0 0 4px}
+.stmt{display:flex;justify-content:space-between;gap:10px;margin:10px 0 12px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--paper);
+  font:500 12.5px var(--mono);font-variant-numeric:tabular-nums}
+
+/* Savings meter */
+.savings{margin-top:14px;padding:16px;border-radius:14px;background:var(--cream-2)}
+.savings.has{background:var(--mint)}
+.sv-head{display:flex;align-items:center;gap:8px}
+.sv-head .eyebrow{color:var(--forest-2)}
+.sv-coin{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--gold);color:var(--ink)}
+.sv-big{margin:12px 0 0;font:400 42px/1 var(--serif);color:var(--forest);font-variant-numeric:tabular-nums}
+.sv-big small{margin-left:6px;font:600 13px var(--sans);color:var(--forest-2)}
+.sv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(23,84,63,.15)}
+.sv-grid b{display:block;font:400 22px/1 var(--serif);color:var(--forest)}
+.sv-grid small{display:block;margin-top:3px;font-size:11.5px;font-weight:600;color:var(--forest-2)}
+.sv-empty{margin:8px 0 0;font-size:13px;color:var(--slate)}
+
+/* Monthly ↔ yearly toggle */
+.top-row{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.segctl.period{display:inline-flex;padding:3px}
+.segctl.period button{flex:none;min-height:44px;padding:0 13px;font-size:13px}
+
+/* Softer, informational banners (overlap, zombie, annual note) and the bank-only tag */
+.banner.soft{background:var(--cream-2)}
+.banner.soft .b-ico{background:var(--forest-2)}
+.banner p.bank-only{display:inline-flex;align-items:center;gap:5px;margin-top:8px;font:800 10.5px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--gold-ink)}
+
+/* Trial radar: its own warning style — hatched gold, with a ring showing how much of the trial is used */
+.radar{display:flex;gap:14px;align-items:center;margin-top:14px;padding:16px 14px;border:2px dashed var(--gold);border-radius:14px;
+  background:repeating-linear-gradient(135deg,var(--gold-wash) 0 12px,#FDF7E6 12px 24px)}
+.radar .eyebrow{display:flex;align-items:center;gap:5px;color:var(--gold-ink)}
+.radar-ring{flex:none;display:grid;place-items:center;width:76px;height:76px;border-radius:50%;
+  background:conic-gradient(var(--gold) calc(var(--p) * 1%), var(--gold-lite) 0)}
+.radar-ring span{display:grid;place-items:center;align-content:center;width:60px;height:60px;border-radius:50%;background:var(--paper);font:400 26px/1 var(--serif)}
+.radar-ring small{font:800 9px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--slate)}
+.radar-h{margin:4px 0 0;font:700 14px var(--sans)}
+.radar-count{margin:2px 0 6px;font:700 21px var(--mono);color:var(--gold-ink);font-variant-numeric:tabular-nums}
+
+/* Price sparkline */
+.spark{display:block;width:100%;height:auto;margin-top:10px}
+
+/* How we recognised this */
+.recog-btn{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:44px;padding:0;border:0;background:none;font:700 15px var(--sans);text-align:left}
+.recog-btn .i{transition:transform 220ms var(--ease)}
+.recog-btn[aria-expanded="true"] .i{transform:rotate(180deg)}
+.recog{animation:fade 220ms var(--ease)}
+.stmt-list{list-style:none;margin:8px 0 0;padding:0;font:500 12px var(--mono)}
+.stmt-list li{display:grid;grid-template-columns:20px 1fr auto;gap:8px;align-items:center;margin-top:6px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--cream)}
+.stmt-list .st{min-width:0;overflow-wrap:anywhere}
+.stmt-list small{display:block;color:var(--slate);font-size:11px}
+.stmt-list .mk{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--cream-2);color:var(--slate)}
+.stmt-list .mk.ok{background:var(--mint);color:var(--moss)}
+.stmt-list .excl{background:var(--paper);border-style:dashed;color:var(--slate)}
+.merge{display:flex;align-items:center;gap:8px;margin-top:8px;padding:10px 12px;border-radius:10px;background:var(--mint);color:var(--forest-2);font-weight:700;font-size:13.5px}
+.recog-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+
+/* Stopped list rows carry a Rejoin button */
+.stopped-li{display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line)}
+.stopped-li .sub-row{border-bottom:0;min-width:0;flex:1}
+.list .stopped-li:last-child{border-bottom:0}
+
+/* Guess your total */
+.guess-val{margin:18px 0 4px;text-align:center;font:400 64px/1 var(--serif);font-variant-numeric:tabular-nums}
+.range{display:block;width:100%;height:44px;margin:0;accent-color:var(--forest)}
+.range-scale{display:flex;justify-content:space-between;font-size:12px;color:var(--slate)}
+.guess-real{margin:8px 0 8px;font:400 64px/1 var(--serif);color:var(--forest);font-variant-numeric:tabular-nums}
+.guess-real small{margin-left:6px;font:500 15px var(--sans);color:var(--slate)}
+
+.list{list-style:none;margin:6px 0 0;padding:0}
+.sub-row{width:100%;display:flex;align-items:center;gap:12px;min-height:66px;padding:10px 2px;border:0;border-bottom:1px solid var(--line);background:none;text-align:left}
+.list li:last-child .sub-row{border-bottom:0}
+.sub-row:hover .sub-name{text-decoration:underline;text-underline-offset:3px}
+.sub-main{flex:1;min-width:0}
+.sub-name{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;font-weight:700}
+.sub-meta{display:block;font-size:12.5px;color:var(--slate);margin-top:1px}
+.sub-amt{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.sub-amt small{display:block;font-weight:500;font-size:11.5px;color:var(--slate)}
+.list.stopped .logo{filter:grayscale(1);opacity:.55}
+.list.stopped .sub-amt{color:var(--slate);text-decoration:line-through}
+
+.fine{margin:18px 6px 0;font-size:12px;color:var(--slate);text-align:center}
+
+/* =====================================================================
+   5. DETAIL SCREEN
+   ===================================================================== */
+.back{display:inline-flex;align-items:center;gap:2px;min-height:44px;padding:0 12px 0 2px;margin-left:-6px;border:0;border-radius:999px;background:none;font-weight:700;color:var(--forest-2)}
+.back:hover{background:var(--cream-2)}
+.d-hero{display:flex;gap:14px;align-items:center;margin-top:6px}
+.d-hero .logo{width:58px;height:58px;border-radius:17px;font-size:25px}
+.d-hero .h-title{margin:0 0 4px;font-size:32px}
+.badges{display:flex;flex-wrap:wrap;gap:6px}
+.d-amt{margin-top:20px;font:400 56px/1 var(--serif);font-variant-numeric:tabular-nums}
+.d-amt small{font:500 15px var(--sans);color:var(--slate);margin-left:4px}
+.d-sub{margin:6px 0 0;color:var(--slate);font-size:14px}
+.next-chip{display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:8px 13px;border-radius:999px;background:var(--cream-2);font-weight:700;font-size:13.5px}
+.next-chip.urgent{background:var(--gold-wash);color:var(--gold-ink);box-shadow:inset 0 0 0 1px var(--gold-lite)}
+.next-chip.calm{background:var(--mint);color:var(--forest-2)}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:14px 12px;margin:0}
+.facts dt{font-size:12px;color:var(--slate)}
+.facts dd{margin:2px 0 0;font-weight:700}
+.ph{list-style:none;margin:8px 0 0;padding:0}
+.ph li{display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-top:1px solid var(--line);font-size:13.5px}
+.ph li:first-child{border-top:0}
+.choices{display:flex;gap:8px;margin-top:10px}
+.choice{flex:1;min-height:44px;border:1.5px solid var(--line);border-radius:999px;background:var(--paper);font-weight:700;font-size:14px}
+.choice[aria-pressed="true"]{background:var(--forest);border-color:var(--forest);color:var(--cream)}
+.decide{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.decide-btn{display:flex;flex-direction:column;align-items:center;gap:6px;min-height:96px;padding:14px 6px;border:1.5px solid var(--line);border-radius:14px;background:var(--paper);font-weight:800;font-size:14.5px}
+.decide-btn:hover{border-color:var(--forest-2)}
+.decide-btn .d-ico{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--cream-2);color:var(--forest)}
+.decide-btn small{font-weight:500;font-size:11.5px;line-height:1.3;color:var(--slate);text-align:center}
+.decide-btn[aria-pressed="true"]{border-color:var(--forest);box-shadow:inset 0 0 0 1px var(--forest);background:#F7FBF8}
+
+/* =====================================================================
+   6. ADD FLOW
+   ===================================================================== */
+.add-top{display:flex;align-items:center;justify-content:space-between}
+.steps{display:flex;gap:6px;margin:6px 0 16px}
+.steps i{flex:1;height:4px;border-radius:99px;background:var(--line);transition:background 240ms var(--ease)}
+.steps i.on{background:var(--forest)}
+.stmt-card{margin-bottom:14px;padding:14px;border-radius:14px;background:var(--cream-2)}
+.stmt-card .stmt{margin:8px 0 6px}
+.opt{width:100%;display:flex;align-items:center;gap:12px;min-height:62px;margin-top:8px;padding:10px 14px;border:1.5px solid var(--line);border-radius:14px;background:var(--paper);text-align:left}
+.opt:hover{border-color:var(--forest-2)}
+.opt[aria-pressed="true"]{border-color:var(--forest);box-shadow:inset 0 0 0 1px var(--forest);background:#F7FBF8}
+.opt .opt-main{flex:1;min-width:0}
+.opt b{display:block}
+.opt small{display:block;color:var(--slate);font-size:12.5px}
+.tick{flex:none;width:24px;height:24px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;color:transparent}
+.opt[aria-pressed="true"] .tick{background:var(--forest);border-color:var(--forest);color:#fff}
+.opt .logo{width:36px;height:36px;border-radius:10px;font-size:15px}
+.opt .logo.blank{background:var(--cream-2);color:var(--slate)}
+.field label{display:block;margin:18px 0 6px;font-weight:700;font-size:13px}
+.input{width:100%;min-height:50px;padding:0 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--paper);font:600 16px var(--sans);color:var(--ink)}
+.input:focus{border-color:var(--forest-2)}
+.money{position:relative}
+.money span{position:absolute;left:16px;top:50%;transform:translateY(-50%);font:400 28px var(--serif)}
+.money .input{padding-left:36px;font:400 30px var(--serif);min-height:60px}
+.segctl{display:flex;gap:4px;padding:4px;border-radius:999px;background:var(--cream-2)}
+.segctl button{flex:1;min-height:44px;border:0;border-radius:999px;background:none;font-weight:700}
+.segctl button[aria-pressed="true"]{background:var(--paper);box-shadow:0 1px 3px rgba(18,36,29,.15)}
+.preview{margin:16px 0 0;padding:12px 14px;border-radius:12px;background:var(--mint);color:var(--forest-2);font-weight:700;font-size:14px}
+.error{margin:6px 0 0;color:var(--danger);font-size:13px;font-weight:600}
+.sticky-cta{position:sticky;bottom:-36px;margin:20px -16px -36px;padding:14px 16px 20px;background:linear-gradient(rgba(251,248,241,0),var(--cream) 28%)}
+
+/* =====================================================================
+   7. SHEETS, TOASTS, OVERLAYS
+   ===================================================================== */
+.sheet-layer{position:absolute;inset:0;z-index:40;display:flex;flex-direction:column;justify-content:flex-end}
+.sheet-backdrop{position:absolute;inset:0;background:rgba(18,36,29,.45);animation:fade 220ms var(--ease)}
+.sheet{position:relative;max-height:90%;overflow-y:auto;padding:10px 20px 26px;border-radius:20px 20px 0 0;background:var(--cream);animation:sheetUp 320ms var(--ease)}
+.grabber{width:40px;height:5px;margin:0 auto 10px;border-radius:99px;background:var(--line)}
+.sheet-close{position:absolute;top:8px;right:8px}
+.sheet-title{margin:6px 40px 0 0;font:400 30px/1.08 var(--serif)}
+.deadline{display:flex;gap:10px;align-items:flex-start;margin:16px 0 4px;padding:14px;border-left:4px solid var(--gold);border-radius:12px;background:var(--gold-wash);font-weight:600;font-size:14.5px}
+.deadline .i{color:var(--gold-ink);margin-top:1px}
+.crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.crumbs span{padding:5px 9px;border:1px solid var(--line);border-radius:8px;background:var(--paper);font-size:13px;font-weight:700}
+.crumbs i{font-style:normal;color:var(--slate)}
+.meta-row{display:flex;gap:10px;align-items:flex-start;margin-top:12px;font-size:13.5px}
+.meta-row .i{color:var(--forest-2);margin-top:1px}
+.bullets{margin:10px 0 0;padding-left:18px;font-size:14px}
+.bullets li{margin:4px 0}
+
+.toast-root{position:absolute;left:12px;right:12px;bottom:96px;z-index:70;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none}
+.toast{max-width:100%;padding:11px 16px;border-radius:14px;background:var(--forest);color:var(--cream);font-weight:600;font-size:13.5px;
+  box-shadow:0 10px 30px -10px rgba(14,59,46,.6);animation:toastIn 260ms var(--ease)}
+.toast.out{opacity:0;transform:translateY(6px);transition:all 220ms var(--ease)}
+
+.overlay{position:absolute;inset:0;z-index:30;display:none}
+.overlay.on{display:block}
+
+/* Phone lock screen */
+.lock{position:absolute;inset:0;overflow:hidden;color:#fff;background:#163F33}
+.lock::before{content:"";position:absolute;inset:-60px;filter:blur(34px);
+  background:
+    radial-gradient(circle at 20% 22%, #3E8C69 0, transparent 42%),
+    radial-gradient(circle at 85% 30%, #C9A227 0, transparent 34%),
+    radial-gradient(circle at 70% 85%, #0E3B2E 0, transparent 50%),
+    radial-gradient(circle at 15% 80%, #6FA88A 0, transparent 40%),
+    linear-gradient(160deg,#1E5A45,#0E3B2E)}
+.lock > *{position:relative}
+.lock-status{display:flex;justify-content:space-between;align-items:center;height:48px;padding:4px 30px 0 34px;font:700 14px var(--sans)}
+.lock-clock{text-align:center;margin-top:34px}
+.lock-date{font:600 18px var(--sans);opacity:.92}
+.lock-time{font:500 86px/1 var(--sans);letter-spacing:-.03em;margin-top:2px}
+.lock-hint{margin:40px 0 8px;text-align:center;font-size:12.5px;font-weight:600;opacity:.85}
+.notif{display:grid;grid-template-columns:38px 1fr;gap:10px;width:calc(100% - 24px);margin:0 12px;padding:12px 14px;border:0;border-radius:22px;text-align:left;
+  background:rgba(251,248,241,.84);color:var(--ink);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  box-shadow:0 14px 34px -12px rgba(0,0,0,.45);animation:notifIn 520ms var(--ease) 250ms both}
+.notif:hover{background:rgba(251,248,241,.95)}
+.notif:focus-visible{outline-color:var(--gold-lite);outline-offset:3px}
+.notif-icon{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:var(--bank)}
+.notif-app{display:flex;justify-content:space-between;font:700 11.5px var(--sans);letter-spacing:.04em;text-transform:uppercase;color:var(--slate)}
+.notif-title{display:block;margin-top:2px;font-weight:700;font-size:14.5px;line-height:1.3}
+.notif-body{display:block;font-size:13.5px;color:#33463D;margin-top:2px}
+.lock-skip{position:absolute;left:0;right:0;bottom:42px;display:flex;justify-content:center}
+.lock-skip button{min-height:44px;padding:0 18px;border:1px solid rgba(255,255,255,.4);border-radius:999px;background:rgba(255,255,255,.12);color:#fff;font-weight:700;font-size:14px}
+.home-bar{position:absolute;left:50%;bottom:10px;width:130px;height:5px;margin-left:-65px;border-radius:99px;background:rgba(255,255,255,.85)}
+
+/* Mock provider website (deliberately looks like a different company) */
+.prov{position:absolute;inset:0;display:flex;flex-direction:column;background:#F5F5F7;color:#1C1C1E;font-family:var(--sans)}
+.prov-chrome{display:flex;align-items:center;gap:8px;padding:52px 12px 10px;background:#E9E9EC;border-bottom:1px solid #D6D6DA}
+.prov-close{min-height:44px;padding:0 10px;border:0;background:none;color:#0A58CA;font-weight:700}
+.prov-url{flex:1;display:flex;align-items:center;gap:6px;min-width:0;padding:9px 11px;border-radius:10px;background:#fff;font-size:13px;color:#3A3A3C}
+.prov-url span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prov-brand{display:flex;align-items:center;gap:10px;padding:14px 18px;background:#fff;border-bottom:1px solid #E5E5EA}
+.prov-brand b{font-size:16px;letter-spacing:-.01em}
+.prov-logo{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;background:var(--pc);color:#fff;font-weight:800}
+.prov-body{flex:1;overflow:auto;padding:22px 18px}
+.prov-h{margin:0 0 6px;font:800 24px/1.2 var(--sans);letter-spacing:-.02em}
+.prov-p{margin:0 0 16px;color:#48484A;font-size:14.5px}
+.prov-card{margin-bottom:18px;padding:16px;border:1px solid #E5E5EA;border-radius:10px;background:#fff}
+.prov-plan{display:flex;justify-content:space-between;gap:8px;font-size:15px}
+.prov-dl{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 0}
+.prov-dl dt{font-size:12px;color:#6E6E73}
+.prov-dl dd{margin:2px 0 0;font-weight:700;font-size:13.5px}
+.prov-btn{width:100%;min-height:50px;margin-top:10px;border:0;border-radius:10px;background:var(--pc);color:#fff;font-weight:800;font-size:15px}
+.prov-link{width:100%;min-height:50px;margin-top:10px;border:1.5px solid #C7C7CC;border-radius:10px;background:#fff;color:#1C1C1E;font-weight:700;font-size:15px}
+.prov-done{display:grid;place-items:center;width:64px;height:64px;margin:10px 0 16px;border-radius:50%;background:#E8F5EC;color:#1E7B45}
+.prov-ref{display:inline-block;margin-bottom:18px;padding:6px 10px;border-radius:8px;background:#EDEDF0;font:600 13px var(--mono)}
+.prov-foot{padding:10px;text-align:center;font-size:11px;color:#8E8E93;border-top:1px solid #E5E5EA;background:#fff}
+
+/* =====================================================================
+   8. DEMO CONTROLS (scaffolding — deliberately not bank-app styling)
+   ===================================================================== */
+.demo{flex:none;position:sticky;top:24px;width:300px;padding:16px;border:1.5px dashed #B3A88E;border-radius:12px;background:var(--paper);font-size:13.5px}
+.demo-head{display:flex;align-items:center;gap:10px}
+.demo-head b{display:block;font:800 14px var(--sans)}
+.demo-head small{display:block;font-size:11.5px;color:var(--slate);line-height:1.3}
+.demo-x{display:none}
+.tag{display:inline-block;padding:3px 6px;border-radius:4px;background:var(--ink);color:var(--cream);font:700 10px var(--mono);letter-spacing:.1em;text-transform:uppercase}
+.task{margin-top:14px;padding:12px;border-radius:10px;background:var(--cream-2)}
+.task-top{display:flex;justify-content:space-between;align-items:center}
+.task-done{font:700 12px var(--mono);color:var(--moss)}
+.task-q{margin:8px 0 4px;font:400 20px/1.22 var(--serif)}
+.task-hint{margin:0 0 8px;font-size:12.5px;color:var(--slate)}
+.task-nav{display:flex;gap:6px}
+.demo-mini{flex:1;min-height:40px;border:1.5px solid var(--ink);border-radius:8px;background:var(--paper);font:700 12.5px var(--sans)}
+.demo-mini.hot{background:var(--ink);color:var(--cream)}
+.demo-mini:disabled{opacity:.35;cursor:not-allowed}
+.demo-group{margin-top:16px}
+.demo-label{font:700 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--slate)}
+.demo-date{margin-top:4px;font:600 13px var(--mono)}
+.demo-btn{width:100%;display:flex;align-items:center;gap:10px;min-height:48px;margin-top:8px;padding:6px 12px;border:1.5px solid var(--ink);border-radius:8px;background:var(--paper);text-align:left;font-weight:700}
+.demo-btn small{display:block;font-weight:500;font-size:11.5px;color:var(--slate)}
+.demo-btn .emo{font-size:18px;width:22px;text-align:center}
+.demo-btn.primary{background:var(--ink);color:var(--cream)}
+.demo-btn.primary small{color:#C9D5CF}
+.demo-btn.reset{border-color:var(--danger);color:var(--danger);border-width:2px}
+.demo-btn:disabled{opacity:.5;cursor:not-allowed;border-style:dashed}
+.demo-note{margin:14px 0 0;font-size:11.5px;color:var(--slate)}
+.demo-fab{display:none}
+
+/* =====================================================================
+   9. MOBILE (< 900px): app fills the screen, demo controls float
+   ===================================================================== */
+@media (max-width:899px){
+  body{background:var(--cream)}
+  .stage{display:block;padding:0}
+  .device-wrap{width:100%;height:auto}
+  .device{width:100%;height:100vh;height:100dvh;padding:0;border-radius:0;background:none;box-shadow:none;transform:none}
+  .island,.statusbar,.lock-status{display:none}
+  .app{border-radius:0}
+  .lock-clock{margin-top:70px}
+  .prov-chrome{padding-top:12px}
+  .tabbar{padding-bottom:max(10px, env(safe-area-inset-bottom))}
+  .demo{display:none;position:fixed;left:8px;right:8px;bottom:8px;top:auto;z-index:200;width:auto;max-height:82vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+  .demo.open{display:block}
+  .demo-x{display:grid;margin-left:auto}
+  /* The demo button takes the bell's place in the header so it never covers app content */
+  #bellBtn{display:none}
+  .demo-fab{display:flex;align-items:center;gap:6px;position:fixed;right:56px;top:10px;z-index:150;min-height:44px;padding:0 14px;
+    border:1.5px dashed #B3A88E;border-radius:10px;background:var(--paper);font:700 13px var(--sans);box-shadow:0 6px 20px rgba(0,0,0,.15)}
+}
+
+/* =====================================================================
+   9c. POLISH: tools, list controls, skeleton, calendar, check-up,
+       year in review, settings
+   ===================================================================== */
+.tools{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:14px}
+.tool{display:flex;flex-direction:column;align-items:center;gap:5px;min-height:66px;padding:8px 2px;border:1px solid var(--line);border-radius:14px;background:var(--paper);font:700 11px/1.15 var(--sans);text-align:center}
+.tool:hover{border-color:var(--forest-2)}
+.tool-ico{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--bank-wash);color:var(--forest)}
+
+.list-tools{display:flex;gap:8px;margin-top:10px}
+.input.search{flex:1;min-width:0;min-height:44px;font-size:14px;font-weight:500}
+.input.sort{flex:none;width:auto;max-width:44%;min-height:44px;padding:0 8px;font-size:13px}
+.chips{display:flex;gap:6px;margin:8px -2px 0;padding:2px;overflow-x:auto;scrollbar-width:none}
+.chip{flex:none;min-height:40px;padding:0 13px;border:1.5px solid var(--line);border-radius:999px;background:var(--paper);font:700 12.5px var(--sans);white-space:nowrap}
+.chip[aria-pressed="true"]{background:var(--forest);border-color:var(--forest);color:var(--cream)}
+.list .empty{padding:16px 4px;font-size:13.5px}
+
+.bell{display:inline-flex;align-items:center;gap:2px;margin-left:6px;padding:0 6px;border-radius:999px;background:var(--cream-2);font:700 10.5px/1.6 var(--sans);color:var(--slate);vertical-align:1px}
+.tl-row.urgent .bell{background:rgba(255,255,255,.6);color:var(--gold-ink)}
+.bell.off{opacity:.75}
+
+/* First-load skeleton */
+.sk{margin-top:14px;border-radius:14px;background:linear-gradient(90deg,var(--cream-2) 25%,#EEE6D4 50%,var(--cream-2) 75%);background-size:200% 100%;animation:shimmer 1.3s linear infinite}
+.sk-dark{background:linear-gradient(90deg,var(--forest) 25%,var(--forest-2) 50%,var(--forest) 75%);background-size:200% 100%;opacity:.85}
+.detect-steps{list-style:none;margin:14px 0 0;padding:0;font-size:13.5px}
+.detect-steps li{display:flex;align-items:center;gap:8px;padding:4px 0;animation:fade 300ms var(--ease) both}
+.detect-steps li:nth-child(2){animation-delay:.4s}
+.detect-steps li:nth-child(3){animation-delay:.8s}
+.detect-steps .i{color:var(--moss)}
+@keyframes shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
+
+/* Charge-day calendar */
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-top:16px}
+.cal-nav .icon-btn:disabled{opacity:.3;cursor:not-allowed}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:6px}
+.cal-wd{padding:4px 0;text-align:center;font:700 10.5px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--slate)}
+.cal-day{position:relative;display:flex;flex-direction:column;align-items:center;min-height:54px;padding:6px 0 4px;border:1px solid var(--line);border-radius:10px;background:var(--paper);font:700 13px var(--sans)}
+.cal-day.past{opacity:.4}
+.cal-day.today{border:2px solid var(--forest-2)}
+.cal-day.has{background:var(--gold-wash);border-color:var(--gold-lite)}
+.cal-day.income{background:var(--mint)}
+.cal-day.income::after{content:"";position:absolute;top:5px;right:5px;width:7px;height:7px;transform:rotate(45deg);background:var(--moss)}
+.cal-day[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--forest)}
+.cd-dots{display:flex;gap:2px;margin-top:3px}
+.cd-dots i{width:6px;height:6px;border-radius:50%;background:var(--gold)}
+.cd-amt{margin-top:2px;font:700 9.5px var(--sans);color:var(--gold-ink)}
+.cal-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;font-size:12px;color:var(--slate)}
+.cal-legend span{display:inline-flex;align-items:center;gap:6px}
+.cal-legend i{display:inline-block;width:10px;height:10px}
+.lg-charge{border-radius:50%;background:var(--gold)}
+.lg-income{transform:rotate(45deg);background:var(--moss)}
+.lg-today{border:2px solid var(--forest-2);border-radius:3px}
+
+/* Monthly check-up */
+.cu-card{position:relative;margin-top:14px;padding:26px 20px 20px;border:1px solid var(--line);border-radius:20px;background:var(--paper);text-align:center;
+  box-shadow:0 18px 40px -24px rgba(18,36,29,.4);touch-action:pan-y;user-select:none;transition:transform 240ms var(--ease),opacity 240ms var(--ease)}
+.cu-card .logo{width:64px;height:64px;margin:0 auto;border-radius:18px;font-size:28px}
+.cu-name{margin:14px 0 0;font:400 30px/1.1 var(--serif)}
+.cu-amt{margin:8px 0 0;font:400 46px/1 var(--serif);font-variant-numeric:tabular-nums}
+.cu-amt small{margin-left:4px;font:500 14px var(--sans);color:var(--slate)}
+.cu-next{margin:10px 0 0;font-weight:700;font-size:13.5px;color:var(--slate)}
+.cu-insight{margin:14px 0 0;padding:10px 12px;border-radius:12px;background:var(--cream-2);font-size:13.5px}
+.cu-stamp{position:absolute;top:16px;padding:4px 10px;border:2px solid;border-radius:8px;font:800 13px var(--sans);letter-spacing:.08em;text-transform:uppercase;opacity:0;transition:opacity 150ms}
+.cu-stamp.keep{left:16px;color:var(--moss);transform:rotate(-8deg)}
+.cu-stamp.stop{right:16px;color:var(--gold-ink);transform:rotate(8deg)}
+.cu-card[data-lean="keep"] .cu-stamp.keep,.cu-card[data-lean="stop"] .cu-stamp.stop{opacity:1}
+.cu-card.fly-right{transform:translateX(120%) rotate(10deg);opacity:0}
+.cu-card.fly-left{transform:translateX(-120%) rotate(-10deg);opacity:0}
+.cu-card.fly-up{transform:translateY(-30%) scale(.94);opacity:0}
+.cu-sum{margin:12px 0 0;font:400 26px/1.25 var(--serif)}
+
+/* Year in review card */
+.yir{position:relative;overflow:hidden;margin-top:14px;padding:22px 20px;border-radius:20px;background:linear-gradient(155deg,var(--bank-2),var(--bank));color:var(--cream);
+  box-shadow:0 24px 50px -24px rgba(0,0,0,.45)}
+.yir::before{content:"";position:absolute;right:-70px;top:-70px;width:210px;height:210px;border-radius:50%;border:26px solid rgba(201,162,39,.22)}
+.yir > *{position:relative}
+.yir-top{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:13px}
+.yir-top span{display:inline-flex;align-items:center;gap:8px}
+.yir-kicker{margin:24px 0 0;font:italic 400 22px/1.2 var(--serif)}
+.yir-big{margin:6px 0 0;font:400 60px/1 var(--serif);color:var(--gold);font-variant-numeric:tabular-nums}
+.yir-sub{margin:6px 0 0;font-size:13px;color:#D8E4DD}
+.yir-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 14px;margin:22px 0 0;padding-top:18px;border-top:1px solid rgba(255,255,255,.2)}
+.yir-grid dt{font:800 10.5px var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--gold-lite)}
+.yir-grid dd{margin:4px 0 0;font:400 22px/1.1 var(--serif)}
+.yir-grid span{display:block;margin-top:3px;font-size:12px;color:#D2DED7}
+
+/* Settings */
+.switch-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.switch{flex:none;position:relative;width:58px;height:44px;padding:0;border:0;background:none}
+.switch::before{content:"";position:absolute;left:3px;top:6px;width:52px;height:32px;border-radius:999px;background:#B3AB98;transition:background 200ms var(--ease)}
+.switch span{position:absolute;left:6px;top:9px;width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform 200ms var(--ease)}
+.switch[aria-checked="true"]::before{background:var(--forest-2)}
+.switch[aria-checked="true"] span{transform:translateX(20px)}
+.notify-list{list-style:none;margin:8px 0 0;padding:0}
+.notify-list li{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.notify-list label{display:flex;align-items:center;gap:10px;flex:1;min-width:0;font-weight:700;font-size:14px}
+.notify-list label small{display:block;font-weight:500;font-size:12px;color:var(--slate)}
+.notify-list .logo{width:34px;height:34px;border-radius:10px;font-size:14px}
+.input.notify{flex:none;width:auto;max-width:48%;min-height:44px;padding:0 8px;font-size:13px}
+.input.notify:disabled{opacity:.5}
+
+/* =====================================================================
+   9b. THEME SWITCHER + FULL PAGES (partner dashboard, About)
+   ===================================================================== */
+.themes{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.theme-btn{display:flex;align-items:center;gap:8px;min-height:48px;padding:6px 8px;border:1.5px solid var(--line);border-radius:8px;background:var(--paper);text-align:left;font:700 12.5px var(--sans);line-height:1.2}
+.theme-btn i{flex:none;width:18px;height:18px;border-radius:50%;box-shadow:inset 0 0 0 2px rgba(255,255,255,.35)}
+.theme-btn small{display:block;font-weight:500;font-size:10.5px;color:var(--slate)}
+.theme-btn[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+
+.page{position:fixed;inset:0;z-index:300;overflow-y:auto;background:var(--cream);animation:fade 220ms var(--ease)}
+.page.about{--forest:#0E3B2E;--forest-2:#17543F;--bank:#0E3B2E}   /* About always wears Mohar's own colours */
+.pg-bar{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 24px;background:var(--bank);color:var(--bank-ink)}
+.page.about .pg-bar{background:var(--forest)}
+.pg-brand{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.pg-brand b{font:800 16px var(--sans)}
+.pg-brand span{font-size:13px;opacity:.75;padding-left:10px;border-left:1px solid rgba(255,255,255,.3)}
+.wordmark{font:400 26px/1 var(--serif)!important;letter-spacing:.01em}
+.pg-tag{padding:4px 10px;border-radius:999px;background:var(--gold-lite);color:var(--ink);font:800 11px var(--sans);letter-spacing:.06em;text-transform:uppercase}
+.pg-close{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border:1.5px solid rgba(255,255,255,.5);border-radius:999px;background:transparent;color:inherit;font-weight:700}
+.pg-close:hover{background:rgba(255,255,255,.1)}
+.pg-close:focus-visible{outline-color:var(--gold-lite)}
+.pg-main{max-width:1080px;margin:0 auto;padding:32px 24px 56px}
+.pg-main.narrow{max-width:820px}
+.pg-title{margin:6px 0 6px;font:400 44px/1.05 var(--serif);letter-spacing:-.01em}
+.pg-title em{font-style:italic}
+.pg-card{margin-top:18px;padding:22px;border:1px solid var(--line);border-radius:14px;background:var(--paper)}
+.pg-cols{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.pg-cols .pg-card{margin-top:18px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:24px}
+.kpi{padding:18px;border:1px solid var(--line);border-radius:14px;background:var(--paper)}
+.kpi b{display:block;font:400 44px/1 var(--serif);color:var(--bank)}
+.kpi span{display:block;margin-top:8px;font-weight:700;font-size:14px;line-height:1.3}
+.kpi small{display:block;margin-top:6px;font-size:12.5px;color:var(--slate)}
+.chart{position:relative;margin-top:14px}
+.chart-svg{display:block;width:100%;height:auto;overflow:visible}
+.chart-svg .bar{cursor:default;outline:none}
+.chart-svg .bar:hover path,.chart-svg .bar:focus path{fill:var(--bank-2)!important}
+.chart-svg .bar:focus-visible rect{stroke:var(--forest-2);stroke-width:2}
+.chart-tip{position:absolute;transform:translate(-50%,calc(-100% - 10px));padding:6px 10px;border-radius:8px;background:var(--ink);color:var(--cream);font:700 12.5px var(--sans);white-space:nowrap;pointer-events:none}
+.pg-table{margin-top:10px;font-size:13.5px}
+.pg-table summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:700;color:var(--forest-2)}
+.pg-table table{border-collapse:collapse;min-width:260px}
+.pg-table th,.pg-table td{padding:6px 12px 6px 0;text-align:left;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.ticks,.crosses{list-style:none;margin:10px 0 0;padding:0}
+.ticks li,.crosses li{position:relative;padding:6px 0 6px 26px;font-size:14px}
+.ticks li::before,.crosses li::before{position:absolute;left:0;top:6px;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font:800 11px var(--sans)}
+.ticks li::before{content:"✓";background:var(--mint);color:var(--moss)}
+.crosses li::before{content:"✕";background:var(--cream-2);color:var(--slate)}
+.about-hero{display:flex;align-items:center;gap:24px}
+.about-hero svg{flex:none}
+.about-lead{margin:0 0 12px;font:400 21px/1.4 var(--serif)}
+.four{margin:12px 0 0;padding:0;list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:14px;counter-reset:f}
+.four li{counter-increment:f;padding:14px 14px 14px 52px;position:relative;border-radius:12px;background:var(--cream);font-size:13.5px;color:var(--slate)}
+.four li::before{content:counter(f);position:absolute;left:14px;top:14px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--gold);color:var(--ink);font:800 13px var(--sans)}
+.four b{display:block;margin-bottom:4px;font-size:15px;color:var(--ink)}
+.team{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
+.team li{padding:8px 14px;border-radius:999px;background:var(--cream-2);font-weight:700;font-size:14px}
+@media (max-width:899px){
+  .pg-bar{padding:10px 16px}
+  .pg-brand span{display:none}
+  .pg-brand b{white-space:nowrap}
+  .pg-tag{order:3}
+  .pg-main{padding:24px 16px 48px}
+  .pg-title{font-size:34px}
+  .kpis{grid-template-columns:1fr 1fr;gap:10px}
+  .kpi b{font-size:36px}
+  .pg-cols,.four{grid-template-columns:1fr}
+  .pg-cols{gap:0}
+  .about-hero{flex-direction:column;align-items:flex-start;gap:12px}
+  .about-hero svg{width:72px;height:72px}
+}
+
+/* =====================================================================
+   10. MOTION
+   ===================================================================== */
+@keyframes inFwd{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}
+@keyframes inBack{from{opacity:0;transform:translateX(-26px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
+@keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes notifIn{from{opacity:0;transform:translateY(-18px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+
+<body>
+<div class="stage">
+
+  <!-- ================= DEMO CONTROLS (outside the phone) ================= -->
+  <aside class="demo" id="demo" aria-label="Demo controls">
+    <div class="demo-head">
+      <span id="demoMark"></span>
+      <div><b>Demo controls</b><small>Scaffolding for testers — not part of the bank app</small></div>
+      <button class="icon-btn demo-x" data-action="demoToggle" aria-label="Close demo controls"></button>
+    </div>
+
+    <section class="task" aria-labelledby="taskNum">
+      <div class="task-top"><span class="tag" id="taskNum">Task 1 of 3</span><span class="task-done" id="taskDone" hidden>✓ DONE</span></div>
+      <p class="task-q" id="taskText" aria-live="polite"></p>
+      <p class="task-hint" id="taskHint"></p>
+      <div class="task-nav">
+        <button class="demo-mini" id="taskPrev" data-action="taskPrev">‹ Previous</button>
+        <button class="demo-mini" id="taskNext" data-action="taskNext">Next task ›</button>
+      </div>
+    </section>
+
+    <div class="demo-group">
+      <div class="demo-label">Demo clock</div>
+      <div class="demo-date" id="demoDate"></div>
+      <button class="demo-btn primary" data-action="ff"><span class="emo" aria-hidden="true">⏩</span><span>Fast-forward one month<small id="ffTo"></small></span></button>
+      <button class="demo-btn reset" data-action="reset"><span class="emo" aria-hidden="true">↺</span><span>Reset demo<small>Back to Day 0 — a clean start for the next tester</small></span></button>
+    </div>
+
+    <div class="demo-group">
+      <div class="demo-label" id="themeLabel"><span aria-hidden="true">🎨</span> Bank theme · white-label</div>
+      <div class="themes" role="group" aria-labelledby="themeLabel" id="themeBtns"></div>
+    </div>
+
+    <div class="demo-group">
+      <div class="demo-label">The business side</div>
+      <button class="demo-btn" data-action="openPage" data-value="dashboard"><span class="emo" aria-hidden="true">📊</span><span>Partner dashboard<small>What the bank's product manager sees</small></span></button>
+      <button class="demo-btn" data-action="openPage" data-value="about"><span class="emo" aria-hidden="true">ℹ️</span><span>About Mohar<small>The name, the team, what's simulated</small></span></button>
+    </div>
+    <p class="demo-note">Everything here is fictional: banks, services, people and figures.</p>
+  </aside>
+
+  <!-- ================= PHONE ================= -->
+  <div class="device-wrap">
+    <div class="device">
+      <div class="island" aria-hidden="true"></div>
+      <div class="app" id="app">
+
+        <!-- The host bank app. Mohar lives inside it as one tab. -->
+        <div class="shell" id="shell">
+          <div class="statusbar" aria-hidden="true"><span>9:41</span><span class="sb-icons" id="sbIcons"></span></div>
+          <header class="bankbar">
+            <span id="bankLogo"></span>
+            <span class="bank-name" id="bankName"></span>
+            <button class="icon-btn" data-action="inert" data-label="Notifications" aria-label="Notifications (not part of this prototype)" id="bellBtn"></button>
+            <button class="avatar" data-action="inert" data-label="Profile" aria-label="Profile (not part of this prototype)">A</button>
+          </header>
+          <main class="screen" id="screen" aria-live="off"></main>
+          <nav class="tabbar" id="tabbar" aria-label="Bank app"></nav>
+        </div>
+
+        <div class="overlay" id="overlay"></div>
+        <div id="sheetRoot"></div>
+        <div class="toast-root" id="toastRoot" role="status" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page" hidden></div>
+
+<button class="demo-fab" id="demoFab" data-action="demoToggle" aria-controls="demo" aria-expanded="false"><span aria-hidden="true">⚙</span> Demo</button>
+
+<script>
+'use strict';
+/* =======================================================================
+   MOHAR PROTOTYPE — application script
+
+   How it works, in one paragraph:
+   There is ONE state object (`state`) holding subscriptions, the demo
+   clock and every decision the user makes. Each screen is a function that
+   reads `state` and returns an HTML string. After any change we call
+   `refresh()`, which re-renders the current screen from state — so the
+   numbers on screen can never disagree with the data. Buttons carry a
+   `data-action` attribute; one click listener looks the action up in the
+   `actions` object. Navigation uses the URL hash (#/hub, #/detail/x) so
+   the browser back button works, from disk and on GitHub Pages.
+
+   Sections
+     1. Demo data
+     2. State + derived values
+     3. Date and money helpers
+     4. Icons and small HTML helpers
+     5. Router
+     6. Screens  (hub, detail, add flow, provider page, lock screen)
+     7. Sheets and toasts
+     8. Actions  (what every button does)
+     9. Demo harness (fast-forward, reset, tester tasks)
+    10. Boot
+   ======================================================================= */
+
+/* ---------------------------------------------------------------------
+   1. DEMO DATA
+   All services are invented. Amounts are stored in CENTS (integers) so
+   the totals are exact: 6895 + 1099 = 7994, never 79.94000001.
+   --------------------------------------------------------------------- */
+const DAY0 = '2026-11-03';   // Tuesday 3 November 2026
+
+/* White-label banks. Each bank licenses the feature, names it itself and dresses it in its own colours.
+   Mohar's own name and coin appear only in the demo chrome, the partner portal footer and the About page. */
+const BANKS = [
+  { id: 'saimaa',  name: 'Saimaa Bank',  feature: 'Subscriptions', featureFi: 'Tilaukset',   code: 'SB', logo: 'lake',   bank: '#0E3B2E', bank2: '#17543F', wash: '#E6F3EB' },
+  { id: 'virta',   name: 'Virta Pankki', feature: 'Recurring',     featureFi: 'Toistuvat',   code: 'VP', logo: 'stream', bank: '#0B3C6E', bank2: '#17548F', wash: '#E3EEF9' },
+  { id: 'nordlys', name: 'Nordlys',      feature: 'Renewals',      featureFi: 'Uusiutuvat',  code: 'NL', logo: 'aurora', bank: '#3B2363', bank2: '#563782', wash: '#EEE8F7' },
+  { id: 'koski',   name: 'Koski Bank',   feature: 'Regulars',      featureFi: 'Vakiomaksut', code: 'KB', logo: 'rapids', bank: '#7A2E17', bank2: '#963F1F', wash: '#F8E9E2' },
+];
+let BANK = BANKS[0];   // the bank currently shown; switched from the demo controls
+
+/* Demo-only settings that survive Reset (the presenter's choice, not the tester's data) */
+const demo = { page: null };
+
+/* Billing channels: label, where the subscription is managed, the exit
+   route and an honest effort estimate. */
+const CHANNELS = {
+  card:       { label: 'Debit card',  effort: 'about 3 minutes',
+                where: n => `Card subscriptions are stopped with ${n} directly, on their website or app.`,
+                route: n => [n, 'Account', 'Subscription', 'Cancel'] },
+  paypal:     { label: 'PayPal',      effort: 'about 2 minutes',
+                where: n => `This one is paid through PayPal, so you can stop it there — or on ${n}'s own page.`,
+                route: n => ['Settings', 'Payments', 'Automatic payments', n] },
+  appstore:   { label: 'App store',   effort: 'about 1 minute',
+                where: () => 'App store subscriptions are stopped in your phone settings.',
+                route: n => ['Settings', 'Your name', 'Subscriptions', n] },
+  googleplay: { label: 'Google Play', effort: 'about 1 minute',
+                where: () => 'Stopped from the Play store on your phone.',
+                route: n => ['Play store', 'Profile', 'Payments & subscriptions', n] },
+  family:     { label: 'Family plan', effort: 'depends on the plan owner',
+                where: () => 'Someone else pays for this plan. Ask them to remove you, or leave it yourself.',
+                route: n => [`${n} family settings`, 'Members', 'Leave plan'] },
+  other:      { label: 'Other',       effort: 'about 5 minutes',
+                where: n => `Stopped on ${n}'s own website.`,
+                route: n => [n, 'Billing', 'Cancel plan'] },
+};
+
+/* Segments of the "honest total" bar */
+const SEGMENTS = [
+  { key: 'card',     label: 'Card',         color: '#FBF8F1' },
+  { key: 'paypal',   label: 'PayPal',       color: '#7FBF9C' },
+  { key: 'appstore', label: 'App store',    color: '#C9A227' },
+  { key: 'manual',   label: 'Added by you', color: '#F0D98A' },
+];
+
+/* Presets offered in the "add what the bank can't see" flow */
+const PRESETS = [
+  { id: 'tunely',     name: 'Tunely Music', category: 'Music streaming', color: '#C42D55', group: 'entertainment' },
+  { id: 'snapframe',  name: 'Snapframe',    category: 'Photo filters',   color: '#2F5DB8' },
+  { id: 'questly',    name: 'Questly',      category: 'Mobile games',    color: '#6D3FB8' },
+  { id: 'pocketnote', name: 'Pocketnote',   category: 'Notes app',       color: '#8A5A12' },
+];
+
+/* The starting data. initialState() deep-copies this, so Reset is clean. */
+const SEED = {
+  today: DAY0,
+  balanceCents: 1840,
+  incomeDay: 15,                     // student allowance arrives on the 15th
+  incomeLabel: 'student allowance',
+  notifyAll: true,                   // global switch for renewal warnings
+  savedCents: 0,                     // money not charged because something was stopped
+  subs: [
+    { id: 'pixelcraft', name: 'Pixelcraft Pro', category: 'Design app', color: '#5B3FC4',
+      cents: 2300, cycle: 'monthly', channel: 'paypal', source: 'detected', next: '2026-11-06',
+      since: '2025-01', paid2026: 23000, lastOpened: '2 months ago', lastOpenedDays: 61,
+      priceHistory: [{ from: '2025-01', cents: 2300 }],
+      statement: [
+        ['PAYPAL *PIXELCRAFT 4029357733', '€23,00', '06.10.2026'],
+        ['PP*PIXELCRAFTPRO',              '€23,00', '06.09.2026'],
+        ['PIXELCRAFT.COM/BILL EUR',       '€23,00', '06.08.2026'] ] },
+    { id: 'streamview', name: 'Streamview', category: 'Video streaming', color: '#B42318',
+      cents: 1299, cycle: 'monthly', channel: 'card', source: 'detected', next: '2026-11-09',
+      since: '2024-06', paid2026: 12590, lastOpened: 'yesterday', lastOpenedDays: 1, group: 'entertainment',
+      priceHistory: [{ from: '2024-06', cents: 1099 }, { from: '2026-03', cents: 1299 }] },
+    { id: 'nimbus', name: 'Nimbus Cloud', category: 'Cloud storage', color: '#2563A8',
+      cents: 299, cycle: 'monthly', channel: 'card', source: 'detected', next: '2026-11-15',
+      since: '2023-09', paid2026: 2990, lastOpened: 'today', lastOpenedDays: 0,
+      priceHistory: [{ from: '2023-09', cents: 299 }] },
+    { id: 'gamepass', name: 'Gamepass+', category: 'Games', color: '#0F766E',
+      cents: 899, cycle: 'monthly', channel: 'card', source: 'detected', next: '2026-11-21',
+      since: '2026-07', paid2026: 3596, lastOpened: '5 days ago', lastOpenedDays: 5, group: 'entertainment',
+      priceHistory: [{ from: '2026-07', cents: 899 }] },
+    { id: 'fitflow', name: 'FitFlow', category: 'Fitness app', color: '#B45309',
+      cents: 1499, cycle: 'monthly', channel: 'card', source: 'detected', next: '2026-11-08',
+      trial: true, trialStart: '2026-10-08', since: '2026-10', paid2026: 0, lastOpened: '3 weeks ago', lastOpenedDays: 21,
+      statement: [['FITFLOW*TRIAL VERIFY', '€0,00', '08.10.2026']],
+      priceHistory: null, ghostAfterStop: true },   // will charge again after being stopped (demo of ghost charges)
+    { id: 'lingo', name: 'Lingo Daily', category: 'Language learning', color: '#9D2F7E',
+      cents: 7188, cycle: 'yearly', channel: 'paypal', source: 'detected', next: '2026-11-28',
+      since: '2024-11', paid2026: 0, lastOpened: '4 days ago', lastOpenedDays: 4,
+      priceHistory: [{ from: '2024-11', cents: 7188 }] },
+  ],
+  /* Payments the bank sees but cannot name. Tunely Music hides in here. */
+  unknown: [
+    { id: 'appstore', label: 'APP STORE', cents: 1099, channel: 'appstore',
+      next: '2026-11-12', last: '2026-10-12', paid2026: 10990, resolved: false, resolvedTo: null },
+  ],
+  alerts: [],   // confirmations ("no charge from …") and ghost charges, newest first
+};
+
+/* Fields every subscription gets at runtime */
+const SUB_DEFAULTS = {
+  status: 'active',      // 'active' | 'stopping' | 'stopped'
+  decision: null,        // 'keep' | 'unsure' | 'stop' | null
+  remindOn: null,        // ISO date of the "Not sure" reminder
+  usage: null,           // 'yes' | 'little' | 'no'
+  stoppedOn: null, checkOn: null, confirmedOn: null,
+  ghostArmed: false, ghost: null,
+  notify: 'smart',       // warning setting: 'smart' | '3' | '7' | 'both' | 'off'
+};
+
+/* ---------------------------------------------------------------------
+   2. STATE + DERIVED VALUES
+   --------------------------------------------------------------------- */
+function initialState() {
+  const s = JSON.parse(JSON.stringify(SEED));
+  s.subs = s.subs.map(sub => Object.assign({}, SUB_DEFAULTS, sub));
+  return s;
+}
+function initialUi() {
+  return {
+    lockOn: true,          // phone lock screen showing?
+    lockNote: null,        // the push notification on it
+    taskIndex: 0,          // which tester task the demo bar shows
+    breakdownOpen: false,
+    addDraft: null,        // in-progress "add a subscription" answers
+    cancelStep: 0,         // step on the mock provider page
+    shown: {},             // last value shown for each counting number, so it can count up/down
+    period: 'month',       // monthly ↔ yearly toggle: 'month' | 'year'
+    guessShown: false,     // guess-your-total appears once per session
+    guessRevealed: false,
+    guess: 30,             // the user's guess, whole euros
+    recogOpen: {},         // which "How we recognised this" panels are open
+    overlapDismissed: false,
+    clockStart: Date.now(),// real time the demo clock started ticking (for live countdowns)
+    sawConfirmation: false,
+    lang: 'en',            // 'en' | 'fi'
+    detected: false,       // has the "detecting your subscriptions" moment run yet?
+    detectTimer: null,
+    search: '', sort: 'next', filter: 'all',   // the All subscriptions list
+    calMonth: 0, calDay: null,                 // calendar: months ahead of today, selected day
+    checkup: null,                             // monthly check-up progress
+    pendingStop: null,                         // open the exit guide after navigating to this subscription
+    seq: 0,                // id counter
+  };
+}
+let state = initialState();
+let ui = initialUi();
+
+const findSub   = id => state.subs.find(s => s.id === id);
+const findAlert = id => state.alerts.find(a => a.id === id);
+const openLump  = () => state.unknown.find(u => !u.resolved);
+const isLive    = s => s.status === 'active' || s.status === 'stopping';   // still costs money (stopping = not yet confirmed)
+const monthly   = s => s.cycle === 'yearly' ? Math.round(s.cents / 12) : s.cents;
+const cycleMonths = s => s.cycle === 'yearly' ? 12 : 1;
+const totalMonthly = () => state.subs.filter(isLive).reduce((sum, s) => sum + monthly(s), 0);
+const segmentOf = s => s.source === 'manual' ? (s.channel === 'appstore' ? 'appstore' : 'manual') : s.channel;
+/* How many days ahead a charge counts as "urgent" (gold) */
+const warnDays  = s => s.trial ? 7 : s.cycle === 'yearly' ? 14 : 3;
+
+function segments() {
+  const sums = { card: 0, paypal: 0, appstore: 0, manual: 0 };
+  state.subs.filter(isLive).forEach(s => { sums[segmentOf(s)] += monthly(s); });
+  return SEGMENTS.map(g => Object.assign({}, g, { cents: sums[g.key] })).filter(g => g.cents > 0);
+}
+function savings() {
+  const stopped = state.subs.filter(s => s.status === 'stopped');
+  const m = stopped.reduce((sum, s) => sum + monthly(s), 0);
+  return { count: stopped.length, monthly: m, yearly: m * 12,
+           avoided: state.alerts.filter(a => a.type === 'confirmed').length };
+}
+/* Only what the bank detected by itself — the number revealed after "guess your total" */
+const detectedTotal = () => state.subs.filter(s => isLive(s) && s.source === 'detected').reduce((sum, s) => sum + monthly(s), 0);
+
+/* Monthly ↔ yearly toggle: m is a monthly amount in cents */
+const inPeriod = m => ui.period === 'year' ? m * 12 : m;
+const perLabel = () => ui.period === 'year' ? 'year' : 'month';
+
+/* Price increase: the latest price is higher than the one before it */
+function priceRise(s) {
+  const h = s.priceHistory;
+  if (!h || h.length < 2) return null;
+  const last = h[h.length - 1], prev = h[h.length - 2];
+  if (last.cents <= prev.cents) return null;
+  return { diff: last.cents - prev.cents, month: MO[Number(last.from.slice(5, 7)) - 1] };
+}
+
+/* Zombie detection: paying for something that isn't used. The usage check-in can switch it on or off. */
+function zombie(s) {
+  if (s.status !== 'active' || s.usage === 'yes' || s.usage === 'little') return null;
+  if (s.lastOpenedDays >= 45) {
+    const since = addDays(state.today, -s.lastOpenedDays);
+    let n = 0;
+    for (let k = 1; k < 36; k++) {
+      const d = addMonths(s.next, -k * cycleMonths(s));
+      if (d <= since) break;
+      if (d <= state.today) n++;
+    }
+    if (n) return { cents: n * s.cents, text: `You've paid ${eurShort(n * s.cents)} since you last opened this.` };
+  }
+  if (s.usage === 'no') return { cents: s.cents, text: `You said you didn't use it last month. That month cost ${eurShort(s.cents)}.` };
+  return null;
+}
+
+/* Balance clash — only possible inside the bank: add up charges due before the next income
+   and report the first one that takes the total past today's balance. Observation, not advice. */
+function nextIncome() {
+  const d = toDate(state.today);
+  let inc = toISO(new Date(d.getFullYear(), d.getMonth(), state.incomeDay));
+  if (inc <= state.today) inc = toISO(new Date(d.getFullYear(), d.getMonth() + 1, state.incomeDay));
+  return inc;
+}
+function balanceClash() {
+  const income = nextIncome();
+  let due = 0;
+  for (const it of timelineItems()) {
+    if (it.date >= income) break;
+    let cents = 0;
+    if (it.kind === 'unknown') cents = it.lump.cents;
+    else if ((it.kind === 'charge' || it.kind === 'trial') && it.sub.status === 'active') cents = it.sub.cents;
+    if (!cents) continue;
+    due += cents;
+    if (due > state.balanceCents) return { item: it, cents, due, date: it.date, income, single: due === cents };
+  }
+  return null;
+}
+
+/* The raw bank-statement lines a detected subscription was built from */
+function statementLines(s) {
+  if (s.statement) return s.statement;
+  const tag = s.name.toUpperCase().replace(/[^A-Z0-9]+/g, '');
+  const variants = [`${tag}*SUBSCRIPTION`, `${tag}.COM`, `${tag} HELSINKI FI`];
+  const n = s.cycle === 'yearly' ? 1 : 3;
+  return Array.from({ length: n }, (_, i) => [variants[i], eurFi(s.cents), fmtStmt(addMonths(s.next, -(i + 1) * cycleMonths(s)))]);
+}
+
+/* Live countdown, measured from the demo clock (today at 09:41, ticking in real time) */
+function demoNow() {
+  const d = toDate(state.today);
+  d.setHours(9, 41, 0, 0);
+  return d.getTime() + (Date.now() - ui.clockStart);
+}
+function countdownText(iso, short) {
+  const ms = toDate(iso).getTime() - demoNow();
+  if (ms <= 0) return 'now';
+  const t = Math.floor(ms / 1000);
+  const d = Math.floor(t / 86400), h = Math.floor(t % 86400 / 3600), m = Math.floor(t % 3600 / 60), s = t % 60;
+  return short ? `${d}d ${h}h` : `${d}d ${pad(h)}h ${pad(m)}m ${pad(s)}s`;
+}
+
+/* ---------------------------------------------------------------------
+   3. DATE AND MONEY HELPERS
+   Dates are ISO strings ('2026-11-06') so they sort and compare simply.
+   --------------------------------------------------------------------- */
+const WD = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MO = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const WD_FI = ['su', 'ma', 'ti', 'ke', 'to', 'pe', 'la'];
+const MO_FI = ['tammi', 'helmi', 'maalis', 'huhti', 'touko', 'kesä', 'heinä', 'elo', 'syys', 'loka', 'marras', 'joulu'];
+const pad = n => String(n).padStart(2, '0');
+const toDate = iso => { const [y, m, d] = iso.split('-').map(Number); return new Date(y, m - 1, d); };
+const toISO  = dt => `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}`;
+const addDays = (iso, n) => { const d = toDate(iso); d.setDate(d.getDate() + n); return toISO(d); };
+function addMonths(iso, n) {
+  const d = toDate(iso), day = d.getDate();
+  d.setDate(1); d.setMonth(d.getMonth() + n);
+  const last = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+  d.setDate(Math.min(day, last));
+  return toISO(d);
+}
+const daysBetween = (a, b) => Math.round((toDate(b) - toDate(a)) / 86400000);
+const weekday  = iso => WD[toDate(iso).getDay()];
+const fmtShort = iso => { const d = toDate(iso); return ui.lang === 'fi' ? `${WD_FI[d.getDay()]} ${d.getDate()}.${d.getMonth() + 1}.` : `${WD[d.getDay()].slice(0, 3)} ${d.getDate()} ${MO[d.getMonth()].slice(0, 3)}`; }; // Fri 6 Nov · pe 6.11.
+const fmtLong  = iso => { const d = toDate(iso); return `${WD[d.getDay()]} ${d.getDate()} ${MO[d.getMonth()]}`; };                     // Friday 6 November
+const fmtDM    = iso => { const d = toDate(iso); return ui.lang === 'fi' ? `${d.getDate()}.${d.getMonth() + 1}.` : `${d.getDate()} ${MO[d.getMonth()].slice(0, 3)}`; };                          // 6 Nov
+const fmtFull  = iso => `${fmtShort(iso)} ${toDate(iso).getFullYear()}`;
+const fmtStmt  = iso => { const d = toDate(iso); return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}`; };       // 06.11.2026
+const monthYear = ym => { const [y, m] = ym.split('-').map(Number); return `${MO[m - 1].slice(0, 3)} ${y}`; };
+function relDays(iso) {
+  const n = daysBetween(state.today, iso), fi = ui.lang === 'fi';
+  if (n === 0) return fi ? 'tänään' : 'today';
+  if (n === 1) return fi ? 'huomenna' : 'tomorrow';
+  if (n < 0)  return fi ? `${-n} päivää sitten` : `${-n} days ago`;
+  return fi ? `${n} päivän päästä` : `in ${n} days`;
+}
+
+const eur   = cents => '€' + (cents / 100).toFixed(2);                      // €23.00
+const eurFi = cents => '€' + (cents / 100).toFixed(2).replace('.', ',');     // €23,00 (statement style)
+const eurShort = cents => cents % 100 ? eur(cents) : '€' + cents / 100;      // €46 when there are no cents
+function parseAmount(str) {
+  const n = Number(String(str).replace(',', '.').trim());
+  if (!isFinite(n) || n <= 0 || n > 9999) return null;
+  return Math.round(n * 100);
+}
+const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------------------------------------------------------------------
+   4. ICONS AND SMALL HTML HELPERS
+   --------------------------------------------------------------------- */
+const ICONS = {
+  home:     '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  card:     '<rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19M6.5 15h4"/>',
+  payments: '<path d="M4 8h14l-3.5-3.5M20 16H6l3.5 3.5"/>',
+  coin:     '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5" stroke-dasharray="2 2.2"/>',
+  check:    '<path d="M5 12.5 9.5 17 19 7.5"/>',
+  x:        '<path d="M6 6l12 12M18 6 6 18"/>',
+  back:     '<path d="M15 5l-7 7 7 7"/>',
+  chev:     '<path d="M9 5l7 7-7 7"/>',
+  down:     '<path d="M6 9l6 6 6-6"/>',
+  bell:     '<path d="M6 16v-5a6 6 0 1 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>',
+  clock:    '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
+  plus:     '<path d="M12 5v14M5 12h14"/>',
+  help:     '<circle cx="12" cy="12" r="9"/><path d="M9.6 9.3a2.5 2.5 0 1 1 3.4 2.4c-.6.3-1 .8-1 1.5v.6M12 17h.01"/>',
+  exit:     '<path d="M14 4h5a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-5"/><path d="M10 16l4-4-4-4M14 12H4"/>',
+  lock:     '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  alert:    '<path d="M12 3.5 21.5 20h-19z"/><path d="M12 10v4.5M12 17.5h.01"/>',
+  external: '<path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
+  shield:   '<path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
+  layers:   '<path d="M12 3 2 8l10 5 10-5z"/><path d="M2 13l10 5 10-5"/>',
+  moon:     '<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>',
+  radar:    '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6"/>',
+  calendar: '<rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+  sparkle:  '<path d="M12 3l2 5.5 5.5 1.5-5.5 2-2 5.5-2-5.5-5.5-2 5.5-1.5z"/><path d="M19 17l.7 1.8 1.8.7-1.8.7L19 22l-.7-1.8-1.8-.7 1.8-.7z"/>',
+  sliders:  '<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>',
+  globe:    '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18"/>',
+  belloff:  '<path d="M6 16v-5a6 6 0 0 1 9.5-4.9M18 11v5l1.5 2H8"/><path d="M4 4l16 16"/>',
+};
+const icon = (name, size = 20) =>
+  `<svg class="i" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${ICONS[name]}</svg>`;
+
+/* Mohar logo mark: a struck coin with the Devanagari letter म (ma). Only used in the demo chrome / About. */
+const moharMark = (size = 30) => `
+  <svg width="${size}" height="${size}" viewBox="0 0 32 32" role="img" aria-label="Mohar">
+    <circle cx="16" cy="16" r="15.5" fill="#C9A227"/>
+    <circle cx="16" cy="16" r="13" fill="none" stroke="#0E3B2E" stroke-width="1.1" stroke-dasharray="1.3 1.6"/>
+    <circle cx="16" cy="16" r="10.6" fill="#F0D98A"/>
+    <text x="16" y="21.2" text-anchor="middle" font-size="14.5" font-weight="700" fill="#0E3B2E"
+      font-family="'Nirmala UI','Noto Sans Devanagari','Kohinoor Devanagari','Devanagari Sangam MN',sans-serif">म</text>
+  </svg>`;
+
+/* Each bank's logo: lake (Saimaa), stream (Virta), aurora (Nordlys), rapids (Koski) */
+const BANK_MARKS = {
+  lake:   `<circle cx="21" cy="11" r="3.4" fill="#C9A227"/>
+           <path d="M6 18.5c3 0 3.4-2.4 6.6-2.4s3.6 2.4 6.7 2.4 3.6-2.4 6.7-2.4"/>
+           <path d="M6 24c3 0 3.4-2.4 6.6-2.4S16.2 24 19.3 24s3.6-2.4 6.7-2.4" opacity=".55"/>`,
+  stream: `<path d="M7 9c6 0 6 5 12 5s4-4 6-4"/><path d="M7 15c6 0 6 5 12 5s4-4 6-4" opacity=".7"/><path d="M7 21c6 0 6 5 12 5" opacity=".45"/>`,
+  aurora: `<path d="M5 22c4-9 9-13 22-13"/><path d="M5 26c5-7 10-10 22-10" opacity=".6"/><circle cx="23" cy="24" r="1.6" fill="#C9A227" stroke="none"/>`,
+  rapids: `<path d="M7 11l5 4-5 4"/><path d="M14 11l5 4-5 4" opacity=".7"/><path d="M21 11l5 4-5 4" opacity=".45"/>`,
+};
+const bankLogo = (size = 30) => `
+  <svg width="${size}" height="${size}" viewBox="0 0 32 32" aria-hidden="true">
+    <rect width="32" height="32" rx="9" fill="#FBF8F1"/>
+    <g fill="none" style="stroke:var(--bank)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${BANK_MARKS[BANK.logo]}</g>
+  </svg>`;
+
+const statusIcons = `
+  <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor" aria-hidden="true"><rect y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" width="3" height="11" rx="1"/></svg>
+  <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor" aria-hidden="true"><path d="M8 11.5 5.6 9a3.4 3.4 0 0 1 4.8 0zM2.8 6.2a7.4 7.4 0 0 1 10.4 0l-1.4 1.4a5.4 5.4 0 0 0-7.6 0zM0 3.4a11.4 11.4 0 0 1 16 0l-1.4 1.4a9.4 9.4 0 0 0-13.2 0z"/></svg>
+  <svg width="25" height="12" viewBox="0 0 25 12" aria-hidden="true"><rect x=".5" y=".5" width="21" height="11" rx="3" fill="none" stroke="currentColor" opacity=".5"/><rect x="2" y="2" width="15" height="8" rx="1.6" fill="currentColor"/><rect x="23" y="4" width="1.6" height="4" rx=".8" fill="currentColor" opacity=".5"/></svg>`;
+
+/* Escape anything the user typed before putting it into HTML */
+const esc = str => String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+const logo = s => `<span class="logo" style="background:${s.color}" aria-hidden="true">${esc(s.name.charAt(0))}</span>`;
+
+/* ---------------------------------------------------------------------
+   5. ROUTER
+   Hash routes: #/hub, #/detail/<id>, #/add, #/cancel/<id>
+   `nav.stack` mirrors the browser history we created, so our own Back
+   buttons can call history.back() and stay in sync with the browser's.
+   The lock screen is an overlay flag (ui.lockOn), not a route.
+   --------------------------------------------------------------------- */
+const ROUTES = { hub: 1, detail: 2, add: 2, cancel: 3, calendar: 2, checkup: 2, review: 2, settings: 2 };   // value = depth, used for slide direction
+const nav = { stack: [], lastHash: null, lastDepth: 1 };
+
+function currentRoute() {
+  const [name, param] = location.hash.replace(/^#\/?/, '').split('/');
+  return ROUTES[name] ? { name, param: param ? decodeURIComponent(param) : null } : { name: 'hub', param: null };
+}
+
+/* showScreen('detail', 'pixelcraft') — the one way to navigate */
+function showScreen(name, param = null, opts = {}) {
+  const hash = '#/' + name + (param ? '/' + encodeURIComponent(param) : '');
+  if (hash === location.hash) { render({ nav: true }); return; }
+  if (opts.replace) { nav.stack[nav.stack.length - 1] = hash; location.replace(hash); }
+  else { nav.stack.push(hash); location.hash = hash; }
+}
+
+/* Back: use real browser history when we have it, otherwise jump to a sensible parent */
+function goBack(fallbackName = 'hub', fallbackParam = null) {
+  if (nav.stack.length > 1) history.back();
+  else showScreen(fallbackName, fallbackParam, { replace: true });
+}
+
+/* Unwind all the way to the hub (used by the Mohar tab, fast-forward and reset) */
+function goHome() {
+  const n = nav.stack.length - 1;
+  if (n > 0) history.go(-n);
+  else if (currentRoute().name !== 'hub') showScreen('hub', null, { replace: true });
+  else render({ nav: true });
+}
+
+window.addEventListener('hashchange', () => {
+  const h = location.hash;
+  const i = nav.stack.lastIndexOf(h);
+  if (i === -1) nav.stack.push(h);       // browser Forward, or a typed URL
+  else nav.stack.length = i + 1;         // browser Back (or our own push, already recorded)
+  if (h === nav.lastHash) return;        // already on screen
+  closeSheet(false);
+  render({ nav: true });
+});
+
+/* ---------------------------------------------------------------------
+   6. SCREENS
+   --------------------------------------------------------------------- */
+const els = {};
+
+/* render() redraws the current screen from state.
+   nav: true  -> this is a navigation (animate in, scroll to top, focus the title)
+   nav: false -> an in-place refresh (keep scroll position and keyboard focus) */
+function render({ nav: isNav = false, focusTitle = false } = {}) {
+  const route = currentRoute();
+  const depth = ROUTES[route.name];
+  const focusSel = isNav ? null : focusSelector(document.activeElement);
+  const scroll = els.screen.scrollTop;
+
+  /* 1. the screen inside the bank app */
+  let html;
+  if (route.name === 'detail' || route.name === 'cancel') html = renderDetail(route.param);
+  else if (route.name === 'add') html = renderAdd();
+  else if (route.name === 'calendar') html = renderCalendar();
+  else if (route.name === 'checkup') html = renderCheckup();
+  else if (route.name === 'review') html = renderReview();
+  else if (route.name === 'settings') html = renderSettings();
+  else html = renderHub();
+  els.screen.innerHTML = `<div class="view">${html}</div>`;
+
+  /* 2. overlays on top of the bank app: lock screen or the provider's website */
+  let overlay = '';
+  if (ui.lockOn) overlay = renderLock();
+  else if (route.name === 'cancel') overlay = renderProvider(route.param);
+  els.overlay.innerHTML = overlay;
+  els.overlay.classList.toggle('on', !!overlay);
+  syncInert();
+
+  /* 3. scroll, animation, focus */
+  if (isNav) {
+    els.screen.scrollTop = 0;
+    const view = els.screen.firstElementChild;
+    if (nav.lastHash !== null && !reduceMotion()) view.classList.add(depth >= nav.lastDepth ? 'enter-fwd' : 'enter-back');
+    nav.lastHash = location.hash; nav.lastDepth = depth;
+    focusFirst();
+  } else {
+    els.screen.scrollTop = scroll;
+    const target = focusSel && document.querySelector(focusSel);
+    if (target) target.focus({ preventScroll: true });
+    else if (focusTitle) focusFirst();
+  }
+
+  afterRender();
+}
+const refresh = opts => render(Object.assign({ nav: false }, opts));
+
+/* Move keyboard focus to the most sensible place after navigating */
+function focusFirst() {
+  const root = els.overlay.classList.contains('on') ? els.overlay : els.screen;
+  const t = root.querySelector('[data-autofocus]') || root.querySelector('h1');
+  if (t) t.focus({ preventScroll: true });
+}
+
+/* A CSS selector that finds "the same button" again after a re-render */
+function focusSelector(el) {
+  if (!el || !els.app.contains(el) || el === document.body) return null;
+  if (el.id) return '#' + CSS.escape(el.id);
+  if (!el.dataset || !el.dataset.action) return null;
+  let sel = `[data-action="${el.dataset.action}"]`;
+  ['id', 'value', 'from', 'step'].forEach(k => { if (el.dataset[k]) sel += `[data-${k}="${CSS.escape(el.dataset[k])}"]`; });
+  return sel;
+}
+
+/* Things that happen after every render: number count-up, demo bar, tabs */
+function afterRender() {
+  /* Any element with data-count="key" data-value="cents" counts from the last value shown under that key */
+  if (!ui.lockOn) {
+    els.screen.querySelectorAll('[data-count]').forEach(el => {
+      const key = el.dataset.count, to = Number(el.dataset.value);
+      const from = key in ui.shown ? ui.shown[key] : ('zero' in el.dataset ? 0 : to);
+      if (from !== to) countUp(el, from, to);
+      ui.shown[key] = to;
+    });
+    if (currentRoute().name === 'hub' && state.alerts.some(a => a.type === 'confirmed')) ui.sawConfirmation = true;
+  }
+  updateTabbar();
+  updateDemoBar();
+
+  /* First visit to the hub this session: ask for a guess before showing the real total */
+  const r = currentRoute();
+  if (ui.pendingStop && r.name === 'detail' && r.param === ui.pendingStop && !ui.lockOn) {
+    const s = findSub(ui.pendingStop);
+    ui.pendingStop = null;
+    if (s && s.status === 'active') openSheet(renderExitGuide(s), `How to stop ${s.name}`);
+  }
+  if (!ui.lockOn && ui.detected && !ui.guessShown && r.name === 'hub' && !els.sheet.innerHTML) {
+    ui.guessShown = true;
+    ui.guessRevealed = false;
+    openSheet(renderGuess(), 'Guess your total');
+  }
+}
+
+/* Animate a money figure from one value to another */
+function countUp(el, from, to) {
+  cancelAnimationFrame(el._raf);
+  if (reduceMotion()) { el.textContent = eur(to); return; }
+  const t0 = performance.now(), dur = 900;
+  el.textContent = eur(from);
+  const tick = now => {
+    const p = Math.min(1, (now - t0) / dur);
+    const eased = 1 - Math.pow(1 - p, 3);
+    el.textContent = eur(Math.round(from + (to - from) * eased));
+    if (p < 1) el._raf = requestAnimationFrame(tick);
+  };
+  el._raf = requestAnimationFrame(tick);
+}
+
+/* ===== 6a. HUB — timeline first, then the honest total, then the list ===== */
+function renderHub() {
+  if (!ui.detected) return renderSkeleton();
+  const live = state.subs.filter(isLive);
+  const stopped = state.subs.filter(s => s.status === 'stopped');
+  const notSubs = state.subs.filter(s => s.status === 'notsub');
+  const lump = openLump();
+
+  return `
+    <h1 class="h-title" tabindex="-1">${t('title')}</h1>
+    <div class="top-row">
+      <p class="lead">${live.length} ${t('active')} · ${t('todayIs')} ${fmtShort(state.today)}</p>
+      ${periodToggle()}
+    </div>
+
+    ${renderAlerts()}
+    ${renderTimeline()}
+    ${renderClash()}
+    ${renderTools()}
+    ${renderTotal(lump)}
+    ${renderSavings()}
+    ${lump ? renderLumpCard(lump) : ''}
+    ${renderOverlap()}
+    ${renderAllList()}
+
+    ${stopped.length ? `
+    <section class="card" aria-labelledby="stopped-h">
+      <div class="card-head"><h2 class="card-title" id="stopped-h">${t('stopped')}</h2><span class="muted small">${stopped.length}</span></div>
+      <p class="tiny muted" style="margin:4px 0 0">Changed your mind? You can rejoin any time.</p>
+      <ul class="list stopped">${stopped.map(subRow).join('')}</ul>
+    </section>` : ''}
+
+    ${notSubs.length ? `<p class="fine">Not counted as subscriptions: ${notSubs.map(s =>
+      `${esc(s.name)} <button class="link-btn" data-action="restoreSub" data-id="${s.id}">Restore</button>`).join(' · ')}</p>` : ''}
+
+    <p class="fine">Subscriptions only — not rent, loans, insurance or bills.<br>We never cancel or block a payment for you.<br>
+      <button class="link-btn" data-action="replayGuess">Replay “guess your total”</button></p>`;
+}
+
+/* One control that reframes every recurring amount: €23 a month ↔ €276 a year */
+function periodToggle() {
+  return `
+    <div class="segctl period" role="group" aria-label="Show amounts">
+      <button data-action="setPeriod" data-value="month" aria-pressed="${ui.period === 'month'}">${t('monthly')}</button>
+      <button data-action="setPeriod" data-value="year" aria-pressed="${ui.period === 'year'}">${t('yearly')}</button>
+    </div>`;
+}
+
+/* Confirmation and ghost-charge cards, shown at the top of the hub */
+function renderAlerts() {
+  return state.alerts.filter(a => !a.dismissed).map(a => {
+    const s = findSub(a.subId);
+    if (a.type === 'confirmed') return `
+      <section class="banner ok pop" aria-label="Cancellation confirmed">
+        <span class="b-ico">${icon('check')}</span>
+        <div class="grow">
+          <h2 class="banner-h">No charge from ${esc(s.name)}.</h2>
+          <p>You saved <strong>${eur(a.monthly)}</strong> — <strong>${eur(a.monthly * 12)} a year</strong>.</p>
+          <p class="tiny muted">Checked on ${fmtShort(a.date)}, the day it used to charge.</p>
+        </div>
+        <button class="icon-btn" data-action="dismissAlert" data-id="${a.id}" aria-label="Dismiss">${icon('x', 18)}</button>
+      </section>`;
+    return `
+      <section class="banner bad pop" aria-label="Unexpected charge">
+        <span class="b-ico">${icon('alert')}</span>
+        <div class="grow">
+          <h2 class="banner-h">${esc(s.name)} charged ${eur(a.cents)} <em>after</em> you stopped it.</h2>
+          <p>We confirmed no charge on ${fmtShort(s.confirmedOn)}, but ${eur(a.cents)} arrived on ${fmtShort(a.date)}.</p>
+          ${a.disputeRef
+            ? `<p><span class="pill moss">${icon('check', 12)} Dispute opened · ${a.disputeRef}</span></p>`
+            : `<div class="row"><button class="btn btn-danger btn-sm" data-action="dispute" data-id="${a.id}">Dispute this charge</button>
+               <button class="link-btn" data-action="open" data-id="${s.id}">Details</button></div>`}
+        </div>
+      </section>`;
+  }).join('');
+}
+
+/* "€23.00 charges Friday. Your balance is €18.40." — hub (forSub empty) or one detail screen */
+function renderClash(forSub) {
+  const c = balanceClash();
+  if (!c) return '';
+  const sub = c.item.sub || null;
+  if (forSub && (!sub || sub.id !== forSub.id)) return '';
+  const name = sub ? esc(sub.name) : 'An app store payment';
+  const head = c.single
+    ? `${eur(c.cents)} charges ${weekday(c.date)}. Your balance is ${eur(state.balanceCents)}.`
+    : `${eur(c.due)} is due by ${weekday(c.date)}. Your balance is ${eur(state.balanceCents)}.`;
+  const body = c.single
+    ? `${name} charges on ${fmtShort(c.date)} — before your ${state.incomeLabel} arrives on ${fmtShort(c.income)}.`
+    : `${name} on ${fmtShort(c.date)} is the charge that goes past your balance — before your ${state.incomeLabel} arrives on ${fmtShort(c.income)}.`;
+  return `
+    <section class="banner warn" aria-label="Balance warning">
+      <span class="b-ico">${icon('alert', 18)}</span>
+      <div class="grow">
+        <h2 class="banner-h">${head}</h2>
+        <p>${body}</p>
+        <p class="bank-only">${icon('shield', 14)} Only your bank can see this</p>
+        ${!forSub && sub ? `<div class="row"><button class="link-btn" data-action="open" data-id="${sub.id}">Look at ${name}</button></div>` : ''}
+      </div>
+    </section>`;
+}
+
+/* Every charge (and reminder) in the next 30 days, nearest first */
+function timelineItems() {
+  const end = addDays(state.today, 30), items = [];
+  state.subs.filter(isLive).forEach(s => {
+    for (let d = s.next; d && d <= end; d = addMonths(d, cycleMonths(s))) {
+      items.push({ date: d, kind: s.trial && d === s.next ? 'trial' : 'charge', sub: s });
+      if (s.status === 'stopping') break;   // once stopped, later charges should not happen
+    }
+    if (s.status === 'active' && s.remindOn && s.remindOn <= end) items.push({ date: s.remindOn, kind: 'reminder', sub: s });
+  });
+  state.unknown.filter(u => !u.resolved).forEach(u => {
+    for (let d = u.next; d <= end; d = addMonths(d, 1)) items.push({ date: d, kind: 'unknown', lump: u });
+  });
+  const order = { reminder: 0, trial: 1, charge: 2, unknown: 3 };
+  return items.sort((a, b) => a.date.localeCompare(b.date) || order[a.kind] - order[b.kind]);
+}
+
+function renderTimeline() {
+  const items = timelineItems();
+  const due = items.reduce((sum, it) => {
+    if (it.kind === 'unknown') return sum + it.lump.cents;
+    if ((it.kind === 'charge' || it.kind === 'trial') && it.sub.status === 'active') return sum + it.sub.cents;
+    return sum;
+  }, 0);
+  return `
+    <section class="card" aria-labelledby="tl-h">
+      <div class="card-head">
+        <h2 class="card-title" id="tl-h">${t('next30')}</h2>
+        <span class="muted small num">${eur(due)} ${t('due')}</span>
+      </div>
+      ${state.notifyAll ? '' : `<p class="tiny muted" style="margin:4px 0 0">Warnings are switched off in Settings.</p>`}
+      ${items.length ? `<ol class="timeline">${items.map(timelineRow).join('')}</ol>`
+                     : `<p class="empty">Nothing charges in the next 30 days.</p>`}
+    </section>`;
+}
+
+function timelineRow(it) {
+  const d = toDate(it.date), n = daysBetween(state.today, it.date);
+  const date = `<span class="tl-date" aria-hidden="true"><span>${wdShort(d)}</span><b>${d.getDate()}</b><span>${moShort(d)}</span></span>`;
+  let cls = '', name, meta, amt = '', action;
+
+  if (it.kind === 'unknown') {
+    cls = 'unknown';
+    name = it.lump.label;
+    meta = `Unidentified · ${relDays(it.date)} · tap to name it`;
+    amt = eur(it.lump.cents);
+    action = 'data-action="addStart" data-from="lump"';
+  } else {
+    const s = it.sub;
+    action = `data-action="open" data-id="${s.id}"`;
+    name = esc(s.name);
+    if (it.kind === 'reminder') {
+      cls = 'reminder';
+      name = `Decide on ${esc(s.name)}`;
+      meta = `Your reminder · it charges ${relDays(s.next)}`;
+    } else if (s.status === 'stopping') {
+      cls = 'is-stopping';
+      meta = `Stopping — we'll check this day`;
+      amt = eur(s.cents);
+    } else {
+      cls = (n <= warnWindow(s) ? 'urgent' : '') + (it.kind === 'trial' ? ' trial' : '');
+      meta = it.kind === 'trial' ? `Free trial ends ${relDays(it.date)} → first charge`
+                                 : `${chLabel(s.channel)}${s.cycle === 'yearly' ? ' · yearly' : ''} · ${relDays(it.date)}`;
+      amt = eur(s.cents);
+    }
+  }
+  return `<li><button class="tl-row ${cls}" ${action} aria-label="${fmtShort(it.date)}: ${name.replace(/"/g, '&quot;')}, ${meta}${amt ? ', ' + amt : ''}${it.sub && it.kind !== 'reminder' && it.sub.status === 'active' ? ', ' + warnText(it.sub) : ''}">
+      ${date}<span class="rail" aria-hidden="true"><i class="dot"></i></span>
+      <span class="tl-body"><span class="tl-name">${name}</span><span class="tl-meta">${meta}${it.sub && it.kind !== 'reminder' && it.sub.status === 'active' ? bellTag(it.sub) : ''}</span></span>
+      <span class="tl-amt">${amt}</span></button></li>`;
+}
+
+/* The honest total with its channel-segmented bar; follows the monthly/yearly toggle */
+function renderTotal(lump) {
+  const total = totalMonthly();
+  const live = state.subs.filter(isLive);
+  const segs = segments();
+  const unit = perUnit();
+  const manualCount = live.filter(s => s.source === 'manual').length;
+  const honesty = lump
+    ? `This is only what your bank can see. One app store payment of ${eur(lump.cents)} isn't identified yet.`
+    : manualCount ? `Complete picture — includes ${manualCount} subscription${manualCount > 1 ? 's' : ''} you added yourself.`
+                  : `This is what your bank can see on your card and PayPal.`;
+  const srSegs = segs.map(g => `${segLabel(g)} ${eur(inPeriod(g.cents))}`).join(', ');
+
+  return `
+    <section class="total" aria-labelledby="total-h">
+      <button class="total-btn" data-action="toggleBreakdown" aria-expanded="${ui.breakdownOpen}" aria-controls="breakdown">
+        <span class="eyebrow" id="total-h">${t('youPay')}</span>
+        <span class="total-num"><span data-count="total" data-value="${inPeriod(total)}">${eur(inPeriod(total))}</span><small>/ ${unit}</small></span>
+        <span class="total-sub">${live.length} ${t('subsCount')} · ${ui.period === 'year' ? eur(total) + ' ' + t('aMonth') : eur(total * 12) + ' ' + t('aYear')}</span>
+        <span class="segbar" aria-hidden="true">${segs.map(g => `<span class="seg" style="flex-grow:${g.cents};background:${g.color}"></span>`).join('')}</span>
+        <span class="legend" aria-hidden="true">${segs.map(g => `<span><i style="background:${g.color}"></i>${segLabel(g)} ${eur(inPeriod(g.cents))}</span>`).join('')}</span>
+        <span class="sr-only">Split by how it's billed, per ${unit}: ${srSegs}.</span>
+        <span class="expand">${ui.breakdownOpen ? t('hideBd') : t('showBd')} ${icon('down', 16)}</span>
+      </button>
+      ${ui.breakdownOpen ? `
+        <div class="breakdown" id="breakdown">
+          ${segs.map(g => `
+            <div class="bd-group">
+              <div class="bd-head"><span><i style="background:${g.color}"></i>${segLabel(g)}</span><span class="num">${eur(inPeriod(g.cents))}</span></div>
+              ${live.filter(s => segmentOf(s) === g.key).map(s => `
+                <div class="bd-row"><span>${esc(s.name)}</span><span class="num">${eur(inPeriod(monthly(s)))}${s.cycle === 'yearly' && ui.period === 'month' ? ' <small>(yearly ÷ 12)</small>' : ''}</span></div>`).join('')}
+            </div>`).join('')}
+        </div>` : '<div id="breakdown" hidden></div>'}
+      <p class="honesty">${honesty}</p>
+    </section>`;
+}
+
+/* Savings meter: always on the hub, celebratory once something is stopped */
+function renderSavings() {
+  const sv = savings();
+  return `
+    <section class="savings ${sv.count ? 'has' : ''}" aria-labelledby="sv-h">
+      <div class="sv-head"><span class="sv-coin" aria-hidden="true">${icon('coin', 18)}</span><h2 class="eyebrow" id="sv-h">${t('moneyKept')}</h2></div>
+      ${sv.count ? `
+        <p class="sv-big"><span data-count="savings" data-zero data-value="${inPeriod(sv.monthly)}">${eur(inPeriod(sv.monthly))}</span><small>kept a ${perLabel()}</small></p>
+        <div class="sv-grid">
+          <div><b>${sv.count}</b><small>stopped</small></div>
+          <div><b class="num">${ui.period === 'year' ? eur(sv.monthly) : eur(sv.yearly)}</b><small>a ${ui.period === 'year' ? 'month' : 'year'}</small></div>
+          <div><b>${sv.avoided}</b><small>surprise charge${sv.avoided === 1 ? '' : 's'} avoided</small></div>
+        </div>`
+      : `<p class="sv-empty">Nothing stopped yet. Anything you stop adds up here, month after month.</p>`}
+    </section>`;
+}
+
+/* "We see €10.99 from your app store…" — the entry point to adding Tunely */
+function renderLumpCard(lump) {
+  return `
+    <section class="lump" aria-labelledby="lump-h">
+      <p class="eyebrow">Hidden in your statement</p>
+      <h2 class="h-sub" id="lump-h">We see <em>${eur(lump.cents)}</em> from your app store every month.</h2>
+      <p class="small">Which subscription is it? Your bank can't see inside app store payments. Add it and your total becomes honest.</p>
+      <div class="stmt" aria-label="Statement line"><span>${lump.label}</span><span>${eurFi(lump.cents)}</span><span>${fmtStmt(lump.last)}</span></div>
+      <button class="btn btn-gold btn-block" data-action="addStart" data-from="lump">Identify this payment</button>
+    </section>`;
+}
+
+/* Overlap: a gentle note once three entertainment subscriptions are running */
+function renderOverlap() {
+  const ent = state.subs.filter(s => isLive(s) && s.group === 'entertainment');
+  if (ent.length < 3 || ui.overlapDismissed) return '';
+  const sum = ent.reduce((a, s) => a + monthly(s), 0);
+  const words = ['zero', 'one', 'two', 'three', 'four', 'five', 'six'];
+  const names = ent.map(s => esc(s.name));
+  const list = names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1];
+  return `
+    <section class="banner soft pop" aria-label="Overlapping subscriptions">
+      <span class="b-ico">${icon('layers', 18)}</span>
+      <div class="grow">
+        <h2 class="banner-h">You now have ${words[ent.length] || ent.length} entertainment subscriptions.</h2>
+        <p>${list} — ${eur(inPeriod(sum))} a ${perLabel()} together. Just so you know.</p>
+      </div>
+      <button class="icon-btn" data-action="dismissOverlap" aria-label="Dismiss">${icon('x', 18)}</button>
+    </section>`;
+}
+
+/* One row in the subscription lists */
+function subRow(s) {
+  const tags = [];
+  const rise = priceRise(s);
+  if (s.source === 'manual') tags.push('<span class="pill">Added by you</span>');
+  if (s.status === 'active' && s.trial) tags.push(`<span class="pill gold">${icon('radar', 12)} Trial · <span data-countdown="${s.next}" data-short>${countdownText(s.next, true)}</span></span>`);
+  if (rise && isLive(s)) tags.push(`<span class="pill gold">+${eur(rise.diff)} since ${rise.month}</span>`);
+  if (zombie(s)) tags.push('<span class="pill">Not used lately</span>');
+  if (s.status === 'active' && s.decision === 'unsure') tags.push('<span class="pill gold">Deciding</span>');
+  if (s.status === 'active' && s.decision === 'keep') tags.push('<span class="pill moss">Keeping</span>');
+  if (s.ghost) tags.push('<span class="pill danger">Charged after stopping</span>');
+
+  let meta;
+  if (s.status === 'stopping') meta = `<span class="pill moss">Stopping — we'll check on ${fmtDM(s.checkOn)}</span>`;
+  else if (s.status === 'stopped') meta = `Stopped · no charge on ${fmtDM(s.confirmedOn)} ✓`;
+  else if (s.trial) meta = `${chLabel(s.channel)} · ${t('trialEnds').toLowerCase()} ${fmtShort(s.next)}`;
+  else meta = `${chLabel(s.channel)} · ${t('nextWord')} ${fmtShort(s.next)}`;
+
+  let amt;
+  if (s.trial && s.status === 'active') amt = `€0.00<small>then ${eur(inPeriod(s.cents))}/${ui.period === 'year' ? 'yr' : 'mo'}</small>`;
+  else amt = `${eur(inPeriod(monthly(s)))}<small>/ ${perUnit()}${s.cycle === 'yearly' && ui.period === 'month' ? ' · billed yearly' : ''}</small>`;
+
+  const row = `<button class="sub-row" data-action="open" data-id="${s.id}">
+      ${logo(s)}
+      <span class="sub-main"><span class="sub-name">${esc(s.name)} ${tags.join('')}</span><span class="sub-meta">${meta}</span></span>
+      <span class="sub-amt">${amt}</span>
+    </button>`;
+  return s.status === 'stopped'
+    ? `<li class="stopped-li">${row}<button class="btn btn-ghost btn-sm" data-action="rejoin" data-id="${s.id}" aria-label="Rejoin ${esc(s.name)}">Rejoin</button></li>`
+    : `<li>${row}</li>`;
+}
+
+/* ===== 6b. DETAIL ===== */
+function renderDetail(id) {
+  const s = findSub(id);
+  if (!s) return `
+    <button class="back" data-action="back">${icon('back')} ${t('back')}</button>
+    <h1 class="h-title" tabindex="-1">Not <em>found</em></h1>
+    <p class="muted">This subscription isn't in your list any more.</p>`;
+
+  const ch = CHANNELS[s.channel];
+  const n = daysBetween(state.today, s.next);
+  const live = isLive(s);
+  const active = s.status === 'active';
+  const rise = priceRise(s);
+
+  /* Amount block, reframed by the monthly/yearly toggle */
+  let amount, sub = '';
+  if (s.trial && active) {
+    amount = `€0.00<small>now</small>`;
+    sub = `Then ${eur(inPeriod(s.cents))} a ${perLabel()}, from ${fmtShort(s.next)}.`;
+  } else {
+    amount = `<span data-count="amt-${s.id}" data-value="${inPeriod(monthly(s))}">${eur(inPeriod(monthly(s)))}</span><small>/ ${perUnit()}</small>`;
+    if (s.cycle === 'yearly') sub = ui.period === 'month' ? `Billed ${eur(s.cents)} once a year.` : 'Billed once a year.';
+  }
+  const keepCost = active
+    ? `<p class="d-sub">${s.trial ? 'Keeping it after the trial' : 'Keeping this'} costs <strong>${eur(monthly(s) * 12)}</strong> over the next year.</p>` : '';
+
+  /* Next-charge chip */
+  let chip = '';
+  if (active) {
+    const label = `${s.trial ? t('trialEnds') : t('nextCharge')} ${fmtShort(s.next)} · ${relDays(s.next)}`;
+    chip = `<span class="next-chip ${n <= warnWindow(s) ? 'urgent' : ''}">${icon('clock', 16)} ${label}</span>`;
+  } else if (s.status === 'stopping') {
+    chip = `<span class="next-chip calm">${icon('shield', 16)} We'll check on ${fmtShort(s.checkOn)}</span>`;
+  }
+
+  return `
+    <div class="top-row">
+      <button class="back" data-action="back">${icon('back')} ${t('back')}</button>
+      ${periodToggle()}
+    </div>
+    <div class="d-hero">
+      ${logo(s)}
+      <div class="grow">
+        <h1 class="h-title" tabindex="-1">${esc(s.name)}</h1>
+        <div class="badges">
+          <span class="pill">${chLabel(s.channel)}</span>
+          ${s.source === 'manual' ? '<span class="pill">Added by you</span>' : ''}
+          ${s.trial && active ? '<span class="pill gold">Free trial</span>' : ''}
+          ${rise && live ? `<span class="pill gold">+${eur(rise.diff)} since ${rise.month}</span>` : ''}
+        </div>
+      </div>
+    </div>
+
+    <div class="d-amt">${amount}</div>
+    ${sub ? `<p class="d-sub">${sub}</p>` : ''}
+    ${keepCost}
+    ${chip}
+
+    ${active ? renderClash(s) : ''}
+    ${s.trial && active ? renderRadar(s) : ''}
+    ${renderZombie(s)}
+    ${renderStatusBanner(s)}
+    ${s.cycle === 'yearly' && active ? renderAnnualNote(s) : ''}
+
+    ${active ? `
+    <section class="card" aria-labelledby="dec-h">
+      <h2 class="card-title" id="dec-h">${t('decideH')}</h2>
+      <div class="decide">
+        <button class="decide-btn" data-action="keep" data-id="${s.id}" aria-pressed="${s.decision === 'keep'}">
+          <span class="d-ico">${icon('check')}</span>${t('keep')}<small>${t('keepS')}</small></button>
+        <button class="decide-btn" data-action="unsure" data-id="${s.id}" aria-pressed="${s.decision === 'unsure'}">
+          <span class="d-ico">${icon('help')}</span>${t('unsure')}<small>${t('unsureS')}</small></button>
+        <button class="decide-btn" data-action="stop" data-id="${s.id}">
+          <span class="d-ico">${icon('exit')}</span>${t('stop')}<small>${t('stopS')}</small></button>
+      </div>
+    </section>` : ''}
+
+    <section class="card" aria-label="Facts">
+      <dl class="facts">
+        <div><dt>${t('paid')}</dt><dd class="num">${s.paid2026 === null ? '—' : eur(s.paid2026)}</dd></div>
+        <div><dt>${t('billedVia')}</dt><dd>${chLabel(s.channel)}</dd></div>
+        <div><dt>${s.source === 'manual' ? 'Source' : t('since')}</dt><dd>${s.source === 'manual' ? 'Added by you' : monthYear(s.since)}</dd></div>
+        <div><dt>${t('lastOpened')}</dt><dd>${s.lastOpened || 'Not known'}</dd></div>
+      </dl>
+    </section>
+
+    ${live ? `
+    <section class="card" aria-labelledby="use-h">
+      <h2 class="card-title" id="use-h">${t('usageQ')}</h2>
+      <div class="choices" role="group" aria-labelledby="use-h">
+        ${[['yes', t('yes')], ['little', t('little')], ['no', t('no')]].map(([v, l]) =>
+          `<button class="choice" data-action="usage" data-id="${s.id}" data-value="${v}" aria-pressed="${s.usage === v}">${l}</button>`).join('')}
+      </div>
+      ${s.usage ? `<p class="tiny muted" style="margin:8px 0 0">Noted — only you and your bank see this.</p>` : ''}
+    </section>` : ''}
+
+    <section class="card" aria-labelledby="ph-h">
+      <h2 class="card-title" id="ph-h">${t('priceHist')}</h2>
+      ${priceHistory(s)}
+    </section>
+
+    ${renderRecognised(s)}
+
+    ${s.source === 'manual' ? `<p class="fine"><button class="link-btn" data-action="removeSub" data-id="${s.id}">Remove from my list</button></p>` : ''}
+    <p class="fine">You decide. We point the way but never cancel or block a payment for you.</p>`;
+}
+
+function renderStatusBanner(s) {
+  if (s.status === 'stopping') return `
+    <section class="banner ok">
+      <span class="b-ico">${icon('check')}</span>
+      <div class="grow">
+        <h2 class="banner-h">Stopping — we'll check on ${fmtDM(s.checkOn)}.</h2>
+        <p>You cancelled on ${fmtShort(s.stoppedOn)}. On ${fmtShort(s.checkOn)} we'll look for a charge and tell you if one still arrives.</p>
+        <div class="row"><button class="link-btn" data-action="undoStop" data-id="${s.id}">I didn't cancel after all</button></div>
+      </div>
+    </section>`;
+  if (s.status === 'stopped' && s.ghost) {
+    const a = findAlert(s.ghost.alert);
+    return `
+    <section class="banner bad">
+      <span class="b-ico">${icon('alert')}</span>
+      <div class="grow">
+        <h2 class="banner-h">Charged ${eur(s.ghost.cents)} <em>after</em> you stopped it.</h2>
+        <p>No charge on ${fmtShort(s.confirmedOn)} as expected — then ${eur(s.ghost.cents)} arrived on ${fmtShort(s.ghost.date)}.</p>
+        ${a && a.disputeRef
+          ? `<p><span class="pill moss">Dispute opened · ${a.disputeRef}</span></p>`
+          : `<div class="row"><button class="btn btn-danger btn-sm" data-action="dispute" data-id="${s.ghost.alert}">Dispute this charge</button></div>`}
+      </div>
+    </section>`;
+  }
+  if (s.status === 'stopped') return `
+    <section class="banner ok">
+      <span class="b-ico">${icon('check')}</span>
+      <div class="grow">
+        <h2 class="banner-h">Stopped. No charge on ${fmtDM(s.confirmedOn)}.</h2>
+        <p>You're keeping ${eur(monthly(s))} a month — ${eur(monthly(s) * 12)} a year.</p>
+        <div class="row"><button class="btn btn-ghost btn-sm" data-action="rejoin" data-id="${s.id}">Rejoin ${esc(s.name)}</button></div>
+      </div>
+    </section>`;
+  if (s.status === 'active' && s.decision === 'unsure' && s.remindOn) return `
+    <section class="banner warn">
+      <span class="b-ico">${icon('bell', 18)}</span>
+      <div class="grow">
+        <h2 class="banner-h">We'll remind you on ${fmtShort(s.remindOn)}.</h2>
+        <p>That's the day before it charges ${eur(s.cents)}. No pressure until then.</p>
+      </div>
+    </section>`;
+  return '';
+}
+
+/* Trial radar: a live countdown to the moment a free trial becomes a paid charge */
+function renderRadar(s) {
+  const span = Math.max(1, daysBetween(s.trialStart || addMonths(s.next, -1), s.next));
+  const used = Math.min(100, Math.max(0, Math.round(daysBetween(s.trialStart || addMonths(s.next, -1), state.today) / span * 100)));
+  const left = Math.max(0, n0(daysBetween(state.today, s.next)));
+  return `
+    <section class="radar" aria-labelledby="radar-h">
+      <div class="radar-ring" style="--p:${used}" aria-hidden="true"><span>${left}<small>${left === 1 ? 'day' : 'days'}</small></span></div>
+      <div class="grow">
+        <p class="eyebrow">${icon('radar', 13)} Trial radar</p>
+        <h2 class="radar-h" id="radar-h">Becomes ${eur(s.cents)} a month in</h2>
+        <p class="radar-count" data-countdown="${s.next}" aria-live="off">${countdownText(s.next)}</p>
+        <p class="small" style="margin:0">Stop before ${fmtLong(addDays(s.next, -1))} and you pay nothing. ${used}% of the trial is used.</p>
+      </div>
+    </section>`;
+}
+const n0 = n => n < 0 ? 0 : n;
+
+/* Zombie: "You've paid €46 since you last opened this." */
+function renderZombie(s) {
+  const z = zombie(s);
+  if (!z) return '';
+  return `
+    <section class="banner soft">
+      <span class="b-ico">${icon('moon', 18)}</span>
+      <div class="grow">
+        <h2 class="banner-h">${z.text}</h2>
+        <p>${s.lastOpenedDays >= 45 ? `Last opened ${s.lastOpened}. ` : ''}Still worth it? Only you can say — the check-in below helps us get this right.</p>
+      </div>
+    </section>`;
+}
+
+/* Annual early warning: why yearly subscriptions are flagged 14 days ahead */
+function renderAnnualNote(s) {
+  const warnOn = addDays(s.next, -14);
+  return `
+    <section class="banner soft">
+      <span class="b-ico">${icon('bell', 18)}</span>
+      <div class="grow">
+        <h2 class="banner-h">Early warning: <em>14 days</em>, not 3.</h2>
+        <p>Yearly charges land all at once — ${eur(s.cents)} here — so we warn you two weeks ahead to give you time to decide.
+          ${warnOn > state.today ? `Your warning comes on ${fmtShort(warnOn)}.` : `That warning window is now.`}</p>
+      </div>
+    </section>`;
+}
+
+/* "How we recognised this" — the raw statement lines collapsing into one subscription */
+function renderRecognised(s) {
+  if (s.source !== 'detected') return '';
+  const open = !!ui.recogOpen[s.id];
+  const lines = statementLines(s);
+  const ways = new Set(lines.map(l => l[0])).size;
+  let how;
+  if (s.trialStart && lines.length === 1) how = 'A €0.00 card check is how free trials usually start. We flagged it the day it appeared.';
+  else if (lines.length === 1) how = `One payment a year, same merchant, same amount. We expect it again on ${fmtShort(s.next)}.`;
+  else how = `${lines.length} payments, the same amount, about a month apart${ways > 1 ? ` — written ${ways} different ways` : ''}.`;
+
+  return `
+    <section class="card" aria-label="How we recognised this">
+      <button class="recog-btn" data-action="toggleRecog" data-id="${s.id}" aria-expanded="${open}" aria-controls="rec-${s.id}">
+        <span>${t('recog')}</span>${icon('down', 18)}</button>
+      ${open ? `
+      <div class="recog" id="rec-${s.id}">
+        <p class="small" style="margin:6px 0 0">${how}</p>
+        <ul class="stmt-list">
+          ${lines.map(l => `<li><span class="mk ok">${icon('check', 14)}</span><span class="st">${esc(l[0])}<small>${l[2]}</small></span><span>${l[1]}</span></li>`).join('')}
+        </ul>
+        <div class="merge">${icon('down', 16)} ${lines.length > 1 ? 'All became' : 'It became'} one subscription: ${esc(s.name)}</div>
+        <h3 class="mini-h">Left out</h3>
+        <ul class="stmt-list">
+          <li class="excl"><span class="mk">${icon('x', 14)}</span><span class="st">K-MARKET MIKKELI<small>30.10.2026</small></span><span>€12,40</span></li>
+        </ul>
+        <p class="tiny muted" style="margin:6px 0 0">A one-off shop purchase — it doesn't repeat, so it isn't a subscription.</p>
+        <p class="small" style="margin:14px 0 0"><strong>Did we get it wrong?</strong></p>
+        <div class="recog-actions">
+          <button class="btn btn-ghost btn-sm" data-action="rename" data-id="${s.id}">Rename</button>
+          <button class="btn btn-ghost btn-sm" data-action="notSub" data-id="${s.id}">This isn't a subscription</button>
+        </div>
+      </div>` : '<div id="rec-' + s.id + '" hidden></div>'}
+    </section>`;
+}
+
+function priceHistory(s) {
+  if (s.source === 'manual') return `<p class="small muted" style="margin:8px 0 0">You added this yourself, so we only know what you told us: ${eur(s.cents)} / ${s.cycle === 'yearly' ? 'year' : 'month'}.</p>`;
+  if (!s.priceHistory) return `<p class="small" style="margin:8px 0 0">Free trial since ${monthYear(s.since)}. ${s.status === 'active' && s.trial ? `Becomes ${eur(s.cents)} a month on ${fmtShort(s.next)}.` : `${eur(s.cents)} a month after the trial.`}</p>`;
+  const h = s.priceHistory;
+  if (h.length === 1) return `<p class="small" style="margin:8px 0 0">${eur(h[0].cents)} since ${monthYear(h[0].from)} — no price changes.</p>`;
+  const rows = h.map((p, i) => {
+    const until = h[i + 1] ? monthYear(addMonths(h[i + 1].from + '-01', -1).slice(0, 7)) : 'now';
+    const diff = i > 0 ? p.cents - h[i - 1].cents : 0;
+    return `<li><span>${monthYear(p.from)} – ${until}</span><span class="num"><strong>${eur(p.cents)}</strong>${diff > 0 ? ` <span class="pill gold">+${eur(diff)}</span>` : ''}</span></li>`;
+  }).reverse();
+  return `${sparkline(s)}<ul class="ph">${rows.join('')}</ul>`;
+}
+
+/* A small step chart of the price over the last 12 months */
+function sparkline(s) {
+  const pts = [];
+  for (let i = 11; i >= 0; i--) {
+    const ym = addMonths(state.today, -i).slice(0, 7);
+    let c = null;
+    s.priceHistory.forEach(p => { if (p.from <= ym) c = p.cents; });
+    if (c !== null) pts.push({ ym, c });
+  }
+  if (pts.length < 2) return '';
+  const W = 300, H = 70;
+  const min = Math.min(...pts.map(p => p.c)), max = Math.max(...pts.map(p => p.c));
+  const x = i => 10 + i * (W - 20) / (pts.length - 1);
+  const y = c => max === min ? H / 2 : H - 18 - (c - min) / (max - min) * (H - 40);
+  let d = `M${x(0)},${y(pts[0].c)}`;
+  pts.forEach((p, i) => { if (i) d += ` H${x(i)} V${y(p.c)}`; });
+  const ch = pts.findIndex((p, i) => i > 0 && p.c > pts[i - 1].c);
+  const label = pts.map(p => p.c).filter((c, i, a) => i === 0 || c !== a[i - 1]).map(eur).join(' then ');
+  return `
+    <svg class="spark" viewBox="0 0 ${W} ${H}" role="img" aria-label="Price over the last 12 months: ${label}">
+      <path d="${d}" fill="none" style="stroke:var(--forest-2)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+      ${ch > 0 ? `
+        <circle cx="${x(ch)}" cy="${y(pts[ch].c)}" r="5.5" style="fill:var(--gold)" stroke="#fff" stroke-width="2"/>
+        <text x="${x(ch)}" y="${y(pts[ch].c) - 10}" text-anchor="middle" font-size="11" font-weight="700" style="fill:var(--gold-ink)">+${eur(pts[ch].c - pts[ch - 1].c)}</text>` : ''}
+      <text x="10" y="${H - 2}" font-size="10" style="fill:var(--slate)">${monthYear(pts[0].ym)}</text>
+      <text x="${W - 10}" y="${H - 2}" font-size="10" text-anchor="end" style="fill:var(--slate)">${monthYear(pts[pts.length - 1].ym)}</text>
+    </svg>`;
+}
+
+/* Guess-your-total: a slider, then the real number counts up from the guess */
+function renderGuess() {
+  const real = detectedTotal();
+  if (!ui.guessRevealed) return `
+    <p class="eyebrow">Before we start</p>
+    <h2 class="sheet-title">How much do you think you pay for subscriptions <em>each month?</em></h2>
+    <p class="guess-val" id="guessVal" aria-hidden="true">€${ui.guess}</p>
+    <input type="range" class="range" id="guessRange" min="0" max="150" step="1" value="${ui.guess}"
+      aria-label="Your guess, euros per month" aria-valuetext="€${ui.guess} a month" data-autofocus>
+    <div class="range-scale" aria-hidden="true"><span>€0</span><span>€150</span></div>
+    <p class="tiny muted" style="text-align:center">Drag, then let go.</p>
+    <button class="btn btn-gold btn-block mt" data-action="guessReveal">Show me the real number</button>
+    <button class="btn btn-ghost btn-block mt" data-action="closeSheet">Skip</button>`;
+  const diff = real - ui.guess * 100;
+  return `
+    <p class="eyebrow">You guessed €${ui.guess}</p>
+    <h2 class="sheet-title">Your bank can see</h2>
+    <p class="guess-real"><span id="guessReal">${eur(real)}</span><small>/ month</small></p>
+    <p style="margin:0">${diff > 0 ? `That's <strong>${eur(diff)} more</strong> than you thought — ${eur(real * 12)} a year.`
+                       : diff < 0 ? `A little less than you guessed — ${eur(real * 12)} a year.` : 'Spot on.'}</p>
+    <div class="banner warn">
+      <span class="b-ico">${icon('help', 18)}</span>
+      <div class="grow"><h3 class="banner-h" style="font-size:19px">And that's only what your bank can see.</h3>
+        <p>App store payments and family plans can hide more. We'll show you where.</p></div>
+    </div>
+    <button class="btn btn-gold btn-block mt" data-action="closeSheet" data-autofocus>Show me everything</button>`;
+}
+function revealGuess() {
+  if (ui.guessRevealed) return;
+  ui.guessRevealed = true;
+  setSheetContent(renderGuess());
+  const el = document.getElementById('guessReal');
+  if (el) countUp(el, ui.guess * 100, detectedTotal());
+}
+
+/* ===== 6c. ADD WHAT THE BANK CAN'T SEE — a guided 3-step flow ===== */
+function newDraft(fromLump) {
+  const lump = fromLump ? openLump() : null;
+  return {
+    step: 1,
+    lumpId: lump ? lump.id : null,
+    pick: null, customName: '',
+    channel: lump ? lump.channel : null,
+    amount: lump ? (lump.cents / 100).toFixed(2) : '',
+    cycle: 'monthly',
+    next: lump ? lump.next : addMonths(state.today, 1),
+  };
+}
+function draftName(d) {
+  const p = PRESETS.find(x => x.id === d.pick);
+  return p ? p.name : d.customName.trim();
+}
+function stepValid(d) {
+  if (d.step === 1) return !!d.pick && (d.pick !== 'custom' || d.customName.trim().length > 0);
+  if (d.step === 2) return !!d.channel;
+  return parseAmount(d.amount) !== null && !!d.next && d.next >= state.today;
+}
+function draftPreview(d) {
+  const c = parseAmount(d.amount);
+  if (c === null) return 'Enter an amount to see the yearly cost.';
+  return d.cycle === 'yearly' ? `${eur(Math.round(c / 12))} a month · ${eur(c)} a year` : `${eur(c)} a month · ${eur(c * 12)} a year`;
+}
+
+function renderAdd() {
+  if (!ui.addDraft) ui.addDraft = newDraft(false);
+  const d = ui.addDraft;
+  const lump = d.lumpId ? state.unknown.find(u => u.id === d.lumpId) : null;
+  let body;
+
+  if (d.step === 1) {
+    const presets = PRESETS.filter(p => !findSub(p.id));
+    body = `
+      ${lump ? `
+        <div class="stmt-card">
+          <p class="eyebrow">From your statement</p>
+          <div class="stmt"><span>${lump.label}</span><span>${eurFi(lump.cents)}</span><span>${fmtStmt(lump.last)}</span></div>
+          <p class="tiny muted" style="margin:0">Same amount on the 12th of every month — it looks like a subscription.</p>
+        </div>` : ''}
+      <h1 class="h-title" tabindex="-1">${lump ? 'Which subscription <em>is it?</em>' : 'What do you want <em>to add?</em>'}</h1>
+      <p class="lead">${lump ? `We see ${eur(lump.cents)} from your app store every month. Your bank can't see what's inside it.`
+                             : `Add subscriptions paid through app stores, PayPal or someone else's family plan.`}</p>
+      <div role="group" aria-label="Choose the subscription">
+        ${presets.map(p => `
+          <button class="opt" data-action="addPick" data-value="${p.id}" aria-pressed="${d.pick === p.id}">
+            <span class="logo" style="background:${p.color}" aria-hidden="true">${p.name.charAt(0)}</span>
+            <span class="opt-main"><b>${p.name}</b><small>${p.category}</small></span>
+            <span class="tick">${icon('check', 14)}</span>
+          </button>`).join('')}
+        <button class="opt" data-action="addPick" data-value="custom" aria-pressed="${d.pick === 'custom'}">
+          <span class="logo blank" aria-hidden="true">${icon('plus', 18)}</span>
+          <span class="opt-main"><b>Something else</b><small>Type the name yourself</small></span>
+          <span class="tick">${icon('check', 14)}</span>
+        </button>
+      </div>
+      ${d.pick === 'custom' ? `
+        <div class="field">
+          <label for="customName">Name of the subscription</label>
+          <input class="input" id="customName" data-field="customName" value="${esc(d.customName)}" maxlength="40" autocomplete="off" placeholder="e.g. Podcast app">
+        </div>` : ''}`;
+  }
+
+  if (d.step === 2) {
+    const opts = [
+      ['appstore', 'App store', "Paid through your phone's app store"],
+      ['googleplay', 'Google Play', 'Paid through the Play store'],
+      ['paypal', 'PayPal', 'An automatic PayPal payment'],
+      ['family', 'Family plan', 'Someone else pays — you share it'],
+      ['other', 'Other', 'Anything else'],
+    ];
+    body = `
+      <h1 class="h-title" tabindex="-1">How is <em>${esc(draftName(d))}</em> billed?</h1>
+      <p class="lead">This tells us where you'd stop it, if you ever want to.</p>
+      <div role="group" aria-label="Billing channel">
+        ${opts.map(([v, l, h]) => `
+          <button class="opt" data-action="addChannel" data-value="${v}" aria-pressed="${d.channel === v}">
+            <span class="opt-main"><b>${l}</b><small>${h}${lump && v === lump.channel ? ' · matches your statement' : ''}</small></span>
+            <span class="tick">${icon('check', 14)}</span>
+          </button>`).join('')}
+      </div>`;
+  }
+
+  if (d.step === 3) {
+    const bad = d.amount !== '' && parseAmount(d.amount) === null;
+    body = `
+      <h1 class="h-title" tabindex="-1">How much, and <em>how often?</em></h1>
+      <p class="lead">${lump ? 'We filled this in from your statement — change it if it looks wrong.' : 'Check a receipt or the app if you are not sure.'}</p>
+      <div class="field">
+        <label for="amount">Amount</label>
+        <div class="money"><span aria-hidden="true">€</span>
+          <input class="input" id="amount" data-field="amount" inputmode="decimal" autocomplete="off" value="${esc(d.amount)}" aria-describedby="amountErr">
+        </div>
+        <p class="error" id="amountErr" ${bad ? '' : 'hidden'}>Enter an amount like 10.99</p>
+      </div>
+      <div class="field">
+        <label id="cycle-l">Billed</label>
+        <div class="segctl" role="group" aria-labelledby="cycle-l">
+          <button data-action="addCycle" data-value="monthly" aria-pressed="${d.cycle === 'monthly'}">Monthly</button>
+          <button data-action="addCycle" data-value="yearly" aria-pressed="${d.cycle === 'yearly'}">Yearly</button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="nextDate">Next charge</label>
+        <input class="input" id="nextDate" type="date" data-field="next" value="${d.next}" min="${state.today}">
+      </div>
+      <p class="preview" id="addPreview" aria-live="polite">${draftPreview(d)}</p>`;
+  }
+
+  return `
+    <div class="add-top">
+      <button class="back" data-action="addBack">${icon('back')} ${d.step === 1 ? 'Cancel' : 'Back'}</button>
+      <span class="muted small">Step ${d.step} of 3</span>
+    </div>
+    <div class="steps" aria-hidden="true"><i class="on"></i><i class="${d.step >= 2 ? 'on' : ''}"></i><i class="${d.step >= 3 ? 'on' : ''}"></i></div>
+    ${body}
+    <div class="sticky-cta">
+      <button class="btn btn-gold btn-block" id="addContinue" data-action="${d.step < 3 ? 'addNext' : 'addSave'}" ${stepValid(d) ? '' : 'disabled'}>
+        ${d.step < 3 ? 'Continue' : 'Add to my subscriptions'}</button>
+    </div>`;
+}
+
+/* ===== 6d. MOCK PROVIDER CANCELLATION PAGE (opens "in the browser") ===== */
+function renderProvider(id) {
+  const s = findSub(id);
+  if (!s) return '';
+  const host = s.name.toLowerCase().replace(/[^a-z0-9]+/g, '') + '.example';
+  const access = addDays(s.next, -1);
+  const plan = `${esc(s.name)} ${s.cycle === 'yearly' ? 'Annual' : 'Monthly'}`;
+  let body;
+
+  if (ui.cancelStep === 0) body = `
+    <h1 class="prov-h" tabindex="-1">Your plan</h1>
+    <p class="prov-p">Manage your ${esc(s.name)} membership.</p>
+    <div class="prov-card">
+      <div class="prov-plan"><b>${plan}</b><span>${eur(s.cents)} / ${s.cycle === 'yearly' ? 'year' : 'month'}</span></div>
+      <dl class="prov-dl">
+        <div><dt>${s.trial ? 'Trial ends' : 'Renews'}</dt><dd>${fmtLong(s.next)}</dd></div>
+        <div><dt>Payment method</dt><dd>${CHANNELS[s.channel].label}</dd></div>
+      </dl>
+    </div>
+    <button class="prov-btn" data-action="provUpsell">Switch to annual — save 20%</button>
+    <button class="prov-link" data-action="provStep" data-step="1" data-id="${s.id}">Cancel subscription</button>`;
+
+  if (ui.cancelStep === 1) body = `
+    <h1 class="prov-h" tabindex="-1">Sorry to see you go</h1>
+    <p class="prov-p">If you cancel, you'll lose your saved work and premium features on <strong>${fmtLong(access)}</strong>, at the end of the period you've paid for.</p>
+    <div class="prov-card"><div class="prov-plan"><b>${plan}</b><span>${eur(s.cents)}</span></div></div>
+    <button class="prov-btn" data-action="provStep" data-step="0" data-id="${s.id}">Keep my plan</button>
+    <button class="prov-link" data-action="provStep" data-step="2" data-id="${s.id}">Confirm cancellation</button>`;
+
+  if (ui.cancelStep === 2) body = `
+    <div class="prov-done">${icon('check', 32)}</div>
+    <h1 class="prov-h" tabindex="-1">Subscription cancelled</h1>
+    <p class="prov-p">You can keep using ${esc(s.name)} until <strong>${fmtLong(access)}</strong>. You won't be charged again.</p>
+    <span class="prov-ref">Confirmation ${s.id.slice(0, 2).toUpperCase()}-48213</span>
+    <button class="prov-btn" data-action="provDone" data-id="${s.id}" data-autofocus>Return to ${BANK.name}</button>`;
+
+  return `
+    <div class="prov" role="dialog" aria-modal="true" aria-label="${esc(s.name)} website" style="--pc:${s.color}">
+      <div class="prov-chrome">
+        <button class="prov-close" data-action="provClose" data-id="${s.id}">Close</button>
+        <div class="prov-url">${icon('lock', 14)}<span>${host}/account/plan</span></div>
+      </div>
+      <div class="prov-brand"><span class="prov-logo" aria-hidden="true">${esc(s.name.charAt(0))}</span><b>${esc(s.name)}</b></div>
+      <div class="prov-body">${body}</div>
+      <div class="prov-foot">Mock provider page — part of the prototype, nothing is really cancelled</div>
+    </div>`;
+}
+
+/* ===== 6e. PHONE LOCK SCREEN with a push notification ===== */
+function renderLock() {
+  const n = ui.lockNote;
+  return `
+    <div class="lock" role="dialog" aria-modal="true" aria-label="Phone lock screen">
+      <div class="lock-status" aria-hidden="true"><span>9:41</span><span class="sb-icons" style="display:flex;gap:6px;align-items:center">${statusIcons}</span></div>
+      <div class="lock-clock">
+        <div class="lock-date">${fmtLong(state.today)}</div>
+        <div class="lock-time" aria-hidden="true">9:41</div>
+      </div>
+      ${n ? `
+        <p class="lock-hint">1 new notification · tap to open</p>
+        <button class="notif" data-action="openNotification" data-autofocus>
+          <span class="notif-icon" aria-hidden="true">${bankLogo(26)}</span>
+          <span>
+            <span class="notif-app"><span>${BANK.name}</span><span>now</span></span>
+            <span class="notif-title">${feat()} · ${n.title}</span>
+            <span class="notif-body">${n.body}</span>
+          </span>
+        </button>` : `<p class="lock-hint">No new notifications</p>`}
+      <div class="lock-skip"><button data-action="skipLock" ${n ? '' : 'data-autofocus'}>Skip to app ›</button></div>
+      <div class="home-bar" aria-hidden="true"></div>
+    </div>`;
+}
+
+/* Pick the notification to show: ghost charge > confirmation > upcoming charge */
+function buildLockNote(newAlerts) {
+  const ghost = newAlerts.find(a => a.type === 'ghost');
+  if (ghost) {
+    const s = findSub(ghost.subId);
+    return { title: `${esc(s.name)} charged ${eur(ghost.cents)} after you stopped it.`, body: 'Tap to see what you can do.', target: null };
+  }
+  const conf = newAlerts.filter(a => a.type === 'confirmed');
+  if (conf.length) {
+    const s = findSub(conf[0].subId);
+    const more = conf.length > 1 ? ` (+${conf.length - 1} more)` : '';
+    return { title: `No charge from ${esc(s.name)}${more}.`, body: `It worked. You kept ${eur(conf[0].monthly)} this month — ${eur(conf[0].monthly * 12)} a year.`, target: null };
+  }
+  const soon = state.subs
+    .filter(s => s.status === 'active' && daysBetween(state.today, s.next) <= warnWindow(s) && daysBetween(state.today, s.next) >= 0)
+    .sort((a, b) => a.next.localeCompare(b.next))[0];
+  if (soon) {
+    const title = soon.trial
+      ? `${esc(soon.name)} free trial ends ${relDays(soon.next)} — then ${eur(soon.cents)}.`
+      : `${esc(soon.name)}, ${eur(soon.cents)} — charges ${relDays(soon.next)}.`;
+    return { title, body: `Tap to review it before ${weekday(soon.next)}.`, target: soon.id };
+  }
+  return null;
+}
+
+/* ---------------------------------------------------------------------
+   7. SHEETS AND TOASTS
+   --------------------------------------------------------------------- */
+let sheetReturnFocus = null;
+function openSheet(html, label) {
+  sheetReturnFocus = document.activeElement;
+  els.sheet.innerHTML = `
+    <div class="sheet-layer">
+      <div class="sheet-backdrop" data-action="closeSheet"></div>
+      <div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(label)}">
+        <div class="grabber" aria-hidden="true"></div>
+        <button class="icon-btn sheet-close" data-action="closeSheet" aria-label="Close">${icon('x')}</button>
+        ${html}
+      </div>
+    </div>`;
+  syncInert();
+  const t = els.sheet.querySelector('[data-autofocus]') || els.sheet.querySelector('h2');
+  if (t) { if (!t.hasAttribute('tabindex') && t.tagName === 'H2') t.setAttribute('tabindex', '-1'); t.focus({ preventScroll: true }); }
+}
+/* Swap what an open sheet shows (e.g. guess -> reveal, dispute -> confirmation) */
+function setSheetContent(html) {
+  const sheet = els.sheet.querySelector('.sheet');
+  if (!sheet) return;
+  sheet.innerHTML = `<div class="grabber" aria-hidden="true"></div>
+    <button class="icon-btn sheet-close" data-action="closeSheet" aria-label="Close">${icon('x')}</button>${html}`;
+  const t = sheet.querySelector('[data-autofocus]');
+  if (t) t.focus({ preventScroll: true });
+}
+function closeSheet(restoreFocus = true) {
+  if (!els.sheet.innerHTML) return;
+  els.sheet.innerHTML = '';
+  syncInert();
+  if (restoreFocus && sheetReturnFocus && document.contains(sheetReturnFocus)) sheetReturnFocus.focus({ preventScroll: true });
+}
+/* While a sheet or overlay is open, the bank app underneath can't be tabbed into */
+function syncInert() {
+  const sheetOn = !!els.sheet.innerHTML;
+  els.shell.inert = sheetOn || els.overlay.classList.contains('on');
+  els.overlay.inert = sheetOn;
+}
+
+function toast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  els.toast.appendChild(t);
+  setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 240); }, 3200);
+}
+
+/* The exit guide: deadline, route, effort, and the official page */
+function renderExitGuide(s) {
+  const ch = CHANNELS[s.channel];
+  const n = daysBetween(state.today, s.next);
+  const deadline = addDays(s.next, -1);
+  const what = s.trial ? `first ${eur(s.cents)} charge` : `${eur(s.cents)} charge`;
+  const deadlineText = n <= 1
+    ? `Stop it <strong>today</strong> to avoid ${n === 0 ? "today's" : "tomorrow's"} ${what}.`
+    : `Stop before <strong>${fmtLong(deadline)}</strong> to avoid ${weekday(s.next)}'s ${what}.`;
+  return `
+    <p class="eyebrow">Stop ${esc(s.name)}</p>
+    <h2 class="sheet-title">Stop it <em>before</em> ${n <= 1 ? 'it charges' : weekday(s.next)}.</h2>
+    <div class="deadline" role="note">${icon('clock')}<span>${deadlineText}</span></div>
+
+    <h3 class="mini-h">Where it's managed</h3>
+    <p class="small" style="margin:0 0 8px">${ch.where(esc(s.name))}</p>
+    <div class="crumbs" aria-label="Route">${ch.route(s.name).map(x => `<span>${esc(x)}</span>`).join('<i aria-hidden="true">›</i>')}</div>
+
+    <div class="meta-row">${icon('clock', 18)}<span>Takes <strong>${ch.effort}</strong>.</span></div>
+    <div class="meta-row">${icon('check', 18)}<span>You usually keep access until <strong>${fmtShort(deadline)}</strong> — the end of the period you've already paid for.</span></div>
+    <div class="meta-row">${icon('shield', 18)}<span>On ${fmtShort(s.next)} we'll check that no charge arrives, and tell you.</span></div>
+
+    <button class="btn btn-gold btn-block mt" data-action="openCancel" data-id="${s.id}" data-autofocus>Open cancellation page ${icon('external', 18)}</button>
+    <p class="fine" style="margin-top:8px">Opens ${esc(s.name)}'s official page. We never cancel anything for you.</p>
+    <button class="btn btn-ghost btn-block mt" data-action="closeSheet">Not now</button>`;
+}
+
+/* The bank's own dispute flow, reached from a ghost charge */
+function renderDispute(a) {
+  const s = findSub(a.subId);
+  if (a.disputeRef) return `
+    <p class="eyebrow">Dispute opened</p>
+    <h2 class="sheet-title">We've <em>got it</em> from here.</h2>
+    <div class="banner ok"><span class="b-ico">${icon('check')}</span><div class="grow">
+      <p style="margin:0"><strong>Reference ${a.disputeRef}</strong></p>
+      <p>We'll update you within 10 banking days. You don't need to do anything else.</p></div></div>
+    <button class="btn btn-gold btn-block mt" data-action="closeSheet" data-autofocus>Done</button>`;
+  return `
+    <p class="eyebrow">${BANK.name} · dispute a charge</p>
+    <h2 class="sheet-title">This charge <em>shouldn't</em> be here.</h2>
+    <div class="stmt"><span>${s.name.toUpperCase().replace(/\s+/g, '')}*MEMBERSHIP</span><span>${eurFi(a.cents)}</span><span>${fmtStmt(a.date)}</span></div>
+    <ul class="bullets">
+      <li>You stopped ${esc(s.name)} on ${fmtShort(s.stoppedOn)}.</li>
+      <li>We confirmed no charge on ${fmtShort(s.confirmedOn)}.</li>
+      <li>${eur(a.cents)} arrived on ${fmtShort(a.date)} anyway.</li>
+    </ul>
+    <p class="small">Contacting ${esc(s.name)} first is often fastest. If that doesn't work, we can dispute it with the card network for you.</p>
+    <button class="btn btn-gold btn-block mt" data-action="disputeConfirm" data-id="${a.id}" data-autofocus>Start a dispute</button>
+    <button class="btn btn-ghost btn-block mt" data-action="closeSheet">Not now</button>`;
+}
+
+/* ---------------------------------------------------------------------
+   8. ACTIONS — every data-action="…" maps to a function here
+   --------------------------------------------------------------------- */
+const actions = {
+  /* --- lock screen --- */
+  openNotification() {
+    const target = ui.lockNote && ui.lockNote.target;
+    ui.lockOn = false;
+    els.overlay.classList.remove('on');   // hide the lock at once, before the route change renders
+    syncInert();
+    if (target) showScreen('detail', target);
+    else refresh({ focusTitle: true });
+  },
+  skipLock() { ui.lockOn = false; refresh({ focusTitle: true }); },
+
+  /* --- bank shell (inert on purpose) --- */
+  inert(d) { toast(`${d.label || 'That'} isn't part of this prototype — only the ${feat()} tab works here.`); },
+  tab(d) {
+    if (d.value !== 'mohar') return toast(`${d.label} isn't part of this prototype — only the ${feat()} tab works here.`);
+    if (currentRoute().name === 'hub') els.screen.scrollTo({ top: 0, behavior: reduceMotion() ? 'auto' : 'smooth' });
+    else goHome();
+  },
+
+  /* --- navigation --- */
+  open(d) { closeSheet(false); showScreen('detail', d.id); },
+  back() { goBack('hub'); },
+  toggleBreakdown() { ui.breakdownOpen = !ui.breakdownOpen; refresh(); },
+
+  /* --- detail: usage check-in and the three decisions --- */
+  usage(d) { findSub(d.id).usage = d.value; refresh(); },
+  keep(d) {
+    const s = findSub(d.id);
+    s.decision = 'keep'; s.remindOn = null;
+    toast(`Keeping ${s.name}. We'll still warn you before each charge.`);
+    goBack('hub');
+  },
+  unsure(d) {
+    const s = findSub(d.id);
+    const dayBefore = addDays(s.next, -1);
+    s.decision = 'unsure';
+    s.remindOn = dayBefore < state.today ? state.today : dayBefore;
+    toast(`We'll remind you on ${fmtShort(s.remindOn)}, the day before it charges.`);
+    goBack('hub');
+  },
+  stop(d) { const s = findSub(d.id); openSheet(renderExitGuide(s), `How to stop ${s.name}`); },
+  undoStop(d) {
+    const s = findSub(d.id);
+    Object.assign(s, { status: 'active', decision: null, stoppedOn: null, checkOn: null });
+    refresh();
+    toast(`${s.name} is active again.`);
+  },
+  removeSub(d) {
+    const s = findSub(d.id);
+    state.subs = state.subs.filter(x => x.id !== s.id);
+    state.unknown.forEach(u => { if (u.resolvedTo === s.id) { u.resolved = false; u.resolvedTo = null; } });
+    toast(`${s.name} removed from your list.`);
+    goBack('hub');
+  },
+
+  /* --- exit guide -> provider's page -> back to the bank --- */
+  closeSheet() { closeSheet(); },
+  openCancel(d) { closeSheet(false); ui.cancelStep = 0; showScreen('cancel', d.id); },
+  provStep(d) { ui.cancelStep = Number(d.step); refresh({ focusTitle: true }); },
+  provUpsell() { toast('Upgrades are not part of this prototype.'); },
+  provClose(d) {
+    if (ui.cancelStep === 2) return actions.provDone(d);
+    goBack('detail', d.id);
+    toast('Nothing changed. You can come back to this any time.');
+  },
+  provDone(d) {
+    const s = findSub(d.id);
+    Object.assign(s, { status: 'stopping', decision: 'stop', remindOn: null, stoppedOn: state.today, checkOn: s.next });
+    goBack('detail', d.id);
+    toast(`Marked as stopping — we'll check on ${fmtDM(s.checkOn)}.`);
+  },
+
+  /* --- add what the bank can't see --- */
+  addStart(d) { closeSheet(false); ui.addDraft = newDraft(d.from === 'lump'); showScreen('add'); },
+  addPick(d) {
+    ui.addDraft.pick = d.value;
+    refresh();
+    if (d.value === 'custom') { const inp = document.getElementById('customName'); if (inp) inp.focus(); }
+  },
+  addChannel(d) { ui.addDraft.channel = d.value; refresh(); },
+  addCycle(d) { ui.addDraft.cycle = d.value; refresh(); },
+  addNext() { if (stepValid(ui.addDraft)) { ui.addDraft.step++; refresh({ focusTitle: true }); els.screen.scrollTop = 0; } },
+  addBack() {
+    if (ui.addDraft && ui.addDraft.step > 1) { ui.addDraft.step--; refresh({ focusTitle: true }); }
+    else { ui.addDraft = null; goBack('hub'); }
+  },
+  addSave() {
+    const d = ui.addDraft;
+    if (!stepValid(d)) return;
+    const preset = PRESETS.find(p => p.id === d.pick);
+    let id = preset ? preset.id : 'custom-' + (++ui.seq);
+    while (findSub(id)) id += '-' + (++ui.seq);
+    const lump = d.lumpId ? state.unknown.find(u => u.id === d.lumpId) : null;
+    state.subs.push(Object.assign({}, SUB_DEFAULTS, {
+      id, name: draftName(d),
+      category: preset ? preset.category : 'Added by you',
+      color: preset ? preset.color : '#55606B', group: preset ? preset.group : null, lastOpenedDays: null,
+      cents: parseAmount(d.amount), cycle: d.cycle, channel: d.channel, source: 'manual',
+      next: d.next, since: null, lastOpened: null, priceHistory: null,
+      paid2026: lump ? lump.paid2026 : null,
+    }));
+    if (lump) { lump.resolved = true; lump.resolvedTo = id; }
+    ui.addDraft = null;
+    goBack('hub');   // the hub re-renders and the total counts up to the new figure
+    toast(`${draftName(d) || 'Subscription'} added — your total is now ${eur(totalMonthly())} a month.`);
+  },
+
+  /* --- alerts --- */
+  dismissAlert(d) { findAlert(d.id).dismissed = true; refresh(); },
+  dispute(d) { openSheet(renderDispute(findAlert(d.id)), 'Dispute a charge'); },
+  disputeConfirm(d) {
+    const a = findAlert(d.id);
+    a.disputeRef = BANK.code + '-' + a.date.replace(/-/g, '').slice(2) + '-07';
+    refresh();
+    setSheetContent(renderDispute(a));
+  },
+
+  /* --- Tier 2: monthly/yearly, guess, recognition, rejoin --- */
+  setPeriod(d) { ui.period = d.value; refresh(); },
+  guessReveal() { revealGuess(); },
+  replayGuess() { ui.guessRevealed = false; openSheet(renderGuess(), 'Guess your total'); },
+  toggleRecog(d) { ui.recogOpen[d.id] = !ui.recogOpen[d.id]; refresh(); },
+  rename(d) {
+    const s = findSub(d.id);
+    openSheet(`
+      <p class="eyebrow">Rename</p>
+      <h2 class="sheet-title">What should we <em>call</em> it?</h2>
+      <div class="field"><label for="renameInput">Name</label>
+        <input class="input" id="renameInput" value="${esc(s.name)}" maxlength="40" autocomplete="off" data-enter="renameSave" data-autofocus></div>
+      <button class="btn btn-gold btn-block mt" data-action="renameSave" data-id="${s.id}">Save name</button>`, 'Rename subscription');
+  },
+  renameSave(d) {
+    const s = findSub(d.id), v = document.getElementById('renameInput').value.trim();
+    if (!v) return;
+    s.name = v;
+    closeSheet(false);
+    refresh();
+    const btn = document.querySelector('[data-action="rename"]');
+    if (btn) btn.focus({ preventScroll: true });
+    toast(`Renamed to ${v}.`);
+  },
+  notSub(d) {
+    const s = findSub(d.id);
+    openSheet(`
+      <p class="eyebrow">Not a subscription?</p>
+      <h2 class="sheet-title">Stop counting <em>${esc(s.name)}</em>?</h2>
+      <p class="small">We'll take it out of your total and stop warning you about it. You can restore it from the bottom of the list any time.</p>
+      <button class="btn btn-gold btn-block mt" data-action="notSubConfirm" data-id="${s.id}" data-autofocus>Yes, it isn't a subscription</button>
+      <button class="btn btn-ghost btn-block mt" data-action="closeSheet">Keep it in the list</button>`, 'Not a subscription');
+  },
+  notSubConfirm(d) {
+    const s = findSub(d.id);
+    s.status = 'notsub';
+    closeSheet(false);
+    toast(`${s.name} isn't counted any more. Thanks — that helps us learn.`);
+    goBack('hub');
+  },
+  restoreSub(d) { const s = findSub(d.id); s.status = 'active'; refresh(); toast(`${s.name} is back in your list.`); },
+  rejoin(d) {
+    const s = findSub(d.id);
+    while (s.next <= state.today) s.next = addMonths(s.next, cycleMonths(s));
+    Object.assign(s, { status: 'active', decision: null, trial: false, usage: null, stoppedOn: null,
+                       checkOn: null, confirmedOn: null, ghostArmed: false, ghost: null });
+    refresh();
+    toast(`Rejoined ${s.name} — we'll track it again. Next charge ${fmtShort(s.next)}.`);
+  },
+  dismissOverlap() { ui.overlapDismissed = true; refresh(); },
+
+  /* --- polish: tools, language, list, calendar, check-up, settings --- */
+  go(d) {
+    closeSheet(false);
+    if (d.value === 'checkup') ui.checkup = null;
+    if (d.value === 'calendar') { ui.calMonth = 0; ui.calDay = null; }
+    showScreen(d.value);
+  },
+  setLang(d) { setLang(d.value); },
+  setFilter(d) { ui.filter = d.value; refresh(); },
+  clearFilters() {
+    ui.search = ''; ui.filter = 'all';
+    refresh();
+    const i = document.getElementById('subSearch');
+    if (i) i.focus({ preventScroll: true });
+  },
+  calMonth(d) { ui.calMonth = Math.max(0, Math.min(2, Number(d.value))); ui.calDay = null; refresh(); },
+  calDay(d) { ui.calDay = d.value; refresh(); },
+  cuDecide(d) { checkupDecide(d.value); },
+  cuStop(d) { ui.pendingStop = d.id; showScreen('detail', d.id); },
+  restartCheckup() { startCheckup(); refresh({ focusTitle: true }); },
+  share() { toast('Sharing is not part of this prototype — but the card is made to be screenshotted.'); },
+  toggleNotifyAll() {
+    state.notifyAll = !state.notifyAll;
+    refresh();
+    toast(state.notifyAll ? 'Warnings are on.' : 'All warnings are off — the timeline shows no alerts now.');
+  },
+
+  /* --- demo harness --- */
+  setTheme(d) { applyTheme(d.value); refresh(); toast(`White-labelled as ${BANK.name} — same feature, their brand.`); },
+  openPage(d) { openPage(d.value); },
+  closePage() { closePage(); },
+  ff() { fastForward(); },
+  reset() { resetDemo(); },
+  taskPrev() { ui.taskIndex = Math.max(0, ui.taskIndex - 1); updateDemoBar(); },
+  taskNext() { ui.taskIndex = Math.min(TASKS.length - 1, ui.taskIndex + 1); updateDemoBar(); },
+  demoToggle() { setDemoOpen(!els.demo.classList.contains('open')); },
+};
+
+/* One click listener for the whole page */
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-action]');
+  if (!el || el.disabled) return;
+  const fn = actions[el.dataset.action];
+  if (fn) { e.preventDefault(); fn(el.dataset, el); }
+});
+
+/* Text inputs in the add flow update the draft without a full re-render (keeps the cursor in place) */
+document.addEventListener('input', e => {
+  if (e.target.id === 'subSearch') { ui.search = e.target.value; updateList(); return; }
+  if (e.target.id === 'guessRange') {
+    ui.guess = Number(e.target.value);
+    document.getElementById('guessVal').textContent = '€' + ui.guess;
+    e.target.setAttribute('aria-valuetext', `€${ui.guess} a month`);
+    return;
+  }
+  const f = e.target.dataset && e.target.dataset.field;
+  if (!f || !ui.addDraft) return;
+  ui.addDraft[f] = e.target.value;
+  const btn = document.getElementById('addContinue');
+  if (btn) btn.disabled = !stepValid(ui.addDraft);
+  const prev = document.getElementById('addPreview');
+  if (prev) prev.textContent = draftPreview(ui.addDraft);
+  const err = document.getElementById('amountErr');
+  if (err && f === 'amount') err.hidden = !(ui.addDraft.amount !== '' && parseAmount(ui.addDraft.amount) === null);
+});
+
+document.addEventListener('change', e => {
+  if (e.target.id === 'subSort') { ui.sort = e.target.value; updateList(); }
+  if (e.target.dataset && e.target.dataset.notify) {
+    const s = findSub(e.target.dataset.notify);
+    s.notify = e.target.value;
+    refresh();
+    toast(`${s.name}: ${warnText(s)}.`);
+  }
+});
+
+/* Releasing the guess slider reveals the real total (keyboard users press the button instead) */
+document.addEventListener('pointerup', e => { if (e.target.id === 'guessRange') revealGuess(); });
+
+/* Live countdowns (trial radar) tick once a second */
+setInterval(() => {
+  document.querySelectorAll('[data-countdown]').forEach(el => {
+    el.textContent = countdownText(el.dataset.countdown, 'short' in el.dataset);
+  });
+}, 1000);
+
+/* Enter submits the add-flow step / rename; Escape closes whatever is on top */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.dataset && e.target.dataset.field) {
+    const btn = document.getElementById('addContinue');
+    if (btn && !btn.disabled) btn.click();
+  }
+  if (e.key === 'Enter' && e.target.dataset && e.target.dataset.enter) {
+    const btn = els.sheet.querySelector(`[data-action="${e.target.dataset.enter}"]`);
+    if (btn) btn.click();
+  }
+  if (e.key !== 'Escape') return;
+  if (demo.page) return closePage();
+  if (els.sheet.innerHTML) return closeSheet();
+  if (els.demo.classList.contains('open')) return setDemoOpen(false);
+  const r = currentRoute();
+  if (r.name === 'cancel' && !ui.lockOn) actions.provClose({ id: r.param });
+});
+
+/* ---------------------------------------------------------------------
+   9. DEMO HARNESS
+   --------------------------------------------------------------------- */
+const TASKS = [
+  { text: "You've been notified about a charge. Stop it before Friday.",
+    hint: 'Start on the phone: tap the notification.',
+    done: () => { const s = findSub('pixelcraft'); return !!s && (s.status === 'stopping' || s.status === 'stopped'); } },
+  { text: "Your music is billed by your phone's app store. Add it so the total is real.",
+    hint: 'Look for the payment your bank can’t identify.',
+    done: () => state.unknown.every(u => u.resolved) },
+  { text: 'A month has passed. Check whether your cancellation worked.',
+    hint: 'First press ⏩ Fast-forward one month below.',
+    done: () => ui.sawConfirmation },
+];
+
+/* Advance the demo clock by one calendar month and process every charge in between */
+function fastForward() {
+  closeSheet(false);
+  setDemoOpen(false);
+  ui.addDraft = null;
+  const from = state.today, to = addMonths(from, 1), fresh = [];
+
+  state.subs.forEach(s => {
+    let guard = 0;
+    while (s.next > from && s.next <= to && guard++ < 24) processCharge(s, s.next, fresh);
+  });
+  state.unknown.forEach(u => {
+    while (u.next > from && u.next <= to) {
+      if (u.next.startsWith('2026')) u.paid2026 += u.cents;
+      u.last = u.next; u.next = addMonths(u.next, 1);
+    }
+  });
+
+  state.today = to;
+  ui.clockStart = Date.now();
+  ui.taskIndex = 2;
+  ui.lockNote = buildLockNote(fresh);
+  ui.lockOn = !!ui.lockNote;
+  refresh();
+  goHome();
+  toast(`Jumped ahead to ${fmtFull(to)}.`);
+}
+
+/* What happens to one subscription on its charge date */
+function processCharge(s, date, fresh) {
+  if (s.status === 'stopping') {
+    /* the charge did NOT arrive: confirm it */
+    s.status = 'stopped'; s.confirmedOn = date;
+    state.savedCents += s.cents;
+    fresh.push(addAlert({ type: 'confirmed', subId: s.id, date, monthly: monthly(s) }));
+    if (s.ghostAfterStop) s.ghostArmed = true;
+  } else if (s.status === 'stopped') {
+    /* normally nothing — except the demo's ghost charge */
+    if (s.ghostArmed) {
+      s.ghostArmed = false;
+      if (date.startsWith('2026')) s.paid2026 += s.cents;
+      const a = addAlert({ type: 'ghost', subId: s.id, date, cents: s.cents });
+      s.ghost = { date, cents: s.cents, alert: a.id };
+      fresh.push(a);
+    } else {
+      state.savedCents += s.cents;   // another month it didn't charge
+    }
+  } else {
+    /* an ordinary charge */
+    if (date.startsWith('2026') && s.paid2026 !== null) s.paid2026 += s.cents;
+    s.trial = false;
+    if (s.decision === 'unsure') s.decision = null;
+    s.remindOn = null;
+  }
+  s.next = addMonths(date, cycleMonths(s));
+}
+function addAlert(a) { a.id = 'a' + (++ui.seq); state.alerts.unshift(a); return a; }
+
+function resetDemo() {
+  closeSheet(false);
+  setDemoOpen(false);
+  state = initialState();
+  ui = initialUi();
+  document.documentElement.lang = 'en';
+  applyTheme(BANK.id);
+  ui.lockNote = buildLockNote([]);
+  refresh();
+  goHome();
+  toast('Demo reset — back to Tuesday 3 November 2026.');
+}
+
+function updateDemoBar() {
+  const t = TASKS[ui.taskIndex], done = t.done();
+  els.taskNum.textContent = `Task ${ui.taskIndex + 1} of ${TASKS.length}`;
+  els.taskText.textContent = t.text;
+  els.taskHint.textContent = ui.taskIndex === 2 && state.today !== DAY0 && !done ? `Look at the top of the ${BANK.feature} tab.` : t.hint;
+  els.taskDone.hidden = !done;
+  els.taskPrev.disabled = ui.taskIndex === 0;
+  els.taskNext.disabled = ui.taskIndex === TASKS.length - 1;
+  els.taskNext.classList.toggle('hot', done && ui.taskIndex < TASKS.length - 1);
+  const day = daysBetween(DAY0, state.today);
+  els.demoDate.textContent = `${fmtFull(state.today)} · Day ${day === 0 ? '0' : '+' + day}`;
+  els.ffTo.textContent = `Jump to ${fmtFull(addMonths(state.today, 1))}`;
+}
+
+function updateTabbar() {
+  const onHub = !ui.lockOn;
+  els.tabbar.querySelectorAll('.tab').forEach(t => {
+    if (t.dataset.value === 'mohar' && onHub) t.setAttribute('aria-current', 'page');
+    else t.removeAttribute('aria-current');
+  });
+}
+
+function setDemoOpen(open) {
+  els.demo.classList.toggle('open', open);
+  els.fab.setAttribute('aria-expanded', String(open));
+}
+
+/* Scale the phone frame to fit short desktop windows */
+function fitDevice() {
+  const s = window.innerWidth >= 900 ? Math.max(.6, Math.min(1, (window.innerHeight - 48) / 864)) : 1;
+  document.documentElement.style.setProperty('--s', s.toFixed(3));
+}
+
+/* ---------------------------------------------------------------------
+   9b. WHITE-LABEL THEMES
+   Switching bank swaps the shell's name, logo, colours and the name the
+   bank gives the feature. The feature itself is identical — that is the
+   business model: one product, licensed to many banks.
+   --------------------------------------------------------------------- */
+function applyTheme(id) {
+  BANK = BANKS.find(b => b.id === id) || BANKS[0];
+  const root = document.documentElement.style;
+  root.setProperty('--bank', BANK.bank);
+  root.setProperty('--bank-2', BANK.bank2);
+  root.setProperty('--bank-wash', BANK.wash);
+  root.setProperty('--forest', BANK.bank);     // the feature's primary colour follows the bank
+  root.setProperty('--forest-2', BANK.bank2);
+
+  document.getElementById('bankLogo').innerHTML = bankLogo(30);
+  document.getElementById('bankName').textContent = BANK.name;
+  els.tabbar.innerHTML = [['home', t('home'), 'home'], ['cards', t('cards'), 'card'], ['payments', t('payments'), 'payments'], ['mohar', feat(), 'coin']]
+    .map(([v, l, ic]) => `<button class="tab" data-action="tab" data-value="${v}" data-label="${l}"><span class="tab-ico">${icon(ic, 22)}</span>${l}</button>`).join('');
+  document.getElementById('themeBtns').innerHTML = BANKS.map(b => `
+    <button class="theme-btn" data-action="setTheme" data-value="${b.id}" aria-pressed="${b.id === BANK.id}">
+      <i style="background:${b.bank}" aria-hidden="true"></i><span>${b.name}<small>calls it “${b.feature}”</small></span>
+    </button>`).join('');
+  if (demo.page === 'dashboard') els.page.innerHTML = renderDashboard();
+}
+
+/* ---------------------------------------------------------------------
+   9c. FULL PAGES OUTSIDE THE PHONE: partner dashboard and About
+   --------------------------------------------------------------------- */
+let pageReturnFocus = null;
+function openPage(name) {
+  setDemoOpen(false);
+  pageReturnFocus = document.activeElement;
+  demo.page = name;
+  els.page.className = 'page ' + name;
+  els.page.innerHTML = name === 'dashboard' ? renderDashboard() : renderAbout();
+  els.page.hidden = false;
+  els.page.scrollTop = 0;
+  els.stage.inert = true;
+  els.fab.inert = true;
+  els.page.querySelector('h1').focus({ preventScroll: true });
+}
+function closePage() {
+  demo.page = null;
+  els.page.hidden = true;
+  els.page.innerHTML = '';
+  els.stage.inert = false;
+  els.fab.inert = false;
+  if (pageReturnFocus && document.contains(pageReturnFocus)) pageReturnFocus.focus({ preventScroll: true });
+}
+
+/* Illustrative pilot figures — invented, and labelled as such on the page */
+const PILOT = {
+  opens: [['May', 2100], ['Jun', 3900], ['Jul', 6800], ['Aug', 9600], ['Sep', 14200], ['Oct', 18700]],
+  kpis: [
+    { value: '64%',  label: 'of customers aged 18–28 opened the feature', note: '+9 points since September' },
+    { value: '7.4',  label: 'subscriptions found per customer',           note: '6.1 detected · 1.3 added by customers' },
+    { value: '41%',  label: 'of renewal warnings led to a decision',      note: 'Kept 58% · Not sure 17% · Stopped 25%' },
+    { value: '−27%', label: '“What is this charge?” contacts',            note: 'vs. the six months before launch' },
+  ],
+};
+
+function renderDashboard() {
+  return `
+    <header class="pg-bar">
+      <div class="pg-brand">${bankLogo(30)}<b>${BANK.name}</b><span>Partner portal</span></div>
+      <span class="pg-tag">Illustrative sample data</span>
+      <button class="pg-close" data-action="closePage">${icon('x', 18)} Back to prototype</button>
+    </header>
+    <main class="pg-main">
+      <p class="eyebrow">Product dashboard · ${BANK.feature} feature</p>
+      <h1 class="pg-title" tabindex="-1">How your customers use <em>${BANK.feature}</em></h1>
+      <p class="lead">Pilot May – October 2026 · customers aged 18–28 · ${BANK.name}</p>
+
+      <section class="kpis" aria-label="Key figures">
+        ${PILOT.kpis.map(k => `
+          <div class="kpi"><b>${k.value}</b><span>${k.label}</span><small>${k.note}</small></div>`).join('')}
+      </section>
+
+      <section class="pg-card" aria-labelledby="opens-h">
+        <h2 class="card-title" id="opens-h">Monthly feature opens</h2>
+        <p class="small muted" style="margin:2px 0 0">Unique customers who opened ${BANK.feature} at least once that month.</p>
+        ${barChart(PILOT.opens)}
+        <details class="pg-table">
+          <summary>Show as a table</summary>
+          <table><thead><tr><th scope="col">Month (2026)</th><th scope="col">Customers</th></tr></thead>
+            <tbody>${PILOT.opens.map(([m, v]) => `<tr><td>${m}</td><td>${v.toLocaleString('en-GB')}</td></tr>`).join('')}</tbody></table>
+        </details>
+      </section>
+
+      <div class="pg-cols">
+        <section class="pg-card" aria-labelledby="why-h">
+          <h2 class="card-title" id="why-h">Why it pays for ${BANK.name}</h2>
+          <ul class="ticks">
+            <li>Fewer “what is this charge?” calls and chats to the support team.</li>
+            <li>A reason for young customers to open the app every week, not just on payday.</li>
+            <li>Ghost charges are caught early and routed into your own dispute flow.</li>
+            <li>Balance-clash warnings use data only the bank has — no third-party tracker can copy them.</li>
+          </ul>
+        </section>
+        <section class="pg-card" aria-labelledby="never-h">
+          <h2 class="card-title" id="never-h">What the feature never does</h2>
+          <ul class="crosses">
+            <li>Cancel a subscription for the customer</li>
+            <li>Block or hold a payment</li>
+            <li>Give budgeting, saving or investment advice</li>
+            <li>Touch rent, loans, insurance, utilities or phone contracts</li>
+            <li>Ask for or store bank login details</li>
+          </ul>
+        </section>
+      </div>
+      <p class="fine">Powered by Mohar. All figures are invented for a university prototype — no real bank, customer or usage data.</p>
+    </main>`;
+}
+
+/* Single-series bar chart: one colour, rounded tops, hover/focus tooltip, recessive grid */
+function barChart(rows) {
+  const W = 640, H = 240, L = 48, R = 12, T = 16, B = 30;
+  const max = 20000, ticks = [0, 10000, 20000];
+  const slot = (W - L - R) / rows.length, bw = Math.min(56, slot - 18), r = 4;
+  const y = v => T + (H - T - B) * (1 - v / max);
+  const bars = rows.map(([m, v], i) => {
+    const x = L + i * slot + (slot - bw) / 2, top = y(v), base = y(0);
+    const d = `M${x},${base} V${top + r} Q${x},${top} ${x + r},${top} H${x + bw - r} Q${x + bw},${top} ${x + bw},${top + r} V${base} Z`;
+    const last = i === rows.length - 1;
+    return `
+      <g class="bar" tabindex="0" role="img" aria-label="${m} 2026: ${v.toLocaleString('en-GB')} customers" data-tip="${m} 2026 · ${v.toLocaleString('en-GB')} customers" data-x="${(x + bw / 2) / W * 100}" data-y="${top / H * 100}">
+        <rect x="${L + i * slot}" y="${T}" width="${slot}" height="${H - T - B}" fill="transparent"/>
+        <path d="${d}" style="fill:var(--bank)"/>
+        ${last ? `<text x="${x + bw / 2}" y="${top - 6}" text-anchor="middle" font-size="12" font-weight="700" style="fill:var(--ink)">${(v / 1000).toFixed(1)}k</text>` : ''}
+        <text x="${x + bw / 2}" y="${H - 10}" text-anchor="middle" font-size="12" style="fill:var(--slate)">${m}</text>
+      </g>`;
+  }).join('');
+  const grid = ticks.map(t => `
+    <line x1="${L}" x2="${W - R}" y1="${y(t)}" y2="${y(t)}" style="stroke:var(--line)" stroke-width="1"/>
+    <text x="${L - 8}" y="${y(t) + 4}" text-anchor="end" font-size="11" style="fill:var(--slate)">${t ? t / 1000 + 'k' : '0'}</text>`).join('');
+  return `
+    <div class="chart">
+      <svg viewBox="0 0 ${W} ${H}" class="chart-svg" aria-label="Bar chart of monthly feature opens">${grid}${bars}</svg>
+      <div class="chart-tip" id="chartTip" hidden></div>
+    </div>`;
+}
+
+function showChartTip(g) {
+  const tip = document.getElementById('chartTip');
+  if (!tip) return;
+  tip.textContent = g.dataset.tip;
+  tip.style.left = g.dataset.x + '%';
+  tip.style.top = g.dataset.y + '%';
+  tip.hidden = false;
+}
+document.addEventListener('mouseover', e => { const g = e.target.closest && e.target.closest('.bar'); if (g) showChartTip(g); });
+document.addEventListener('focusin',   e => { const g = e.target.closest && e.target.closest('.bar'); if (g) showChartTip(g); });
+document.addEventListener('mouseout',  e => { if (e.target.closest && e.target.closest('.bar')) { const t = document.getElementById('chartTip'); if (t) t.hidden = true; } });
+
+function renderAbout() {
+  const team = ['Bipin Bhandari', 'Suyog Acharya', 'Aayush Darlami', 'Dhrumil Patel', 'Kshitij Banarjee'];
+  return `
+    <header class="pg-bar">
+      <div class="pg-brand">${moharMark(30)}<b class="wordmark">mohar</b></div>
+      <button class="pg-close" data-action="closePage">${icon('x', 18)} Back to prototype</button>
+    </header>
+    <main class="pg-main narrow">
+      <div class="about-hero">
+        ${moharMark(96)}
+        <div>
+          <p class="eyebrow">About the name</p>
+          <h1 class="pg-title" tabindex="-1">Mohar — the bank's <em>seal</em> on every recurring charge.</h1>
+        </div>
+      </div>
+
+      <section class="pg-card">
+        <p class="about-lead">The <strong>mohar</strong> was the silver coin of the Kingdom of Nepal from the 17th century until 1932,
+          when the rupee replaced it at <strong>2 mohar = 1 rupee</strong>. The word also means <em>seal</em> or <em>stamp</em> —
+          a mark of approval.</p>
+        <p class="about-lead" style="margin-bottom:0">Mohar is a white-label feature a bank licenses and puts inside its own app.
+          The customer never sees our name — they see their bank, keeping watch over every subscription.</p>
+      </section>
+
+      <section class="pg-card">
+        <h2 class="card-title">What it does</h2>
+        <ol class="four">
+          <li><b>Warns <em>before</em> the money leaves</b>3 days before every renewal, 7 before a trial converts, 14 before a yearly charge.</li>
+          <li><b>Covers what card data can't see</b>App store, PayPal and family-plan subscriptions, added in a few taps.</li>
+          <li><b>Points to the exit</b>Where each one is managed, its official cancellation page, and the deadline.</li>
+          <li><b>Confirms it stopped</b>Next month it checks the charge really disappeared — and flags it if not.</li>
+        </ol>
+      </section>
+
+      <div class="pg-cols">
+        <section class="pg-card">
+          <h2 class="card-title">Simulated in this prototype</h2>
+          <ul class="ticks">
+            <li>Subscription detection (hard-coded)</li>
+            <li>Push notifications (an in-page lock screen)</li>
+            <li>The passage of time (fast-forward)</li>
+            <li>Provider cancellation pages (mock)</li>
+            <li>Partner dashboard metrics (illustrative)</li>
+            <li>Usage data (invented)</li>
+            <li>Account balance (fixed at €18.40)</li>
+          </ul>
+        </section>
+        <section class="pg-card">
+          <h2 class="card-title">Left out on purpose</h2>
+          <ul class="crosses">
+            <li>Login and authentication</li>
+            <li>Real bank or open-banking data</li>
+            <li>Actually cancelling anything</li>
+            <li>Blocking or holding payments</li>
+            <li>All other banking features</li>
+            <li>Budgeting advice</li>
+            <li>Rent, loans, insurance, utilities and phone contracts</li>
+          </ul>
+        </section>
+      </div>
+
+      <section class="pg-card">
+        <h2 class="card-title">Credits</h2>
+        <p class="small" style="margin:6px 0 10px">ICT Business Management · Artefact 3 · interactive prototype</p>
+        <ul class="team">${team.map(n => `<li>${n}</li>`).join('')}</ul>
+      </section>
+
+      <p class="fine">All banks, services, people, figures and data in this prototype are fictional.
+        Any resemblance to real companies or products is unintended.</p>
+    </main>`;
+}
+
+/* ---------------------------------------------------------------------
+   9d. LANGUAGE — EN / FI for the main labels (longer explanations stay in English)
+   --------------------------------------------------------------------- */
+const STR = {
+  en: {
+    title: 'Your <em>subscriptions</em>', active: 'active', todayIs: 'today is',
+    next30: 'Next 30 days', due: 'due', youPay: 'You pay for subscriptions',
+    month: 'month', year: 'year', aMonth: 'a month', aYear: 'a year', monthly: 'Monthly', yearly: 'Yearly',
+    showBd: 'Show breakdown', hideBd: 'Hide breakdown', subsCount: 'subscriptions',
+    all: 'All subscriptions', stopped: 'Stopped', addHidden: "Add one your bank can't see", moneyKept: 'Money kept',
+    decideH: 'What do you want to do?', keep: 'Keep it', unsure: 'Not sure', stop: 'Stop it',
+    keepS: "We'll still warn you", unsureS: 'Remind me the day before', stopS: 'Show me the way out',
+    nextCharge: 'Next charge', trialEnds: 'Free trial ends', back: 'Subscriptions', nextWord: 'next',
+    priceHist: 'Price history', usageQ: 'Did you use this in the last month?', yes: 'Yes', little: 'A little', no: 'No',
+    recog: 'How we recognised this', paid: 'Paid in 2026', billedVia: 'Billed via', since: 'Customer since', lastOpened: 'Last opened',
+    calendar: 'Calendar', checkup: 'Check-up', review: 'Your year', settings: 'Settings', tools: 'Tools',
+    search: 'Search subscriptions', sortBy: 'Sort by', sortNext: 'Next charge', sortCost: 'Cost', sortChannel: 'Billed via', sortName: 'Name',
+    filter: "Filter by how it's billed", fAll: 'All', fCard: 'Card', fApp: 'App store', fOther: 'Other',
+    noMatch: 'No subscriptions match', clear: 'Clear search', emptyAll: 'No active subscriptions. Nice and quiet.',
+    home: 'Home', cards: 'Cards', payments: 'Payments',
+    detecting: 'Detecting your <em>subscriptions…</em>', detectingSub: 'Looking for payments that repeat. This only takes a moment.',
+    calTitle: 'Charge <em>days</em>', checkupTitle: 'Monthly <em>check-up</em>', reviewTitle: 'Your year in <em>review</em>',
+    warnAll: 'Warn me before charges', warnEach: 'Warnings for each subscription', language: 'Language',
+  },
+  fi: {
+    title: 'Sinun <em>tilauksesi</em>', active: 'aktiivista', todayIs: 'tänään on',
+    next30: 'Seuraavat 30 päivää', due: 'erääntyy', youPay: 'Maksat tilauksista',
+    month: 'kk', year: 'v', aMonth: 'kuukaudessa', aYear: 'vuodessa', monthly: 'Kuukausi', yearly: 'Vuosi',
+    showBd: 'Näytä erittely', hideBd: 'Piilota erittely', subsCount: 'tilausta',
+    all: 'Kaikki tilaukset', stopped: 'Lopetetut', addHidden: 'Lisää tilaus, jota pankki ei näe', moneyKept: 'Säästetty',
+    decideH: 'Mitä haluat tehdä?', keep: 'Pidä', unsure: 'En tiedä', stop: 'Lopeta',
+    keepS: 'Varoitamme silti', unsureS: 'Muistuta edellisenä päivänä', stopS: 'Näytä miten',
+    nextCharge: 'Seuraava veloitus', trialEnds: 'Kokeilu päättyy', back: 'Tilaukset', nextWord: 'seuraava',
+    priceHist: 'Hintahistoria', usageQ: 'Käytitkö tätä viime kuussa?', yes: 'Kyllä', little: 'Vähän', no: 'En',
+    recog: 'Miten tunnistimme tämän', paid: 'Maksettu 2026', billedVia: 'Maksutapa', since: 'Asiakkaana alkaen', lastOpened: 'Viimeksi avattu',
+    calendar: 'Kalenteri', checkup: 'Tarkistus', review: 'Vuotesi', settings: 'Asetukset', tools: 'Työkalut',
+    search: 'Hae tilauksia', sortBy: 'Järjestys', sortNext: 'Seuraava veloitus', sortCost: 'Hinta', sortChannel: 'Maksutapa', sortName: 'Nimi',
+    filter: 'Suodata maksutavan mukaan', fAll: 'Kaikki', fCard: 'Kortti', fApp: 'Sovelluskauppa', fOther: 'Muut',
+    noMatch: 'Ei tilauksia haulla', clear: 'Tyhjennä haku', emptyAll: 'Ei aktiivisia tilauksia.',
+    home: 'Koti', cards: 'Kortit', payments: 'Maksut',
+    detecting: 'Etsitään <em>tilauksiasi…</em>', detectingSub: 'Haemme toistuvia maksuja. Tämä vie hetken.',
+    calTitle: 'Veloitus<em>päivät</em>', checkupTitle: 'Kuukauden <em>tarkistus</em>', reviewTitle: 'Vuotesi <em>tilauksissa</em>',
+    warnAll: 'Varoita ennen veloituksia', warnEach: 'Varoitukset tilauksittain', language: 'Kieli',
+  },
+};
+const t = key => (STR[ui.lang] && STR[ui.lang][key]) || STR.en[key] || key;
+const feat = () => ui.lang === 'fi' ? BANK.featureFi : BANK.feature;
+const CH_FI = { card: 'Pankkikortti', paypal: 'PayPal', appstore: 'Sovelluskauppa', googleplay: 'Google Play', family: 'Perhetilaus', other: 'Muu' };
+const chLabel = c => ui.lang === 'fi' ? CH_FI[c] : CHANNELS[c].label;
+const SEG_FI = { card: 'Kortti', paypal: 'PayPal', appstore: 'Sovelluskauppa', manual: 'Itse lisätyt' };
+const segLabel = g => ui.lang === 'fi' ? SEG_FI[g.key] : g.label;
+const perUnit = () => ui.period === 'year' ? t('year') : t('month');
+const wdShort = d => ui.lang === 'fi' ? WD_FI[d.getDay()] : WD[d.getDay()].slice(0, 3);
+const moShort = d => ui.lang === 'fi' ? MO_FI[d.getMonth()] : MO[d.getMonth()].slice(0, 3);
+
+function setLang(lang) {
+  ui.lang = lang;
+  document.documentElement.lang = lang;
+  applyTheme(BANK.id);   // rebuilds the tab labels
+  refresh();
+}
+
+/* ---------------------------------------------------------------------
+   9e. NOTIFICATION SETTINGS
+   Each subscription: smart (3 days, 7 for trials, 14 for yearly), 3, 7, both, off.
+   The global switch turns every warning off. The timeline's gold highlight and
+   bell tags follow these settings, so a change is visible straight away.
+   --------------------------------------------------------------------- */
+function warnDaysList(s) {
+  if (!state.notifyAll) return [];
+  return { '3': [3], '7': [7], both: [7, 3], off: [] }[s.notify] || [warnDays(s)];
+}
+const warnWindow = s => Math.max(0, ...warnDaysList(s));   // 0 = no warning
+function warnText(s) {
+  const l = warnDaysList(s);
+  return l.length ? `warns ${l.join(' and ')} days before` : 'no warning';
+}
+function bellTag(s) {
+  const l = warnDaysList(s);
+  return l.length
+    ? `<span class="bell" aria-hidden="true">${icon('bell', 11)}${l.join('+')}d</span>`
+    : `<span class="bell off" aria-hidden="true">${icon('belloff', 11)}off</span>`;
+}
+
+function renderSettings() {
+  const subs = state.subs.filter(s => s.status === 'active');
+  const opts = s => [['smart', `Smart (${warnDays(s)} days)`], ['3', '3 days before'], ['7', '7 days before'], ['both', '7 and 3 days before'], ['off', 'Off']];
+  return `
+    <button class="back" data-action="back">${icon('back')} ${t('back')}</button>
+    <h1 class="h-title" tabindex="-1">${t('settings')}</h1>
+
+    <section class="card">
+      <div class="switch-row">
+        <div><h2 class="card-title" id="nAll">${t('warnAll')}</h2>
+          <p class="small muted" style="margin:2px 0 0">Push notifications from ${BANK.name} before money leaves your account.</p></div>
+        <button class="switch" role="switch" aria-checked="${state.notifyAll}" aria-labelledby="nAll" data-action="toggleNotifyAll"><span></span></button>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="per-h">
+      <h2 class="card-title" id="per-h">${t('warnEach')}</h2>
+      <p class="tiny muted" style="margin:2px 0 0">Smart means 3 days before, 7 for free trials and 14 for yearly charges.</p>
+      ${subs.length ? `<ul class="notify-list">${subs.map(s => `
+        <li>
+          <label for="nt-${s.id}">${logo(s)}<span>${esc(s.name)}<small>${warnText(s)}</small></span></label>
+          <select class="input notify" id="nt-${s.id}" data-notify="${s.id}" ${state.notifyAll ? '' : 'disabled'}>
+            ${opts(s).map(([v, l]) => `<option value="${v}" ${s.notify === v ? 'selected' : ''}>${l}</option>`).join('')}
+          </select>
+        </li>`).join('')}</ul>` : `<p class="empty">No active subscriptions to warn you about.</p>`}
+    </section>
+
+    <section class="card" aria-labelledby="lang-h">
+      <h2 class="card-title" id="lang-h">${t('language')}</h2>
+      <div class="segctl mt" role="group" aria-labelledby="lang-h">
+        <button data-action="setLang" data-value="en" aria-pressed="${ui.lang === 'en'}" lang="en">English</button>
+        <button data-action="setLang" data-value="fi" aria-pressed="${ui.lang === 'fi'}" lang="fi">Suomi</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <button class="btn btn-ghost btn-block" data-action="replayGuess">Replay “guess your total”</button>
+    </section>`;
+}
+
+/* ---------------------------------------------------------------------
+   9f. HUB EXTRAS: tools row, search/sort/filter list, first-load skeleton
+   --------------------------------------------------------------------- */
+function renderTools() {
+  const tools = [['calendar', 'calendar', t('calendar')], ['checkup', 'check', t('checkup')], ['review', 'sparkle', t('review')], ['settings', 'sliders', t('settings')]];
+  return `
+    <nav class="tools" aria-label="${t('tools')}">
+      ${tools.map(([r, ic, l]) => `<button class="tool" data-action="go" data-value="${r}"><span class="tool-ico">${icon(ic, 19)}</span>${l}</button>`).join('')}
+      <button class="tool" data-action="setLang" data-value="${ui.lang === 'fi' ? 'en' : 'fi'}" lang="${ui.lang === 'fi' ? 'en' : 'fi'}">
+        <span class="tool-ico">${icon('globe', 19)}</span>${ui.lang === 'fi' ? 'English' : 'Suomeksi'}</button>
+    </nav>`;
+}
+
+const filterKey = s => ({ card: 'card', paypal: 'paypal', appstore: 'appstore' }[s.channel] || 'other');
+function listItems() {
+  const q = ui.search.trim().toLowerCase();
+  const by = {
+    next:    (a, b) => a.next.localeCompare(b.next),
+    cost:    (a, b) => monthly(b) - monthly(a),
+    channel: (a, b) => chLabel(a.channel).localeCompare(chLabel(b.channel)) || a.next.localeCompare(b.next),
+    name:    (a, b) => a.name.localeCompare(b.name),
+  };
+  return state.subs.filter(isLive)
+    .filter(s => ui.filter === 'all' || filterKey(s) === ui.filter)
+    .filter(s => !q || s.name.toLowerCase().includes(q) || chLabel(s.channel).toLowerCase().includes(q))
+    .sort(by[ui.sort]);
+}
+function listHtml() {
+  const items = listItems();
+  if (items.length) return items.map(subRow).join('');
+  if (!state.subs.some(isLive)) return `<li class="empty">${t('emptyAll')}</li>`;
+  return `<li class="empty">${t('noMatch')}${ui.search ? ` “${esc(ui.search)}”` : ''}.
+    <button class="link-btn" data-action="clearFilters">${t('clear')}</button></li>`;
+}
+const countText = () => `${listItems().length} / ${state.subs.filter(isLive).length}`;
+function updateList() {
+  const list = document.getElementById('subList'), count = document.getElementById('subCount');
+  if (list) list.innerHTML = listHtml();
+  if (count) count.textContent = countText();
+}
+function renderAllList() {
+  const chips = [['all', t('fAll')], ['card', t('fCard')], ['paypal', 'PayPal'], ['appstore', t('fApp')], ['other', t('fOther')]];
+  const sorts = [['next', t('sortNext')], ['cost', t('sortCost')], ['channel', t('sortChannel')], ['name', t('sortName')]];
+  return `
+    <section class="card" aria-labelledby="all-h">
+      <div class="card-head"><h2 class="card-title" id="all-h">${t('all')}</h2><span class="muted small" id="subCount" aria-live="polite">${countText()}</span></div>
+      <div class="list-tools">
+        <input type="search" class="input search" id="subSearch" placeholder="${t('search')}" aria-label="${t('search')}" value="${esc(ui.search)}" autocomplete="off">
+        <select class="input sort" id="subSort" aria-label="${t('sortBy')}">
+          ${sorts.map(([v, l]) => `<option value="${v}" ${ui.sort === v ? 'selected' : ''}>${l}</option>`).join('')}
+        </select>
+      </div>
+      <div class="chips" role="group" aria-label="${t('filter')}">
+        ${chips.map(([v, l]) => `<button class="chip" data-action="setFilter" data-value="${v}" aria-pressed="${ui.filter === v}">${l}</button>`).join('')}
+      </div>
+      <ul class="list" id="subList">${listHtml()}</ul>
+      <button class="btn btn-ghost btn-block btn-sm mt" data-action="addStart" data-from="blank">${icon('plus', 18)} ${t('addHidden')}</button>
+    </section>`;
+}
+
+/* "Detecting your subscriptions…" — shown once per session, the first time the hub opens */
+function renderSkeleton() {
+  if (!ui.lockOn && !ui.detectTimer) {
+    const session = ui;
+    ui.detectTimer = setTimeout(() => {
+      if (ui !== session) return;   // the demo was reset meanwhile
+      ui.detected = true;
+      if (currentRoute().name === 'hub') refresh({ focusTitle: true });
+    }, reduceMotion() ? 500 : 1500);
+  }
+  return `
+    <div aria-busy="true">
+      <h1 class="h-title" tabindex="-1">${t('detecting')}</h1>
+      <p class="lead">${t('detectingSub')}</p>
+      <ul class="detect-steps">
+        <li>${icon('check', 14)} Reading 3 months of card payments</li>
+        <li>${icon('check', 14)} Matching PayPal descriptions</li>
+        <li>${icon('clock', 14)} Checking app store payments…</li>
+      </ul>
+      <div class="sk" style="height:200px"></div>
+      <div class="sk sk-dark" style="height:150px"></div>
+      <div class="sk" style="height:110px"></div>
+    </div>`;
+}
+
+/* ---------------------------------------------------------------------
+   9g. CHARGE-DAY CALENDAR — a month grid with charges and the allowance day.
+   Observation only: it counts, it doesn't advise.
+   --------------------------------------------------------------------- */
+function chargesBetween(from, to) {
+  const out = [];
+  state.subs.filter(s => s.status === 'active').forEach(s => {
+    for (let d = s.next; d <= to; d = addMonths(d, cycleMonths(s))) if (d >= from) out.push({ date: d, name: s.name, cents: s.cents, id: s.id });
+  });
+  state.unknown.filter(u => !u.resolved).forEach(u => {
+    for (let d = u.next; d <= to; d = addMonths(d, 1)) if (d >= from) out.push({ date: d, name: u.label, cents: u.cents, id: null });
+  });
+  return out.sort((a, b) => a.date.localeCompare(b.date));
+}
+
+function renderCalendar() {
+  const base = toDate(state.today);
+  const first = new Date(base.getFullYear(), base.getMonth() + ui.calMonth, 1);
+  const y = first.getFullYear(), m = first.getMonth();
+  const daysIn = new Date(y, m + 1, 0).getDate();
+  const endIso = toISO(new Date(y, m, daysIn));
+  const byDay = {};
+  chargesBetween(toISO(first), endIso).filter(c => c.date >= state.today).forEach(c => { (byDay[c.date] = byDay[c.date] || []).push(c); });
+
+  const income = nextIncome();
+  const before = chargesBetween(state.today, addDays(income, -1));
+  const beforeSum = before.reduce((a, c) => a + c.cents, 0);
+  const selected = ui.calDay || Object.keys(byDay).sort()[0] || null;
+  const wds = ui.lang === 'fi' ? ['ma', 'ti', 'ke', 'to', 'pe', 'la', 'su'] : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const offset = (first.getDay() + 6) % 7;   // weeks start on Monday
+
+  let cells = '';
+  for (let i = 0; i < offset; i++) cells += '<span class="cal-blank" aria-hidden="true"></span>';
+  for (let d = 1; d <= daysIn; d++) {
+    const iso = toISO(new Date(y, m, d));
+    const list = byDay[iso] || [];
+    const isIncome = d === state.incomeDay;
+    const cls = ['cal-day', iso < state.today ? 'past' : '', iso === state.today ? 'today' : '', list.length ? 'has' : '', isIncome ? 'income' : ''].join(' ');
+    const label = `${fmtShort(iso)}${iso === state.today ? ', today' : ''}${isIncome ? ', ' + state.incomeLabel : ''}${list.length ? ': ' + list.map(c => `${c.name} ${eur(c.cents)}`).join(', ') : ''}`;
+    cells += `<button class="${cls}" data-action="calDay" data-value="${iso}" aria-pressed="${selected === iso}" aria-label="${esc(label)}">
+        <span>${d}</span>${list.length ? `<span class="cd-dots" aria-hidden="true">${list.map(() => '<i></i>').join('')}</span><span class="cd-amt" aria-hidden="true">${eurShort(list.reduce((a, c) => a + c.cents, 0))}</span>` : ''}
+      </button>`;
+  }
+
+  const sel = selected ? (byDay[selected] || []) : [];
+  const selIncome = selected && toDate(selected).getDate() === state.incomeDay;
+  return `
+    <button class="back" data-action="back">${icon('back')} ${t('back')}</button>
+    <h1 class="h-title" tabindex="-1">${t('calTitle')}</h1>
+
+    <section class="banner soft" aria-label="Before your next income">
+      <span class="b-ico">${icon('calendar', 18)}</span>
+      <div class="grow">
+        <h2 class="banner-h"><em>${before.length}</em> charge${before.length === 1 ? '' : 's'} land before your next income.</h2>
+        <p>${eur(beforeSum)} in total before your ${state.incomeLabel} arrives on ${fmtShort(income)}. Your balance today is ${eur(state.balanceCents)}.</p>
+      </div>
+    </section>
+
+    <div class="cal-nav">
+      <button class="icon-btn" data-action="calMonth" data-value="${ui.calMonth - 1}" aria-label="Previous month" ${ui.calMonth <= 0 ? 'disabled' : ''}>${icon('back')}</button>
+      <h2 class="card-title" aria-live="polite">${ui.lang === 'fi' ? MO_FI[m] + 'kuu' : MO[m]} ${y}</h2>
+      <button class="icon-btn" data-action="calMonth" data-value="${ui.calMonth + 1}" aria-label="Next month" ${ui.calMonth >= 2 ? 'disabled' : ''}>${icon('chev')}</button>
+    </div>
+    <div class="cal-grid">
+      ${wds.map(w => `<span class="cal-wd" aria-hidden="true">${w}</span>`).join('')}
+      ${cells}
+    </div>
+    <div class="cal-legend" aria-hidden="true">
+      <span><i class="lg-charge"></i>Charge</span><span><i class="lg-income"></i>${state.incomeLabel[0].toUpperCase() + state.incomeLabel.slice(1)}</span><span><i class="lg-today"></i>Today</span>
+    </div>
+
+    <section class="card" aria-live="polite">
+      ${selected ? `
+        <h2 class="card-title">${fmtLong(selected)}</h2>
+        ${selIncome ? `<p class="small" style="margin:6px 0 0"><span class="pill moss">${icon('coin', 12)} ${state.incomeLabel} arrives</span></p>` : ''}
+        ${sel.length ? `<ul class="list">${sel.map(c => `
+          <li><button class="sub-row" ${c.id ? `data-action="open" data-id="${c.id}"` : 'data-action="addStart" data-from="lump"'}>
+            <span class="sub-main"><span class="sub-name">${esc(c.name)}</span><span class="sub-meta">${relDays(c.date)}</span></span>
+            <span class="sub-amt">${eur(c.cents)}</span></button></li>`).join('')}</ul>`
+          : `<p class="empty">No charges on this day.</p>`}`
+        : `<p class="empty">No charges left this month.</p>`}
+    </section>`;
+}
+
+/* ---------------------------------------------------------------------
+   9h. MONTHLY CHECK-UP — one big card per subscription: Keep / Not sure / Stop.
+   Buttons work everywhere; on touch screens you can also swipe (right keep, left stop).
+   --------------------------------------------------------------------- */
+function startCheckup() {
+  const queue = state.subs.filter(s => s.status === 'active').sort((a, b) => a.next.localeCompare(b.next)).map(s => s.id);
+  ui.checkup = { queue, i: 0, results: {}, start: Date.now(), end: null };
+}
+
+function renderCheckup() {
+  if (!ui.checkup) startCheckup();
+  const c = ui.checkup;
+  const head = `<div class="add-top"><button class="back" data-action="back">${icon('back')} ${t('back')}</button>
+    <span class="muted small">${Math.min(c.i + 1, c.queue.length)} / ${c.queue.length}</span></div>
+    <div class="steps" aria-hidden="true">${c.queue.map((_, k) => `<i class="${k < c.i || (k === c.i && c.i < c.queue.length) ? 'on' : ''}"></i>`).join('')}</div>`;
+
+  if (!c.queue.length) return `${head}<h1 class="h-title" tabindex="-1">${t('checkupTitle')}</h1><p class="empty">Nothing to review — no active subscriptions.</p>`;
+
+  if (c.i >= c.queue.length) {
+    const r = Object.values(c.results);
+    const n = r.length, k = r.filter(x => x === 'keep').length, u = r.filter(x => x === 'unsure').length, st = r.filter(x => x === 'stop').length;
+    const secs = Math.max(1, Math.round((c.end - c.start) / 1000));
+    const stops = Object.keys(c.results).filter(id => c.results[id] === 'stop').map(findSub).filter(s => s && s.status === 'active');
+    return `${head}
+      <h1 class="h-title" tabindex="-1">Check-up <em>done</em></h1>
+      <p class="cu-sum">You reviewed ${n} subscription${n === 1 ? '' : 's'} in ${secs} seconds — keeping ${k}, reviewing ${u}, stopping ${st}.</p>
+      ${stops.length ? `
+        <section class="card">
+          <h2 class="card-title">Ready to stop</h2>
+          <p class="tiny muted" style="margin:2px 0 6px">We'll show you the way out and the deadline. Nothing is cancelled until you do it.</p>
+          ${stops.map(s => `<button class="btn btn-gold btn-block mt" data-action="cuStop" data-id="${s.id}">Stop ${esc(s.name)} ${icon('chev', 18)}</button>`).join('')}
+        </section>` : ''}
+      ${u ? `<p class="small muted">We'll remind you the day before each “not sure” charges.</p>` : ''}
+      <button class="btn btn-ghost btn-block mt" data-action="back">Back to ${t('back').toLowerCase()}</button>
+      <p class="fine"><button class="link-btn" data-action="restartCheckup">Start the check-up again</button></p>`;
+  }
+
+  const s = findSub(c.queue[c.i]);
+  const z = zombie(s), rise = priceRise(s);
+  const insight = z ? z.text
+    : s.trial ? `Free trial — becomes ${eur(s.cents)} a month on ${fmtShort(s.next)}.`
+    : rise ? `The price went up ${eur(rise.diff)} in ${rise.month}.`
+    : s.lastOpened ? `Last opened ${s.lastOpened}.`
+    : 'Added by you.';
+  return `${head}
+    <h1 class="h-title" tabindex="-1">${t('checkupTitle')}</h1>
+    <div class="cu-card" id="cuCard" data-id="${s.id}">
+      <span class="cu-stamp keep" aria-hidden="true">${t('keep')}</span><span class="cu-stamp stop" aria-hidden="true">${t('stop')}</span>
+      ${logo(s)}
+      <h2 class="cu-name">${esc(s.name)}</h2>
+      <p class="cu-amt">${eur(monthly(s))}<small>/ ${t('month')}</small></p>
+      <p class="cu-next">${s.trial ? t('trialEnds') : t('nextCharge')} ${fmtShort(s.next)} · ${relDays(s.next)}</p>
+      <p class="cu-insight">${insight}</p>
+    </div>
+    <div class="decide">
+      <button class="decide-btn" data-action="cuDecide" data-value="keep"><span class="d-ico">${icon('check')}</span>${t('keep')}</button>
+      <button class="decide-btn" data-action="cuDecide" data-value="unsure"><span class="d-ico">${icon('help')}</span>${t('unsure')}</button>
+      <button class="decide-btn" data-action="cuDecide" data-value="stop"><span class="d-ico">${icon('exit')}</span>${t('stop')}</button>
+    </div>
+    <p class="fine">On a touch screen you can swipe: right to keep, left to stop.</p>`;
+}
+
+function checkupDecide(value) {
+  const c = ui.checkup;
+  if (!c || c.i >= c.queue.length || c.busy) return;
+  const s = findSub(c.queue[c.i]);
+  c.results[s.id] = value;
+  if (value === 'keep') { s.decision = 'keep'; s.remindOn = null; }
+  if (value === 'unsure') {
+    const dayBefore = addDays(s.next, -1);
+    s.decision = 'unsure';
+    s.remindOn = dayBefore < state.today ? state.today : dayBefore;
+  }
+  const next = () => {
+    c.busy = false;
+    c.i++;
+    if (c.i >= c.queue.length) c.end = Date.now();
+    refresh({ focusTitle: true });
+  };
+  const card = document.getElementById('cuCard');
+  if (card && !reduceMotion()) {
+    c.busy = true;
+    card.style.transform = '';
+    card.classList.add(value === 'keep' ? 'fly-right' : value === 'stop' ? 'fly-left' : 'fly-up');
+    setTimeout(next, 240);
+  } else next();
+}
+
+/* Touch swipe on the check-up card */
+let swipe = null;
+document.addEventListener('pointerdown', e => {
+  const card = e.target.closest && e.target.closest('#cuCard');
+  if (!card || e.pointerType === 'mouse') return;
+  swipe = { card, x: e.clientX, dx: 0, id: e.pointerId };
+  card.setPointerCapture(e.pointerId);
+  card.style.transition = 'none';
+});
+document.addEventListener('pointermove', e => {
+  if (!swipe || e.pointerId !== swipe.id) return;
+  swipe.dx = e.clientX - swipe.x;
+  swipe.card.style.transform = `translateX(${swipe.dx}px) rotate(${swipe.dx / 22}deg)`;
+  swipe.card.dataset.lean = swipe.dx > 50 ? 'keep' : swipe.dx < -50 ? 'stop' : '';
+});
+function endSwipe(e) {
+  if (!swipe || e.pointerId !== swipe.id) return;
+  const { card, dx } = swipe;
+  swipe = null;
+  card.style.transition = '';
+  card.dataset.lean = '';
+  if (Math.abs(dx) > 90) checkupDecide(dx > 0 ? 'keep' : 'stop');
+  else card.style.transform = '';
+}
+document.addEventListener('pointerup', endSwipe);
+document.addEventListener('pointercancel', endSwipe);
+
+/* ---------------------------------------------------------------------
+   9i. YEAR IN REVIEW — one shareable-looking card
+   --------------------------------------------------------------------- */
+function renderReview() {
+  const all = state.subs.filter(s => s.status !== 'notsub');
+  const lumpPaid = state.unknown.filter(u => !u.resolved).reduce((a, u) => a + u.paid2026, 0);
+  const total = all.reduce((a, s) => a + (s.paid2026 || 0), 0) + lumpPaid;
+  const biggest = all.filter(s => s.paid2026).sort((a, b) => b.paid2026 - a.paid2026)[0];
+  const unused = s => s.usage === 'no' ? 999 : s.usage === 'yes' ? -1 : (s.lastOpenedDays == null ? -2 : s.lastOpenedDays);
+  const least = all.slice().sort((a, b) => unused(b) - unused(a))[0];
+  const stoppedN = all.filter(s => s.status === 'stopped').length;
+  const manualN = all.filter(s => s.source === 'manual').length;
+  return `
+    <button class="back" data-action="back">${icon('back')} ${t('back')}</button>
+    <h1 class="h-title" tabindex="-1">${t('reviewTitle')}</h1>
+    <article class="yir" aria-label="Your 2026 in subscriptions">
+      <div class="yir-top"><span>${bankLogo(24)} ${BANK.name}</span><span>2026</span></div>
+      <p class="yir-kicker">Your year in subscriptions</p>
+      <p class="yir-big">${eur(total)}</p>
+      <p class="yir-sub">paid for subscriptions so far in 2026${lumpPaid ? ` — including ${eur(lumpPaid)} in app store payments you haven't named yet` : ''}</p>
+      <dl class="yir-grid">
+        <div><dt>Biggest</dt><dd>${biggest ? esc(biggest.name) : '—'}</dd><span>${biggest ? eur(biggest.paid2026) + ' this year' : ''}</span></div>
+        <div><dt>Used least</dt><dd>${least ? esc(least.name) : '—'}</dd><span>${least ? (least.usage === 'no' ? "you said you didn't use it" : least.lastOpened ? 'last opened ' + least.lastOpened : '') : ''}</span></div>
+        <div><dt>Saved so far</dt><dd>${eur(state.savedCents)}</dd><span>${state.savedCents ? `by stopping ${stoppedN}` : 'stop one and this starts counting'}</span></div>
+        <div><dt>Tracked</dt><dd>${all.length}</dd><span>subscriptions${manualN ? `, ${manualN} added by you` : ''}</span></div>
+      </dl>
+    </article>
+    <button class="btn btn-gold btn-block mt" data-action="share">Share my year</button>
+    <p class="fine">Figures come from your ${BANK.name} statements and what you added yourself.</p>`;
+}
+
+/* ---------------------------------------------------------------------
+   10. BOOT
+   --------------------------------------------------------------------- */
+function boot() {
+  ['app', 'shell', 'screen', 'overlay', 'tabbar', 'demo', 'taskNum', 'taskText', 'taskHint', 'taskDone',
+   'taskPrev', 'taskNext', 'demoDate', 'ffTo'].forEach(id => { els[id] = document.getElementById(id); });
+  els.sheet = document.getElementById('sheetRoot');
+  els.toast = document.getElementById('toastRoot');
+  els.fab = document.getElementById('demoFab');
+
+  /* Static pieces of the bank shell */
+  document.getElementById('demoMark').innerHTML = moharMark(32);
+  document.getElementById('sbIcons').innerHTML = statusIcons;
+  document.getElementById('bellBtn').innerHTML = icon('bell', 22);
+  document.querySelector('.demo-x').innerHTML = icon('x');
+  els.page = document.getElementById('page');
+  els.stage = document.querySelector('.stage');
+  applyTheme(BANK.id);
+
+  fitDevice();
+  window.addEventListener('resize', fitDevice);
+  /* The phone frame clips its content; never let focus or keyboard scrolling shift it */
+  els.app.addEventListener('scroll', () => { els.app.scrollTop = 0; els.app.scrollLeft = 0; });
+
+  /* Always start fresh on the hub route, with the lock screen on top */
+  nav.stack = ['#/hub'];
+  if (location.hash !== '#/hub') location.replace('#/hub');
+  ui.lockNote = buildLockNote([]);
+  render({ nav: true });
+}
+boot();
+</script>
+</body>
+</html>
