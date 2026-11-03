@@ -24,14 +24,16 @@ It never cancels anything for the customer, never blocks a payment, and gives no
 ## Try it
 
 Open `prototype/index.html` in a browser — no build step, no server, no dependencies (one Google Fonts link).
-On a laptop it runs as a full-screen web app with demo controls on the right (a phone-frame view is one click away);
-on a phone it fills the screen and the demo controls sit behind the **Demo** button.
+On a computer it opens as a phone in a frame, with the tester guide beside it (a full-screen laptop view is one click away);
+on a phone it fills the screen, the tester guide sits behind the **Test guide** button, and a **Demo: jump a month ahead** button appears when task 3 needs it.
+Progress survives an accidental refresh (sessionStorage); **Reset demo** clears it.
 
 Tester tasks (shown in the demo controls):
 
 1. You've been notified about a charge. Stop it before Friday.
 2. Your music is billed by your phone's app store. Add it so the total is real.
 3. A month has passed. Check whether your cancellation worked. (Use **Fast-forward one month**.)
+4. Optional: jump one more month. A charge you stopped came back — sort it out.
 
 Press **Reset demo** before each new tester.
 
