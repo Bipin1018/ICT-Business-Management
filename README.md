@@ -3,7 +3,7 @@
 A white-label subscription feature that a bank embeds inside its own mobile banking app.
 University artefact for ICT Business Management (Artefact 3).
 
-**Live prototype:** https://bipin1018.github.io/ICT-Business-Management/
+**Live prototype:** https://bipin1018.github.io/ICT-Business-Management/prototype/
 
 ## What it does
 
@@ -16,7 +16,7 @@ It never cancels anything for the customer, never blocks a payment, and gives no
 
 ## Try it
 
-Open `index.html` in a browser — no build step, no server, no dependencies (one Google Fonts link).
+Open `prototype/index.html` in a browser — no build step, no server, no dependencies (one Google Fonts link).
 On a computer it shows a phone frame with demo controls beside it; on a phone it fills the screen
 and the demo controls sit behind the **Demo** button.
 
