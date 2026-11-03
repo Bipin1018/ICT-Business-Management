@@ -8,7 +8,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%23C9A227'/%3E%3Ccircle cx='16' cy='16' r='11' fill='none' stroke='%230E3B2E' stroke-width='1.5' stroke-dasharray='1.5 1.8'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%230E3B2E'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
 
 <style>
 /* =====================================================================
@@ -19,37 +19,37 @@
    --bank*      the white-label bank shell colours (themeable later)
    ===================================================================== */
 :root{
-  --cream:#FBF8F1;      /* app background */
-  --cream-2:#F4EFE3;    /* secondary surface */
-  --forest:#0E3B2E;     /* primary brand */
-  --forest-2:#17543F;
-  --moss:#2E7D5B;       /* positive / success */
-  --mint:#E6F3EB;       /* positive wash */
-  --gold:#C9A227;       /* accent: CTAs, key numbers, warnings */
-  --gold-lite:#F0D98A;
-  --gold-wash:#FBF1D4;  /* warning wash */
-  --ink:#12241D;        /* text */
-  --slate:#5E6F67;      /* secondary text */
-  --line:#E4DCCB;       /* borders */
-  --danger:#C24A2F;     /* use sparingly: ghost charges only */
+  --cream:#F5F8F5;      /* app background: a clean, faintly green white */
+  --cream-2:#EAF0EB;    /* secondary surface */
+  --forest:#0B4F33;     /* primary brand: banknote green */
+  --forest-2:#136B45;
+  --moss:#1E8A55;       /* positive / success */
+  --mint:#E2F2E7;       /* positive wash */
+  --gold:#C9A03A;       /* accent: CTAs, key numbers, warnings (coin gold) */
+  --gold-lite:#EBD592;
+  --gold-wash:#FBF3DD;  /* warning wash */
+  --ink:#13221A;        /* text */
+  --slate:#566760;      /* secondary text */
+  --line:#DCE5DE;       /* borders */
+  --danger:#C2412D;     /* use sparingly: ghost charges only */
 
   --gold-ink:#7A5E0A;
   --danger-wash:#FBE9E4;
   --paper:#FFFFFF;
-  --bank:#0E3B2E;
-  --bank-2:#17543F;
+  --bank:#0B4F33;
+  --bank-2:#136B45;
   --bank-ink:#FBF8F1;
-  --bank-wash:#E6F3EB;
+  --bank-wash:#E2F2E7;
 
   --ease:cubic-bezier(.2,.8,.3,1);
-  --serif:'Instrument Serif', Georgia, 'Times New Roman', serif;
-  --sans:'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --serif:'Manrope', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;   /* headings and amounts */
+  --sans:'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;               /* all other text */
   --mono:ui-monospace, 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
 }
 
 *,*::before,*::after{box-sizing:border-box}
 html,body{margin:0;height:100%}
-body{background:var(--cream-2);color:var(--ink);font:400 15px/1.45 var(--sans);-webkit-font-smoothing:antialiased}
+body{background:var(--cream-2);color:var(--ink);font:400 16px/1.5 var(--sans);font-feature-settings:'tnum' 1,'cv11' 1;-webkit-font-smoothing:antialiased}
 button,input{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:3px solid var(--forest-2);outline-offset:2px}
@@ -95,21 +95,21 @@ button{cursor:pointer}
 /* =====================================================================
    3. TYPE + COMMON COMPONENTS
    ===================================================================== */
-.eyebrow{margin:0;font:700 11px/1.2 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--slate)}
-.h-title{margin:4px 0 4px;font:400 34px/1.05 var(--serif);letter-spacing:-.01em}
-.h-title em,.banner-h em,.sheet-title em,.h-sub em{font-style:italic}
-.h-sub{margin:4px 0 6px;font:400 24px/1.15 var(--serif)}
+.eyebrow{margin:0;font:700 12px/1.2 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--slate)}
+.h-title{margin:4px 0 6px;letter-spacing:-.02em;font:700 27px/1.05 var(--serif);letter-spacing:-.01em}
+.h-title em,.banner-h em,.sheet-title em,.h-sub em,.pg-title em,.cu-sum em{font-style:normal;color:var(--forest-2)}
+.h-sub{margin:4px 0 6px;font:700 21px/1.15 var(--serif)}
 .lead{margin:0;color:var(--slate);font-size:14px}
 .muted{color:var(--slate)}
-.small{font-size:13px}
-.tiny{font-size:12px}
+.small{font-size:14px}
+.tiny{font-size:13px}
 .grow{flex:1;min-width:0}
 .mt{margin-top:16px}
 .num{font-variant-numeric:tabular-nums}
 
-.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:14px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:16px;box-shadow:0 1px 2px rgba(19,34,26,.04)}
 .card-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
-.card-title{margin:0;font:700 15px var(--sans)}
+.card-title{margin:0;font:700 17px var(--serif);letter-spacing:-.01em}
 .mini-h{margin:18px 0 6px;font:700 13px var(--sans);letter-spacing:.02em}
 
 .btn{min-height:48px;padding:0 22px;border-radius:999px;border:1.5px solid transparent;display:inline-flex;align-items:center;justify-content:center;gap:8px;
@@ -125,7 +125,7 @@ button{cursor:pointer}
 .btn-sm{min-height:44px;padding:0 16px;font-size:14px}
 .link-btn{border:0;background:none;padding:10px 4px;min-height:44px;font-weight:700;color:var(--forest-2);text-decoration:underline;text-underline-offset:3px}
 
-.pill{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;font:700 11px/1.35 var(--sans);background:var(--cream-2);color:var(--slate);white-space:nowrap}
+.pill{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font:600 12px/1.35 var(--sans);background:var(--cream-2);color:var(--slate);white-space:nowrap}
 .pill.gold{background:var(--gold-wash);color:var(--gold-ink)}
 .pill.moss{background:var(--mint);color:var(--forest-2)}
 .pill.danger{background:var(--danger-wash);color:var(--danger)}
@@ -140,7 +140,7 @@ button{cursor:pointer}
 .banner .b-ico{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#fff;background:var(--moss)}
 .banner.warn .b-ico{background:var(--gold);color:var(--ink)}
 .banner.bad .b-ico{background:var(--danger)}
-.banner-h{margin:2px 0 0;font:400 21px/1.15 var(--serif)}
+.banner-h{margin:2px 0 0;font:700 18px/1.15 var(--serif)}
 .banner p{margin:4px 0 0;font-size:13.5px}
 .banner .icon-btn{margin:-8px -6px 0 0}
 .banner .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
@@ -155,7 +155,7 @@ button{cursor:pointer}
 .tl-row:hover{background:var(--cream)}
 .tl-date{text-align:center;line-height:1}
 .tl-date span{display:block;font:700 9.5px/1.2 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--slate)}
-.tl-date b{display:block;font:400 24px/1 var(--serif);margin:1px 0}
+.tl-date b{display:block;font:700 21px/1 var(--serif);margin:1px 0}
 .rail{position:relative;align-self:stretch;display:flex;align-items:center;justify-content:center}
 .rail::before{content:"";position:absolute;left:50%;top:-10px;bottom:-10px;width:2px;margin-left:-1px;background:var(--line)}
 .timeline li:first-child .rail::before{top:50%}
@@ -163,7 +163,7 @@ button{cursor:pointer}
 .timeline li:only-child .rail::before{display:none}
 .dot{position:relative;width:12px;height:12px;border-radius:50%;background:var(--paper);border:2px solid #9AA8A1}
 .tl-name{display:block;font-weight:700;line-height:1.25}
-.tl-meta{display:block;font-size:12.5px;color:var(--slate)}
+.tl-meta{display:block;font-size:13px;color:var(--slate)}
 .tl-amt{font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
 .tl-row.urgent{background:var(--gold-wash)}
 .tl-row.urgent .dot{background:var(--gold);border-color:var(--gold)}
@@ -179,7 +179,7 @@ button{cursor:pointer}
 .total-btn{display:block;width:100%;padding:0;border:0;background:none;color:inherit;text-align:left;border-radius:10px}
 .total-btn:focus-visible{outline-color:var(--gold-lite);outline-offset:6px}
 .total .eyebrow{color:#BFD3C8}
-.total-num{display:block;margin:10px 0 2px;font:400 54px/1 var(--serif);color:var(--gold);font-variant-numeric:tabular-nums}
+.total-num{display:block;margin:10px 0 2px;font:800 42px/1 var(--serif);color:var(--gold);font-variant-numeric:tabular-nums}
 .total-num small{font:500 15px var(--sans);color:#D8E4DD;margin-left:4px}
 .total-sub{display:block;color:#D8E4DD;font-size:13.5px}
 .segbar{display:flex;gap:2px;height:10px;margin:14px 0 10px;border-radius:999px;overflow:hidden;background:rgba(255,255,255,.08)}
@@ -210,10 +210,10 @@ button{cursor:pointer}
 .sv-head{display:flex;align-items:center;gap:8px}
 .sv-head .eyebrow{color:var(--forest-2)}
 .sv-coin{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--gold);color:var(--ink)}
-.sv-big{margin:12px 0 0;font:400 42px/1 var(--serif);color:var(--forest);font-variant-numeric:tabular-nums}
+.sv-big{margin:12px 0 0;font:800 33px/1 var(--serif);color:var(--forest);font-variant-numeric:tabular-nums}
 .sv-big small{margin-left:6px;font:600 13px var(--sans);color:var(--forest-2)}
 .sv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(23,84,63,.15)}
-.sv-grid b{display:block;font:400 22px/1 var(--serif);color:var(--forest)}
+.sv-grid b{display:block;font:700 19px/1 var(--serif);color:var(--forest)}
 .sv-grid small{display:block;margin-top:3px;font-size:11.5px;font-weight:600;color:var(--forest-2)}
 .sv-empty{margin:8px 0 0;font-size:13px;color:var(--slate)}
 
@@ -233,7 +233,7 @@ button{cursor:pointer}
 .radar .eyebrow{display:flex;align-items:center;gap:5px;color:var(--gold-ink)}
 .radar-ring{flex:none;display:grid;place-items:center;width:76px;height:76px;border-radius:50%;
   background:conic-gradient(var(--gold) calc(var(--p) * 1%), var(--gold-lite) 0)}
-.radar-ring span{display:grid;place-items:center;align-content:center;width:60px;height:60px;border-radius:50%;background:var(--paper);font:400 26px/1 var(--serif)}
+.radar-ring span{display:grid;place-items:center;align-content:center;width:60px;height:60px;border-radius:50%;background:var(--paper);font:700 20px/1 var(--serif)}
 .radar-ring small{font:800 9px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--slate)}
 .radar-h{margin:4px 0 0;font:700 14px var(--sans)}
 .radar-count{margin:2px 0 6px;font:700 21px var(--mono);color:var(--gold-ink);font-variant-numeric:tabular-nums}
@@ -262,10 +262,10 @@ button{cursor:pointer}
 .list .stopped-li:last-child{border-bottom:0}
 
 /* Guess your total */
-.guess-val{margin:18px 0 4px;text-align:center;font:400 64px/1 var(--serif);font-variant-numeric:tabular-nums}
+.guess-val{margin:18px 0 4px;text-align:center;font:800 50px/1 var(--serif);font-variant-numeric:tabular-nums}
 .range{display:block;width:100%;height:44px;margin:0;accent-color:var(--forest)}
 .range-scale{display:flex;justify-content:space-between;font-size:12px;color:var(--slate)}
-.guess-real{margin:8px 0 8px;font:400 64px/1 var(--serif);color:var(--forest);font-variant-numeric:tabular-nums}
+.guess-real{margin:8px 0 8px;font:800 50px/1 var(--serif);color:var(--forest);font-variant-numeric:tabular-nums}
 .guess-real small{margin-left:6px;font:500 15px var(--sans);color:var(--slate)}
 
 .list{list-style:none;margin:6px 0 0;padding:0}
@@ -274,7 +274,7 @@ button{cursor:pointer}
 .sub-row:hover .sub-name{text-decoration:underline;text-underline-offset:3px}
 .sub-main{flex:1;min-width:0}
 .sub-name{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;font-weight:700}
-.sub-meta{display:block;font-size:12.5px;color:var(--slate);margin-top:1px}
+.sub-meta{display:block;font-size:13.5px;color:var(--slate);margin-top:1px}
 .sub-amt{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
 .sub-amt small{display:block;font-weight:500;font-size:11.5px;color:var(--slate)}
 .list.stopped .logo{filter:grayscale(1);opacity:.55}
@@ -291,7 +291,7 @@ button{cursor:pointer}
 .d-hero .logo{width:58px;height:58px;border-radius:17px;font-size:25px}
 .d-hero .h-title{margin:0 0 4px;font-size:32px}
 .badges{display:flex;flex-wrap:wrap;gap:6px}
-.d-amt{margin-top:20px;font:400 56px/1 var(--serif);font-variant-numeric:tabular-nums}
+.d-amt{margin-top:20px;font:800 44px/1 var(--serif);font-variant-numeric:tabular-nums}
 .d-amt small{font:500 15px var(--sans);color:var(--slate);margin-left:4px}
 .d-sub{margin:6px 0 0;color:var(--slate);font-size:14px}
 .next-chip{display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:8px 13px;border-radius:999px;background:var(--cream-2);font-weight:700;font-size:13.5px}
@@ -336,8 +336,8 @@ button{cursor:pointer}
 .input{width:100%;min-height:50px;padding:0 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--paper);font:600 16px var(--sans);color:var(--ink)}
 .input:focus{border-color:var(--forest-2)}
 .money{position:relative}
-.money span{position:absolute;left:16px;top:50%;transform:translateY(-50%);font:400 28px var(--serif)}
-.money .input{padding-left:36px;font:400 30px var(--serif);min-height:60px}
+.money span{position:absolute;left:16px;top:50%;transform:translateY(-50%);font:700 24px var(--serif)}
+.money .input{padding-left:36px;font:700 26px var(--serif);min-height:60px}
 .segctl{display:flex;gap:4px;padding:4px;border-radius:999px;background:var(--cream-2)}
 .segctl button{flex:1;min-height:44px;border:0;border-radius:999px;background:none;font-weight:700}
 .segctl button[aria-pressed="true"]{background:var(--paper);box-shadow:0 1px 3px rgba(18,36,29,.15)}
@@ -353,7 +353,7 @@ button{cursor:pointer}
 .sheet{position:relative;max-height:90%;overflow-y:auto;padding:10px 20px 26px;border-radius:20px 20px 0 0;background:var(--cream);animation:sheetUp 320ms var(--ease)}
 .grabber{width:40px;height:5px;margin:0 auto 10px;border-radius:99px;background:var(--line)}
 .sheet-close{position:absolute;top:8px;right:8px}
-.sheet-title{margin:6px 40px 0 0;font:400 30px/1.08 var(--serif)}
+.sheet-title{margin:6px 40px 0 0;font:700 23px/1.08 var(--serif)}
 .deadline{display:flex;gap:10px;align-items:flex-start;margin:16px 0 4px;padding:14px;border-left:4px solid var(--gold);border-radius:12px;background:var(--gold-wash);font-weight:600;font-size:14.5px}
 .deadline .i{color:var(--gold-ink);margin-top:1px}
 .crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
@@ -435,7 +435,7 @@ button{cursor:pointer}
 .task{margin-top:14px;padding:12px;border-radius:10px;background:var(--cream-2)}
 .task-top{display:flex;justify-content:space-between;align-items:center}
 .task-done{font:700 12px var(--mono);color:var(--moss)}
-.task-q{margin:8px 0 4px;font:400 20px/1.22 var(--serif)}
+.task-q{margin:8px 0 4px;font:700 17px/1.22 var(--serif)}
 .task-hint{margin:0 0 8px;font-size:12.5px;color:var(--slate)}
 .task-nav{display:flex;gap:6px}
 .demo-mini{flex:1;min-height:40px;border:1.5px solid var(--ink);border-radius:8px;background:var(--paper);font:700 12.5px var(--sans)}
@@ -533,8 +533,8 @@ button{cursor:pointer}
 .cu-card{position:relative;margin-top:14px;padding:26px 20px 20px;border:1px solid var(--line);border-radius:20px;background:var(--paper);text-align:center;
   box-shadow:0 18px 40px -24px rgba(18,36,29,.4);touch-action:pan-y;user-select:none;transition:transform 240ms var(--ease),opacity 240ms var(--ease)}
 .cu-card .logo{width:64px;height:64px;margin:0 auto;border-radius:18px;font-size:28px}
-.cu-name{margin:14px 0 0;font:400 30px/1.1 var(--serif)}
-.cu-amt{margin:8px 0 0;font:400 46px/1 var(--serif);font-variant-numeric:tabular-nums}
+.cu-name{margin:14px 0 0;font:700 23px/1.1 var(--serif)}
+.cu-amt{margin:8px 0 0;font:800 36px/1 var(--serif);font-variant-numeric:tabular-nums}
 .cu-amt small{margin-left:4px;font:500 14px var(--sans);color:var(--slate)}
 .cu-next{margin:10px 0 0;font-weight:700;font-size:13.5px;color:var(--slate)}
 .cu-insight{margin:14px 0 0;padding:10px 12px;border-radius:12px;background:var(--cream-2);font-size:13.5px}
@@ -545,7 +545,7 @@ button{cursor:pointer}
 .cu-card.fly-right{transform:translateX(120%) rotate(10deg);opacity:0}
 .cu-card.fly-left{transform:translateX(-120%) rotate(-10deg);opacity:0}
 .cu-card.fly-up{transform:translateY(-30%) scale(.94);opacity:0}
-.cu-sum{margin:12px 0 0;font:400 26px/1.25 var(--serif)}
+.cu-sum{margin:12px 0 0;font:700 20px/1.25 var(--serif)}
 
 /* Year in review card */
 .yir{position:relative;overflow:hidden;margin-top:14px;padding:22px 20px;border-radius:20px;background:linear-gradient(155deg,var(--bank-2),var(--bank));color:var(--cream);
@@ -554,12 +554,12 @@ button{cursor:pointer}
 .yir > *{position:relative}
 .yir-top{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:13px}
 .yir-top span{display:inline-flex;align-items:center;gap:8px}
-.yir-kicker{margin:24px 0 0;font:italic 400 22px/1.2 var(--serif)}
-.yir-big{margin:6px 0 0;font:400 60px/1 var(--serif);color:var(--gold);font-variant-numeric:tabular-nums}
+.yir-kicker{margin:24px 0 0;font:700 19px/1.2 var(--serif)}
+.yir-big{margin:6px 0 0;font:800 47px/1 var(--serif);color:var(--gold);font-variant-numeric:tabular-nums}
 .yir-sub{margin:6px 0 0;font-size:13px;color:#D8E4DD}
 .yir-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 14px;margin:22px 0 0;padding-top:18px;border-top:1px solid rgba(255,255,255,.2)}
 .yir-grid dt{font:800 10.5px var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--gold-lite)}
-.yir-grid dd{margin:4px 0 0;font:400 22px/1.1 var(--serif)}
+.yir-grid dd{margin:4px 0 0;font:700 19px/1.1 var(--serif)}
 .yir-grid span{display:block;margin-top:3px;font-size:12px;color:#D2DED7}
 
 /* Settings */
@@ -587,27 +587,27 @@ button{cursor:pointer}
 .theme-btn[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
 
 .page{position:fixed;inset:0;z-index:300;overflow-y:auto;background:var(--cream);animation:fade 220ms var(--ease)}
-.page.about{--forest:#0E3B2E;--forest-2:#17543F;--bank:#0E3B2E}   /* About always wears Mohar's own colours */
+.page.about{--forest:#0B4F33;--forest-2:#136B45;--bank:#0B4F33}   /* About always wears Mohar's own colours */
 .pg-bar{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 24px;background:var(--bank);color:var(--bank-ink)}
 .page.about .pg-bar{background:var(--forest)}
 .pg-brand{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
 .pg-brand b{font:800 16px var(--sans)}
 .pg-brand span{font-size:13px;opacity:.75;padding-left:10px;border-left:1px solid rgba(255,255,255,.3)}
-.wordmark{font:400 26px/1 var(--serif)!important;letter-spacing:.01em}
+.wordmark{font:800 22px/1 var(--serif)!important;letter-spacing:.01em}
 .pg-tag{padding:4px 10px;border-radius:999px;background:var(--gold-lite);color:var(--ink);font:800 11px var(--sans);letter-spacing:.06em;text-transform:uppercase}
 .pg-close{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border:1.5px solid rgba(255,255,255,.5);border-radius:999px;background:transparent;color:inherit;font-weight:700}
 .pg-close:hover{background:rgba(255,255,255,.1)}
 .pg-close:focus-visible{outline-color:var(--gold-lite)}
 .pg-main{max-width:1080px;margin:0 auto;padding:32px 24px 56px}
 .pg-main.narrow{max-width:820px}
-.pg-title{margin:6px 0 6px;font:400 44px/1.05 var(--serif);letter-spacing:-.01em}
-.pg-title em{font-style:italic}
+.pg-title{margin:6px 0 6px;font:800 34px/1.05 var(--serif);letter-spacing:-.01em}
+
 .pg-card{margin-top:18px;padding:22px;border:1px solid var(--line);border-radius:14px;background:var(--paper)}
 .pg-cols{display:grid;grid-template-columns:1fr 1fr;gap:18px}
 .pg-cols .pg-card{margin-top:18px}
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:24px}
 .kpi{padding:18px;border:1px solid var(--line);border-radius:14px;background:var(--paper)}
-.kpi b{display:block;font:400 44px/1 var(--serif);color:var(--bank)}
+.kpi b{display:block;font:800 34px/1 var(--serif);color:var(--bank)}
 .kpi span{display:block;margin-top:8px;font-weight:700;font-size:14px;line-height:1.3}
 .kpi small{display:block;margin-top:6px;font-size:12.5px;color:var(--slate)}
 .chart{position:relative;margin-top:14px}
@@ -627,7 +627,7 @@ button{cursor:pointer}
 .crosses li::before{content:"✕";background:var(--cream-2);color:var(--slate)}
 .about-hero{display:flex;align-items:center;gap:24px}
 .about-hero svg{flex:none}
-.about-lead{margin:0 0 12px;font:400 21px/1.4 var(--serif)}
+.about-lead{margin:0 0 12px;font:500 18px/1.4 var(--serif)}
 .four{margin:12px 0 0;padding:0;list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:14px;counter-reset:f}
 .four li{counter-increment:f;padding:14px 14px 14px 52px;position:relative;border-radius:12px;background:var(--cream);font-size:13.5px;color:var(--slate)}
 .four li::before{content:counter(f);position:absolute;left:14px;top:14px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--gold);color:var(--ink);font:800 13px var(--sans)}
@@ -693,7 +693,7 @@ button{cursor:pointer}
   body.view-laptop .screen{grid-column:2;grid-row:1 / span 2}
   body.view-laptop .view{max-width:1120px;margin:0 auto;padding:36px 40px 64px}
   body.view-laptop .view.narrow{max-width:680px}
-  body.view-laptop .h-title{font-size:40px}
+  body.view-laptop .h-title{font-size:32px}
   body.view-laptop .sticky-cta{bottom:-64px;margin:24px -40px -64px;padding:16px 40px 24px}
   body.view-laptop .tools{grid-template-columns:repeat(5,minmax(0,150px))}
   body.view-laptop .toast-root{left:232px;bottom:28px}
@@ -722,6 +722,37 @@ button{cursor:pointer}
     border:1.5px dashed #B3A88E;border-radius:10px;background:var(--paper);font:700 13px var(--sans);box-shadow:0 6px 20px rgba(0,0,0,.15)}
 }
 @media (max-width:899px){ .view-group{display:none} }
+
+/* =====================================================================
+   12. CALMER LAYOUT: section titles, attention cards, the More list
+   ===================================================================== */
+.section-title{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:30px 0 0;font:800 19px/1.2 var(--serif);letter-spacing:-.01em}
+.section-title small{font:500 13px var(--sans);color:var(--slate)}
+.section-title + .card,.section-title + div > .att:first-child{margin-top:12px}
+.att{display:flex;gap:14px;align-items:flex-start;margin-top:12px;padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--paper);box-shadow:0 1px 2px rgba(19,34,26,.04)}
+.att-ico{flex:none;display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:var(--mint);color:var(--forest)}
+.att.warn .att-ico{background:var(--gold-wash);color:var(--gold-ink)}
+.att.unused{border-left:4px solid var(--gold)}
+.att.unused .att-ico{background:var(--gold-wash);color:var(--gold-ink)}
+.att-body{flex:1;min-width:0}
+.att-h{margin:1px 0 0;font:700 16px/1.3 var(--serif);letter-spacing:-.005em}
+.att-body p{margin:5px 0 0;font-size:14.5px;color:var(--slate)}
+.att-body p strong{color:var(--ink)}
+.att-body .bank-tag{display:inline-flex;align-items:center;gap:5px;margin-top:8px;font:700 11px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--gold-ink)}
+.att-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px}
+.calm{display:flex;align-items:center;gap:8px;margin:12px 0 0;padding:14px 16px;border-radius:14px;background:var(--mint);color:var(--forest-2);font-weight:600}
+.show-more{display:block;width:100%;min-height:44px;margin-top:10px;border:0;border-radius:12px;background:var(--cream-2);color:var(--forest-2);font-weight:700}
+.show-more:hover{background:var(--mint)}
+.list-tools-btn{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:var(--cream);color:var(--slate);font-weight:600;font-size:13.5px}
+.more{display:grid;gap:8px;margin-top:12px}
+.more-btn{display:flex;align-items:center;gap:14px;width:100%;min-height:66px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--paper);text-align:left;color:var(--ink)}
+.more-btn:hover{border-color:var(--forest-2)}
+.more-btn b{display:block;font:700 15px var(--serif)}
+.more-btn small{display:block;font-size:13px;color:var(--slate)}
+.more-btn > .i{color:var(--slate)}
+.tl-card{padding-top:10px}
+.total{margin-top:16px}
+body.view-laptop .cols > .col > .total:first-child,body.view-laptop .cols > .col > .section-title:first-child{margin-top:30px}
 </style>
 </head>
 
@@ -843,7 +874,7 @@ const DAY0 = '2026-11-03';   // Tuesday 3 November 2026
 /* White-label banks. Each bank licenses the feature, names it itself and dresses it in its own colours.
    Mohar's own name and coin appear only in the demo chrome, the partner portal footer and the About page. */
 const BANKS = [
-  { id: 'saimaa',  name: 'Saimaa Bank',  feature: 'Subscriptions', featureFi: 'Tilaukset',   code: 'SB', logo: 'lake',   bank: '#0E3B2E', bank2: '#17543F', wash: '#E6F3EB' },
+  { id: 'saimaa',  name: 'Saimaa Bank',  feature: 'Subscriptions', featureFi: 'Tilaukset',   code: 'SB', logo: 'lake',   bank: '#0B4F33', bank2: '#136B45', wash: '#E2F2E7' },
   { id: 'virta',   name: 'Virta Pankki', feature: 'Recurring',     featureFi: 'Toistuvat',   code: 'VP', logo: 'stream', bank: '#0B3C6E', bank2: '#17548F', wash: '#E3EEF9' },
   { id: 'nordlys', name: 'Nordlys',      feature: 'Renewals',      featureFi: 'Uusiutuvat',  code: 'NL', logo: 'aurora', bank: '#3B2363', bank2: '#563782', wash: '#EEE8F7' },
   { id: 'koski',   name: 'Koski Bank',   feature: 'Regulars',      featureFi: 'Vakiomaksut', code: 'KB', logo: 'rapids', bank: '#7A2E17', bank2: '#963F1F', wash: '#F8E9E2' },
@@ -948,6 +979,7 @@ const SUB_DEFAULTS = {
   stoppedOn: null, checkOn: null, confirmedOn: null,
   ghostArmed: false, ghost: null,
   notify: 'smart',       // warning setting: 'smart' | '3' | '7' | 'both' | 'off'
+  nudgeLater: false,     // "Ask me later" on the unused-app question (asks again next month)
 };
 
 /* ---------------------------------------------------------------------
@@ -982,6 +1014,7 @@ function initialUi() {
     calMonth: 0, calDay: null,                 // calendar: months ahead of today, selected day
     checkup: null,                             // monthly check-up progress
     pendingStop: null,                         // open the exit guide after navigating to this subscription
+    attAll: false, tlAll: false, listTools: false,   // "show more" toggles on the hub
     seq: 0,                // id counter
   };
 }
@@ -1378,37 +1411,144 @@ function renderHub() {
       ${periodToggle()}
     </div>`;
   const stoppedHtml = stopped.length ? `
+    <h2 class="section-title" id="stopped-h">${t('stopped')} <small>${stopped.length}</small></h2>
     <section class="card" aria-labelledby="stopped-h">
-      <div class="card-head"><h2 class="card-title" id="stopped-h">${t('stopped')}</h2><span class="muted small">${stopped.length}</span></div>
-      <p class="tiny muted" style="margin:4px 0 0">Changed your mind? You can rejoin any time.</p>
+      <p class="tiny muted" style="margin:0">Changed your mind? You can rejoin any time.</p>
       <ul class="list stopped">${stopped.map(subRow).join('')}</ul>
     </section>` : '';
   const tail = `
     ${notSubs.length ? `<p class="fine">Not counted as subscriptions: ${notSubs.map(s =>
       `${esc(s.name)} <button class="link-btn" data-action="restoreSub" data-id="${s.id}">Restore</button>`).join(' · ')}</p>` : ''}
-    <p class="fine">Subscriptions only — not rent, loans, insurance or bills.<br>We never cancel or block a payment for you.<br>
-      <button class="link-btn" data-action="replayGuess">Replay “guess your total”</button></p>`;
+    <p class="fine">Subscriptions only — not rent, loans, insurance or bills. We never cancel or block a payment for you.</p>`;
 
-  /* Laptop: timeline and list on the left, money on the right */
-  if (isWide()) return `${head}${renderAlerts()}${renderTools()}
+  /* Laptop: things to act on and what's coming up on the left, the money picture on the right */
+  if (isWide()) return `${head}${renderAlerts()}
     <div class="cols">
-      <div class="col">${renderTimeline()}${renderAllList()}${stoppedHtml}</div>
-      <div class="col">${renderTotal(lump)}${renderClash()}${renderSavings()}${lump ? renderLumpCard(lump) : ''}${renderOverlap()}</div>
+      <div class="col">${renderAttention()}${renderTimeline()}${renderAllList()}${stoppedHtml}</div>
+      <div class="col">${renderTotal(lump)}${renderSavings()}${renderMore()}</div>
     </div>${tail}`;
 
-  /* Phone: one column, timeline first */
+  /* Phone: one column — what needs you first, then what's coming, then the totals */
   return `${head}
     ${renderAlerts()}
+    ${renderAttention()}
     ${renderTimeline()}
-    ${renderClash()}
-    ${renderTools()}
     ${renderTotal(lump)}
     ${renderSavings()}
-    ${lump ? renderLumpCard(lump) : ''}
-    ${renderOverlap()}
     ${renderAllList()}
     ${stoppedHtml}
+    ${renderMore()}
     ${tail}`;
+}
+
+/* ---------------------------------------------------------------------
+   "Needs your attention": one plain card per thing worth acting on,
+   each with one obvious button. At most three show until you ask for more.
+   --------------------------------------------------------------------- */
+function attentionCards() {
+  const cards = [];
+  state.subs.filter(s => s.status === 'active').forEach(s => { const h = renderUnusedPrompt(s); if (h) cards.push(h); });
+  const c = balanceClash();
+  if (c) {
+    const sub = c.item.sub;
+    const name = sub ? esc(sub.name) : 'An app store payment';
+    cards.push(`
+      <article class="att warn">
+        <span class="att-ico">${icon('alert', 20)}</span>
+        <div class="att-body">
+          <h3 class="att-h">${c.single ? `${eur(c.cents)} charges ${weekday(c.date)}` : `${eur(c.due)} is due by ${weekday(c.date)}`} — your balance is ${eur(state.balanceCents)}</h3>
+          <p>${name} on ${fmtShort(c.date)}, before your ${state.incomeLabel} arrives on ${fmtShort(c.income)}.</p>
+          <p class="bank-tag">${icon('shield', 13)} Only your bank can see this</p>
+          ${sub ? `<div class="att-actions"><button class="btn btn-ghost btn-sm" data-action="open" data-id="${sub.id}">Look at ${name}</button></div>` : ''}
+        </div>
+      </article>`);
+  }
+  const lump = openLump();
+  if (lump) cards.push(`
+      <article class="att">
+        <span class="att-ico">${icon('help', 20)}</span>
+        <div class="att-body">
+          <h3 class="att-h">Which subscription costs ${eur(lump.cents)}?</h3>
+          <p>We see ${eur(lump.cents)} from your app store every month, but your bank can't see what it's for. Add it so your total is honest.</p>
+          <div class="att-actions"><button class="btn btn-gold btn-sm" data-action="addStart" data-from="lump">Identify this payment</button></div>
+        </div>
+      </article>`);
+  state.subs.filter(s => s.status === 'active' && s.trial && daysBetween(state.today, s.next) <= 7).forEach(s => cards.push(`
+      <article class="att warn">
+        <span class="att-ico">${icon('radar', 20)}</span>
+        <div class="att-body">
+          <h3 class="att-h">${esc(s.name)}'s free trial ends ${relDays(s.next)}</h3>
+          <p>Then ${eur(s.cents)} a month. Stop before ${fmtShort(addDays(s.next, -1))} and you pay nothing.</p>
+          <div class="att-actions"><button class="btn btn-ghost btn-sm" data-action="open" data-id="${s.id}">Review ${esc(s.name)}</button></div>
+        </div>
+      </article>`));
+  const ent = state.subs.filter(s => isLive(s) && s.group === 'entertainment');
+  if (ent.length >= 3 && !ui.overlapDismissed) {
+    const names = ent.map(s => esc(s.name));
+    cards.push(`
+      <article class="att">
+        <span class="att-ico">${icon('layers', 20)}</span>
+        <div class="att-body">
+          <h3 class="att-h">You have ${ent.length} entertainment subscriptions</h3>
+          <p>${names.slice(0, -1).join(', ')} and ${names[names.length - 1]} — ${eur(ent.reduce((a, s) => a + monthly(s), 0))} a month together.</p>
+          <div class="att-actions"><button class="link-btn" data-action="dismissOverlap">OK, got it</button></div>
+        </div>
+      </article>`);
+  }
+  return cards;
+}
+function renderAttention() {
+  const cards = attentionCards();
+  if (!cards.length) return `
+    <h2 class="section-title">${t('attention')}</h2>
+    <p class="calm">${icon('check', 18)} ${t('allGood')}</p>`;
+  const shown = ui.attAll ? cards : cards.slice(0, 3);
+  return `
+    <h2 class="section-title" id="att-h">${t('attention')} <small>${cards.length}</small></h2>
+    <div aria-labelledby="att-h">${shown.join('')}</div>
+    ${cards.length > 3 ? `<button class="show-more" data-action="toggleAttention">${ui.attAll ? 'Show less' : `Show ${cards.length - 3} more`}</button>` : ''}`;
+}
+
+/* "You haven't used this app — do you want to cancel it?" */
+function renderUnusedPrompt(s) {
+  if (s.status !== 'active' || s.nudgeLater) return '';
+  const z = zombie(s);
+  if (!z) return '';
+  const name = esc(s.name);
+  const byDays = s.lastOpenedDays >= 45;
+  const title = byDays ? `You haven't used ${name} for ${s.lastOpened.replace(/ ago$/, '')}` : `You said you didn't use ${name} last month`;
+  const body = byDays ? z.text : `That month cost ${eurShort(s.cents)}.`;
+  return `
+    <article class="att unused">
+      <span class="att-ico">${icon('moon', 20)}</span>
+      <div class="att-body">
+        <h3 class="att-h">${title}</h3>
+        <p>${body} <strong>Do you want to cancel it?</strong></p>
+        <div class="att-actions">
+          <button class="btn btn-gold btn-sm" data-action="nudgeCancel" data-id="${s.id}">Yes, help me cancel</button>
+          <button class="btn btn-ghost btn-sm" data-action="nudgeKeep" data-id="${s.id}">No, I still use it</button>
+          <button class="link-btn" data-action="nudgeLater" data-id="${s.id}">Ask me later</button>
+        </div>
+      </div>
+    </article>`;
+}
+
+/* The tools, as a plain list with a line explaining each */
+function renderMore() {
+  const items = [
+    ['calendar', 'calendar', t('calendar'), 'See which days money leaves'],
+    ['checkup', 'check', t('checkup'), 'Go through them one by one'],
+    ['review', 'sparkle', t('review'), 'What 2026 has cost you'],
+    ['settings', 'sliders', t('settings'), 'Warnings and language'],
+  ];
+  return `
+    <h2 class="section-title">${t('more')}</h2>
+    <nav class="more" aria-label="${t('tools')}">
+      ${items.map(([r, ic, l, d]) => `
+        <button class="more-btn" data-action="go" data-value="${r}">
+          <span class="tool-ico">${icon(ic, 19)}</span><span class="grow"><b>${l}</b><small>${d}</small></span>${icon('chev', 18)}
+        </button>`).join('')}
+    </nav>`;
 }
 
 /* One control that reframes every recurring amount: €23 a month ↔ €276 a year */
@@ -1498,15 +1638,14 @@ function renderTimeline() {
     if ((it.kind === 'charge' || it.kind === 'trial') && it.sub.status === 'active') return sum + it.sub.cents;
     return sum;
   }, 0);
+  const shown = ui.tlAll ? items : items.slice(0, 4);
   return `
-    <section class="card" aria-labelledby="tl-h">
-      <div class="card-head">
-        <h2 class="card-title" id="tl-h">${t('next30')}</h2>
-        <span class="muted small num">${eur(due)} ${t('due')}</span>
-      </div>
-      ${state.notifyAll ? '' : `<p class="tiny muted" style="margin:4px 0 0">Warnings are switched off in Settings.</p>`}
-      ${items.length ? `<ol class="timeline">${items.map(timelineRow).join('')}</ol>`
+    <h2 class="section-title" id="tl-h">${t('comingUp')} <small>${t('next30').toLowerCase()} · ${eur(due)}</small></h2>
+    <section class="card tl-card" aria-labelledby="tl-h">
+      ${state.notifyAll ? '' : `<p class="tiny muted" style="margin:0 0 4px">Warnings are switched off in Settings.</p>`}
+      ${items.length ? `<ol class="timeline">${shown.map(timelineRow).join('')}</ol>`
                      : `<p class="empty">Nothing charges in the next 30 days.</p>`}
+      ${items.length > 4 ? `<button class="show-more" data-action="toggleTimeline">${ui.tlAll ? 'Show less' : `Show all ${items.length} charges`}</button>` : ''}
     </section>`;
 }
 
@@ -1600,49 +1739,19 @@ function renderSavings() {
     </section>`;
 }
 
-/* "We see €10.99 from your app store…" — the entry point to adding Tunely */
-function renderLumpCard(lump) {
-  return `
-    <section class="lump" aria-labelledby="lump-h">
-      <p class="eyebrow">Hidden in your statement</p>
-      <h2 class="h-sub" id="lump-h">We see <em>${eur(lump.cents)}</em> from your app store every month.</h2>
-      <p class="small">Which subscription is it? Your bank can't see inside app store payments. Add it and your total becomes honest.</p>
-      <div class="stmt" aria-label="Statement line"><span>${lump.label}</span><span>${eurFi(lump.cents)}</span><span>${fmtStmt(lump.last)}</span></div>
-      <button class="btn btn-gold btn-block" data-action="addStart" data-from="lump">Identify this payment</button>
-    </section>`;
-}
-
-/* Overlap: a gentle note once three entertainment subscriptions are running */
-function renderOverlap() {
-  const ent = state.subs.filter(s => isLive(s) && s.group === 'entertainment');
-  if (ent.length < 3 || ui.overlapDismissed) return '';
-  const sum = ent.reduce((a, s) => a + monthly(s), 0);
-  const words = ['zero', 'one', 'two', 'three', 'four', 'five', 'six'];
-  const names = ent.map(s => esc(s.name));
-  const list = names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1];
-  return `
-    <section class="banner soft pop" aria-label="Overlapping subscriptions">
-      <span class="b-ico">${icon('layers', 18)}</span>
-      <div class="grow">
-        <h2 class="banner-h">You now have ${words[ent.length] || ent.length} entertainment subscriptions.</h2>
-        <p>${list} — ${eur(inPeriod(sum))} a ${perLabel()} together. Just so you know.</p>
-      </div>
-      <button class="icon-btn" data-action="dismissOverlap" aria-label="Dismiss">${icon('x', 18)}</button>
-    </section>`;
-}
-
 /* One row in the subscription lists */
 function subRow(s) {
-  const tags = [];
+  /* One badge at most, the most important one, so rows stay easy to scan */
   const rise = priceRise(s);
-  if (s.source === 'manual') tags.push('<span class="pill">Added by you</span>');
-  if (s.status === 'active' && s.trial) tags.push(`<span class="pill gold">${icon('radar', 12)} Trial · <span data-countdown="${s.next}" data-short>${countdownText(s.next, true)}</span></span>`);
-  if (rise && isLive(s)) tags.push(`<span class="pill gold">+${eur(rise.diff)} since ${rise.month}</span>`);
-  if (zombie(s)) tags.push('<span class="pill">Not used lately</span>');
-  if (s.status === 'active' && s.decision === 'unsure') tags.push('<span class="pill gold">Deciding</span>');
-  if (s.status === 'active' && s.decision === 'keep') tags.push('<span class="pill moss">Keeping</span>');
-  if (s.ghost) tags.push('<span class="pill danger">Charged after stopping</span>');
-
+  const tag =
+      s.ghost ? '<span class="pill danger">Charged after stopping</span>'
+    : s.status === 'active' && s.trial ? `<span class="pill gold">Trial ends ${fmtDM(s.next)}</span>`
+    : zombie(s) ? '<span class="pill gold">Not used lately</span>'
+    : rise && isLive(s) ? `<span class="pill gold">+${eur(rise.diff)} since ${rise.month}</span>`
+    : s.status === 'active' && s.decision === 'unsure' ? '<span class="pill gold">Deciding</span>'
+    : s.status === 'active' && s.decision === 'keep' ? '<span class="pill moss">Keeping</span>'
+    : s.source === 'manual' ? '<span class="pill">Added by you</span>'
+    : '';
   let meta;
   if (s.status === 'stopping') meta = `<span class="pill moss">Stopping — we'll check on ${fmtDM(s.checkOn)}</span>`;
   else if (s.status === 'stopped') meta = `Stopped · no charge on ${fmtDM(s.confirmedOn)} ✓`;
@@ -1655,7 +1764,7 @@ function subRow(s) {
 
   const row = `<button class="sub-row" data-action="open" data-id="${s.id}">
       ${logo(s)}
-      <span class="sub-main"><span class="sub-name">${esc(s.name)} ${tags.join('')}</span><span class="sub-meta">${meta}</span></span>
+      <span class="sub-main"><span class="sub-name">${esc(s.name)} ${tag}</span><span class="sub-meta">${meta}</span></span>
       <span class="sub-amt">${amt}</span>
     </button>`;
   return s.status === 'stopped'
@@ -1743,12 +1852,7 @@ function renderDetail(id) {
     ${keepCost}
     ${chip}
 
-    ${active ? renderClash(s) : ''}
-    ${s.trial && active ? renderRadar(s) : ''}
-    ${renderZombie(s)}
-    ${renderStatusBanner(s)}
-    ${s.cycle === 'yearly' && active ? renderAnnualNote(s) : ''}
-
+    ${renderUnusedPrompt(s)}
     ${active ? `
     <section class="card" aria-labelledby="dec-h">
       <h2 class="card-title" id="dec-h">${t('decideH')}</h2>
@@ -1761,6 +1865,11 @@ function renderDetail(id) {
           <span class="d-ico">${icon('exit')}</span>${t('stop')}<small>${t('stopS')}</small></button>
       </div>
     </section>` : ''}
+
+    ${renderStatusBanner(s)}
+    ${active ? renderClash(s) : ''}
+    ${s.trial && active ? renderRadar(s) : ''}
+    ${s.cycle === 'yearly' && active ? renderAnnualNote(s) : ''}
 
     ${wide ? usageHtml + '</div><div class="col">' + factsHtml : factsHtml + usageHtml}
 
@@ -1838,19 +1947,6 @@ function renderRadar(s) {
 }
 const n0 = n => n < 0 ? 0 : n;
 
-/* Zombie: "You've paid €46 since you last opened this." */
-function renderZombie(s) {
-  const z = zombie(s);
-  if (!z) return '';
-  return `
-    <section class="banner soft">
-      <span class="b-ico">${icon('moon', 18)}</span>
-      <div class="grow">
-        <h2 class="banner-h">${z.text}</h2>
-        <p>${s.lastOpenedDays >= 45 ? `Last opened ${s.lastOpened}. ` : ''}Still worth it? Only you can say — the check-in below helps us get this right.</p>
-      </div>
-    </section>`;
-}
 
 /* Annual early warning: why yearly subscriptions are flagged 14 days ahead */
 function renderAnnualNote(s) {
@@ -2473,6 +2569,24 @@ const actions = {
     toast(`Rejoined ${s.name} — we'll track it again. Next charge ${fmtShort(s.next)}.`);
   },
   dismissOverlap() { ui.overlapDismissed = true; refresh(); },
+  toggleAttention() { ui.attAll = !ui.attAll; refresh(); },
+  toggleTimeline() { ui.tlAll = !ui.tlAll; refresh(); },
+  toggleListTools() { ui.listTools = true; refresh(); const i = document.getElementById('subSearch'); if (i) i.focus({ preventScroll: true }); },
+
+  /* --- the unused-app question --- */
+  nudgeCancel(d) { const s = findSub(d.id); openSheet(renderExitGuide(s), `How to stop ${s.name}`); },
+  nudgeKeep(d) {
+    const s = findSub(d.id);
+    s.usage = 'yes'; s.decision = 'keep';
+    refresh();
+    toast(`Good to know — we won't ask about ${s.name} again.`);
+  },
+  nudgeLater(d) {
+    const s = findSub(d.id);
+    s.nudgeLater = true;
+    refresh();
+    toast(`OK — we'll ask about ${s.name} again next month.`);
+  },
 
   /* --- polish: tools, language, list, calendar, check-up, settings --- */
   go(d) {
@@ -2602,6 +2716,7 @@ function fastForward() {
   const from = state.today, to = addMonths(from, 1), fresh = [];
 
   state.subs.forEach(s => {
+    s.nudgeLater = false;   // "ask me later" means: ask again next month
     let guard = 0;
     while (s.next > from && s.next <= to && guard++ < 24) processCharge(s, s.next, fresh);
   });
@@ -2972,6 +3087,7 @@ const STR = {
     detecting: 'Detecting your <em>subscriptions…</em>', detectingSub: 'Looking for payments that repeat. This only takes a moment.',
     calTitle: 'Charge <em>days</em>', checkupTitle: 'Monthly <em>check-up</em>', reviewTitle: 'Your year in <em>review</em>',
     warnAll: 'Warn me before charges', warnEach: 'Warnings for each subscription', language: 'Language',
+    attention: 'Needs your attention', comingUp: 'Coming up', more: 'More', allGood: 'All good — nothing needs you right now.',
   },
   fi: {
     title: 'Sinun <em>tilauksesi</em>', active: 'aktiivista', todayIs: 'tänään on',
@@ -2992,6 +3108,7 @@ const STR = {
     detecting: 'Etsitään <em>tilauksiasi…</em>', detectingSub: 'Haemme toistuvia maksuja. Tämä vie hetken.',
     calTitle: 'Veloitus<em>päivät</em>', checkupTitle: 'Kuukauden <em>tarkistus</em>', reviewTitle: 'Vuotesi <em>tilauksissa</em>',
     warnAll: 'Varoita ennen veloituksia', warnEach: 'Varoitukset tilauksittain', language: 'Kieli',
+    attention: 'Vaatii huomiotasi', comingUp: 'Tulossa', more: 'Lisää', allGood: 'Kaikki kunnossa — mikään ei vaadi sinua nyt.',
   },
 };
 const t = key => (STR[ui.lang] && STR[ui.lang][key]) || STR.en[key] || key;
@@ -3028,9 +3145,7 @@ function warnText(s) {
 }
 function bellTag(s) {
   const l = warnDaysList(s);
-  return l.length
-    ? `<span class="bell" aria-hidden="true">${icon('bell', 11)}${l.join('+')}d</span>`
-    : `<span class="bell off" aria-hidden="true">${icon('belloff', 11)}off</span>`;
+  return l.length ? '' : `<span class="bell off" aria-hidden="true">${icon('belloff', 11)}no warning</span>`;
 }
 
 function renderSettings() {
@@ -3076,16 +3191,6 @@ function renderSettings() {
 /* ---------------------------------------------------------------------
    9f. HUB EXTRAS: tools row, search/sort/filter list, first-load skeleton
    --------------------------------------------------------------------- */
-function renderTools() {
-  const tools = [['calendar', 'calendar', t('calendar')], ['checkup', 'check', t('checkup')], ['review', 'sparkle', t('review')], ['settings', 'sliders', t('settings')]];
-  return `
-    <nav class="tools" aria-label="${t('tools')}">
-      ${tools.map(([r, ic, l]) => `<button class="tool" data-action="go" data-value="${r}"><span class="tool-ico">${icon(ic, 19)}</span>${l}</button>`).join('')}
-      <button class="tool" data-action="setLang" data-value="${ui.lang === 'fi' ? 'en' : 'fi'}" lang="${ui.lang === 'fi' ? 'en' : 'fi'}">
-        <span class="tool-ico">${icon('globe', 19)}</span>${ui.lang === 'fi' ? 'English' : 'Suomeksi'}</button>
-    </nav>`;
-}
-
 const filterKey = s => ({ card: 'card', paypal: 'paypal', appstore: 'appstore' }[s.channel] || 'other');
 function listItems() {
   const q = ui.search.trim().toLowerCase();
@@ -3116,18 +3221,21 @@ function updateList() {
 function renderAllList() {
   const chips = [['all', t('fAll')], ['card', t('fCard')], ['paypal', 'PayPal'], ['appstore', t('fApp')], ['other', t('fOther')]];
   const sorts = [['next', t('sortNext')], ['cost', t('sortCost')], ['channel', t('sortChannel')], ['name', t('sortName')]];
+  const open = ui.listTools || ui.search || ui.filter !== 'all' || ui.sort !== 'next';
   return `
+    <h2 class="section-title" id="all-h">${t('all')} <small id="subCount" aria-live="polite">${countText()}</small></h2>
     <section class="card" aria-labelledby="all-h">
-      <div class="card-head"><h2 class="card-title" id="all-h">${t('all')}</h2><span class="muted small" id="subCount" aria-live="polite">${countText()}</span></div>
-      <div class="list-tools">
-        <input type="search" class="input search" id="subSearch" placeholder="${t('search')}" aria-label="${t('search')}" value="${esc(ui.search)}" autocomplete="off">
-        <select class="input sort" id="subSort" aria-label="${t('sortBy')}">
-          ${sorts.map(([v, l]) => `<option value="${v}" ${ui.sort === v ? 'selected' : ''}>${l}</option>`).join('')}
-        </select>
-      </div>
-      <div class="chips" role="group" aria-label="${t('filter')}">
-        ${chips.map(([v, l]) => `<button class="chip" data-action="setFilter" data-value="${v}" aria-pressed="${ui.filter === v}">${l}</button>`).join('')}
-      </div>
+      ${open ? `
+        <div class="list-tools" style="margin-top:0">
+          <input type="search" class="input search" id="subSearch" placeholder="${t('search')}" aria-label="${t('search')}" value="${esc(ui.search)}" autocomplete="off">
+          <select class="input sort" id="subSort" aria-label="${t('sortBy')}">
+            ${sorts.map(([v, l]) => `<option value="${v}" ${ui.sort === v ? 'selected' : ''}>${l}</option>`).join('')}
+          </select>
+        </div>
+        <div class="chips" role="group" aria-label="${t('filter')}">
+          ${chips.map(([v, l]) => `<button class="chip" data-action="setFilter" data-value="${v}" aria-pressed="${ui.filter === v}">${l}</button>`).join('')}
+        </div>`
+      : `<button class="list-tools-btn" data-action="toggleListTools">${icon('sliders', 16)} ${t('search')} or sort</button>`}
       <ul class="list" id="subList">${listHtml()}</ul>
       <button class="btn btn-ghost btn-block btn-sm mt" data-action="addStart" data-from="blank">${icon('plus', 18)} ${t('addHidden')}</button>
     </section>`;
