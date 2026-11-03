@@ -662,6 +662,66 @@ button{cursor:pointer}
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
 }
+
+/* =====================================================================
+   11. LAPTOP APP VIEW (screens ≥ 900px, the default there)
+   The same app as the bank's full-screen web app: sidebar navigation,
+   two-column screens, dialogs instead of bottom sheets, and a desktop
+   notification instead of a phone lock screen. The phone-frame view
+   (sections 2–9) is one click away in the demo controls.
+   ===================================================================== */
+.cols{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:0 24px;align-items:start}
+@media (min-width:900px){
+  body.view-laptop{background:var(--cream)}
+  body.view-laptop .stage{display:flex;align-items:stretch;gap:0;height:100vh;padding:0}
+  body.view-laptop .device-wrap{order:1;flex:1;min-width:0;width:auto;height:100vh}
+  body.view-laptop .device{width:100%;height:100%;padding:0;border-radius:0;background:none;box-shadow:none;transform:none}
+  body.view-laptop .island,body.view-laptop .statusbar,body.view-laptop #bellBtn{display:none}
+  body.view-laptop .app{border-radius:0}
+
+  /* sidebar: bank logo on top, the bank's navigation below */
+  body.view-laptop .shell{display:grid;grid-template-columns:232px minmax(0,1fr);grid-template-rows:auto 1fr}
+  body.view-laptop .bankbar{grid-column:1;grid-row:1;padding:22px 12px 18px 20px}
+  body.view-laptop .tabbar{grid-column:1;grid-row:2;display:flex;flex-direction:column;justify-content:flex-start;gap:4px;padding:8px 12px 20px;border-top:0;background:var(--bank)}
+  body.view-laptop .tab{flex-direction:row;justify-content:flex-start;gap:12px;min-height:46px;padding:0 12px;border-radius:10px;font-size:14px;color:rgba(251,248,241,.72)}
+  body.view-laptop .tab:hover{background:rgba(255,255,255,.07);color:var(--bank-ink)}
+  body.view-laptop .tab .tab-ico{width:auto;height:auto;background:none!important}
+  body.view-laptop .tab[aria-current="page"]{background:rgba(255,255,255,.15);color:var(--bank-ink)}
+  body.view-laptop .tab:focus-visible{outline-color:var(--gold-lite)}
+
+  /* main area */
+  body.view-laptop .screen{grid-column:2;grid-row:1 / span 2}
+  body.view-laptop .view{max-width:1120px;margin:0 auto;padding:36px 40px 64px}
+  body.view-laptop .view.narrow{max-width:680px}
+  body.view-laptop .h-title{font-size:40px}
+  body.view-laptop .sticky-cta{bottom:-64px;margin:24px -40px -64px;padding:16px 40px 24px}
+  body.view-laptop .tools{grid-template-columns:repeat(5,minmax(0,150px))}
+  body.view-laptop .toast-root{left:232px;bottom:28px}
+
+  /* bottom sheets become centred dialogs */
+  body.view-laptop .sheet-layer{justify-content:center;align-items:center;padding:24px}
+  body.view-laptop .sheet{width:min(520px,100%);max-height:88vh;padding:24px 28px 28px;border-radius:20px;animation:pop 260ms var(--ease)}
+  body.view-laptop .grabber{display:none}
+
+  /* the opening push becomes a desktop notification in the corner */
+  body.view-laptop .lock{display:flex;flex-direction:column;align-items:flex-end;padding:24px 28px;background:rgba(18,36,29,.38);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+  body.view-laptop .lock::before,body.view-laptop .lock-status,body.view-laptop .lock-clock,body.view-laptop .home-bar{display:none}
+  body.view-laptop .lock-hint{margin:0 4px 10px;text-align:right;font-size:13px}
+  body.view-laptop .notif{width:420px;max-width:100%;margin:0}
+  body.view-laptop .lock-skip{position:static;margin-top:12px;justify-content:flex-end}
+
+  /* the provider's cancellation page opens full-size */
+  body.view-laptop .prov-chrome{padding-top:12px}
+  body.view-laptop .prov-body{width:100%;max-width:640px;margin:0 auto;padding:36px 24px}
+
+  /* demo controls: a panel on the right that can be hidden */
+  body.view-laptop .demo{order:2;position:relative;top:0;width:300px;height:100vh;overflow-y:auto;border:0;border-left:1.5px dashed #B3A88E;border-radius:0}
+  body.view-laptop .demo-x{display:grid;margin-left:auto}
+  body.view-laptop.demo-hidden .demo{display:none}
+  body.view-laptop.demo-hidden .demo-fab{display:flex;align-items:center;gap:6px;position:fixed;right:16px;bottom:16px;z-index:150;min-height:44px;padding:0 14px;
+    border:1.5px dashed #B3A88E;border-radius:10px;background:var(--paper);font:700 13px var(--sans);box-shadow:0 6px 20px rgba(0,0,0,.15)}
+}
+@media (max-width:899px){ .view-group{display:none} }
 </style>
 </head>
 
@@ -673,7 +733,7 @@ button{cursor:pointer}
     <div class="demo-head">
       <span id="demoMark"></span>
       <div><b>Demo controls</b><small>Scaffolding for testers — not part of the bank app</small></div>
-      <button class="icon-btn demo-x" data-action="demoToggle" aria-label="Close demo controls"></button>
+      <button class="icon-btn demo-x" data-action="demoToggle" aria-label="Hide demo controls"></button>
     </div>
 
     <section class="task" aria-labelledby="taskNum">
@@ -691,6 +751,14 @@ button{cursor:pointer}
       <div class="demo-date" id="demoDate"></div>
       <button class="demo-btn primary" data-action="ff"><span class="emo" aria-hidden="true">⏩</span><span>Fast-forward one month<small id="ffTo"></small></span></button>
       <button class="demo-btn reset" data-action="reset"><span class="emo" aria-hidden="true">↺</span><span>Reset demo<small>Back to Day 0 — a clean start for the next tester</small></span></button>
+    </div>
+
+    <div class="demo-group view-group">
+      <div class="demo-label" id="viewLabel"><span aria-hidden="true">🖥</span> View on this screen</div>
+      <div class="themes" role="group" aria-labelledby="viewLabel" id="viewBtns">
+        <button class="theme-btn" data-action="setView" data-value="laptop" aria-pressed="true"><span class="emo" aria-hidden="true">💻</span><span>Laptop app<small>full-screen web app</small></span></button>
+        <button class="theme-btn" data-action="setView" data-value="phone" aria-pressed="false"><span class="emo" aria-hidden="true">📱</span><span>Phone frame<small>mobile app mock-up</small></span></button>
+      </div>
     </div>
 
     <div class="demo-group">
@@ -783,7 +851,7 @@ const BANKS = [
 let BANK = BANKS[0];   // the bank currently shown; switched from the demo controls
 
 /* Demo-only settings that survive Reset (the presenter's choice, not the tester's data) */
-const demo = { page: null };
+const demo = { page: null, view: 'laptop' };   // view: 'laptop' app or 'phone' frame (screens ≥ 900px)
 
 /* Billing channels: label, where the subscription is managed, the exit
    route and an honest effort estimate. */
@@ -1205,7 +1273,8 @@ function render({ nav: isNav = false, focusTitle = false } = {}) {
   else if (route.name === 'review') html = renderReview();
   else if (route.name === 'settings') html = renderSettings();
   else html = renderHub();
-  els.screen.innerHTML = `<div class="view">${html}</div>`;
+  const narrow = ['add', 'calendar', 'checkup', 'review', 'settings'].includes(route.name);
+  els.screen.innerHTML = `<div class="view${narrow ? ' narrow' : ''}">${html}</div>`;
 
   /* 2. overlays on top of the bank app: lock screen or the provider's website */
   let overlay = '';
@@ -1302,13 +1371,33 @@ function renderHub() {
   const notSubs = state.subs.filter(s => s.status === 'notsub');
   const lump = openLump();
 
-  return `
+  const head = `
     <h1 class="h-title" tabindex="-1">${t('title')}</h1>
     <div class="top-row">
       <p class="lead">${live.length} ${t('active')} · ${t('todayIs')} ${fmtShort(state.today)}</p>
       ${periodToggle()}
-    </div>
+    </div>`;
+  const stoppedHtml = stopped.length ? `
+    <section class="card" aria-labelledby="stopped-h">
+      <div class="card-head"><h2 class="card-title" id="stopped-h">${t('stopped')}</h2><span class="muted small">${stopped.length}</span></div>
+      <p class="tiny muted" style="margin:4px 0 0">Changed your mind? You can rejoin any time.</p>
+      <ul class="list stopped">${stopped.map(subRow).join('')}</ul>
+    </section>` : '';
+  const tail = `
+    ${notSubs.length ? `<p class="fine">Not counted as subscriptions: ${notSubs.map(s =>
+      `${esc(s.name)} <button class="link-btn" data-action="restoreSub" data-id="${s.id}">Restore</button>`).join(' · ')}</p>` : ''}
+    <p class="fine">Subscriptions only — not rent, loans, insurance or bills.<br>We never cancel or block a payment for you.<br>
+      <button class="link-btn" data-action="replayGuess">Replay “guess your total”</button></p>`;
 
+  /* Laptop: timeline and list on the left, money on the right */
+  if (isWide()) return `${head}${renderAlerts()}${renderTools()}
+    <div class="cols">
+      <div class="col">${renderTimeline()}${renderAllList()}${stoppedHtml}</div>
+      <div class="col">${renderTotal(lump)}${renderClash()}${renderSavings()}${lump ? renderLumpCard(lump) : ''}${renderOverlap()}</div>
+    </div>${tail}`;
+
+  /* Phone: one column, timeline first */
+  return `${head}
     ${renderAlerts()}
     ${renderTimeline()}
     ${renderClash()}
@@ -1318,19 +1407,8 @@ function renderHub() {
     ${lump ? renderLumpCard(lump) : ''}
     ${renderOverlap()}
     ${renderAllList()}
-
-    ${stopped.length ? `
-    <section class="card" aria-labelledby="stopped-h">
-      <div class="card-head"><h2 class="card-title" id="stopped-h">${t('stopped')}</h2><span class="muted small">${stopped.length}</span></div>
-      <p class="tiny muted" style="margin:4px 0 0">Changed your mind? You can rejoin any time.</p>
-      <ul class="list stopped">${stopped.map(subRow).join('')}</ul>
-    </section>` : ''}
-
-    ${notSubs.length ? `<p class="fine">Not counted as subscriptions: ${notSubs.map(s =>
-      `${esc(s.name)} <button class="link-btn" data-action="restoreSub" data-id="${s.id}">Restore</button>`).join(' · ')}</p>` : ''}
-
-    <p class="fine">Subscriptions only — not rent, loans, insurance or bills.<br>We never cancel or block a payment for you.<br>
-      <button class="link-btn" data-action="replayGuess">Replay “guess your total”</button></p>`;
+    ${stoppedHtml}
+    ${tail}`;
 }
 
 /* One control that reframes every recurring amount: €23 a month ↔ €276 a year */
@@ -1620,11 +1698,33 @@ function renderDetail(id) {
     chip = `<span class="next-chip calm">${icon('shield', 16)} We'll check on ${fmtShort(s.checkOn)}</span>`;
   }
 
+  const wide = isWide();
+  const factsHtml = `
+    <section class="card" aria-label="Facts">
+      <dl class="facts">
+        <div><dt>${t('paid')}</dt><dd class="num">${s.paid2026 === null ? '—' : eur(s.paid2026)}</dd></div>
+        <div><dt>${t('billedVia')}</dt><dd>${chLabel(s.channel)}</dd></div>
+        <div><dt>${s.source === 'manual' ? 'Source' : t('since')}</dt><dd>${s.source === 'manual' ? 'Added by you' : monthYear(s.since)}</dd></div>
+        <div><dt>${t('lastOpened')}</dt><dd>${s.lastOpened || 'Not known'}</dd></div>
+      </dl>
+    </section>`;
+  const usageHtml = `
+    ${live ? `
+    <section class="card" aria-labelledby="use-h">
+      <h2 class="card-title" id="use-h">${t('usageQ')}</h2>
+      <div class="choices" role="group" aria-labelledby="use-h">
+        ${[['yes', t('yes')], ['little', t('little')], ['no', t('no')]].map(([v, l]) =>
+          `<button class="choice" data-action="usage" data-id="${s.id}" data-value="${v}" aria-pressed="${s.usage === v}">${l}</button>`).join('')}
+      </div>
+      ${s.usage ? `<p class="tiny muted" style="margin:8px 0 0">Noted — only you and your bank see this.</p>` : ''}
+    </section>` : ''}`;
+
   return `
     <div class="top-row">
       <button class="back" data-action="back">${icon('back')} ${t('back')}</button>
       ${periodToggle()}
     </div>
+    ${wide ? '<div class="cols"><div class="col">' : ''}
     <div class="d-hero">
       ${logo(s)}
       <div class="grow">
@@ -1662,24 +1762,7 @@ function renderDetail(id) {
       </div>
     </section>` : ''}
 
-    <section class="card" aria-label="Facts">
-      <dl class="facts">
-        <div><dt>${t('paid')}</dt><dd class="num">${s.paid2026 === null ? '—' : eur(s.paid2026)}</dd></div>
-        <div><dt>${t('billedVia')}</dt><dd>${chLabel(s.channel)}</dd></div>
-        <div><dt>${s.source === 'manual' ? 'Source' : t('since')}</dt><dd>${s.source === 'manual' ? 'Added by you' : monthYear(s.since)}</dd></div>
-        <div><dt>${t('lastOpened')}</dt><dd>${s.lastOpened || 'Not known'}</dd></div>
-      </dl>
-    </section>
-
-    ${live ? `
-    <section class="card" aria-labelledby="use-h">
-      <h2 class="card-title" id="use-h">${t('usageQ')}</h2>
-      <div class="choices" role="group" aria-labelledby="use-h">
-        ${[['yes', t('yes')], ['little', t('little')], ['no', t('no')]].map(([v, l]) =>
-          `<button class="choice" data-action="usage" data-id="${s.id}" data-value="${v}" aria-pressed="${s.usage === v}">${l}</button>`).join('')}
-      </div>
-      ${s.usage ? `<p class="tiny muted" style="margin:8px 0 0">Noted — only you and your bank see this.</p>` : ''}
-    </section>` : ''}
+    ${wide ? usageHtml + '</div><div class="col">' + factsHtml : factsHtml + usageHtml}
 
     <section class="card" aria-labelledby="ph-h">
       <h2 class="card-title" id="ph-h">${t('priceHist')}</h2>
@@ -1687,6 +1770,7 @@ function renderDetail(id) {
     </section>
 
     ${renderRecognised(s)}
+    ${wide ? '</div></div>' : ''}
 
     ${s.source === 'manual' ? `<p class="fine"><button class="link-btn" data-action="removeSub" data-id="${s.id}">Remove from my list</button></p>` : ''}
     <p class="fine">You decide. We point the way but never cancel or block a payment for you.</p>`;
@@ -2425,7 +2509,8 @@ const actions = {
   reset() { resetDemo(); },
   taskPrev() { ui.taskIndex = Math.max(0, ui.taskIndex - 1); updateDemoBar(); },
   taskNext() { ui.taskIndex = Math.min(TASKS.length - 1, ui.taskIndex + 1); updateDemoBar(); },
-  demoToggle() { setDemoOpen(!els.demo.classList.contains('open')); },
+  demoToggle() { setDemoOpen(isLaptop() ? document.body.classList.contains('demo-hidden') : !els.demo.classList.contains('open')); },
+  setView(d) { setView(d.value); },
 };
 
 /* One click listener for the whole page */
@@ -2499,7 +2584,7 @@ document.addEventListener('keydown', e => {
    --------------------------------------------------------------------- */
 const TASKS = [
   { text: "You've been notified about a charge. Stop it before Friday.",
-    hint: 'Start on the phone: tap the notification.',
+    hint: 'Start with the notification — click or tap it.',
     done: () => { const s = findSub('pixelcraft'); return !!s && (s.status === 'stopping' || s.status === 'stopped'); } },
   { text: "Your music is billed by your phone's app store. Add it so the total is real.",
     hint: 'Look for the payment your bank can’t identify.',
@@ -2512,7 +2597,7 @@ const TASKS = [
 /* Advance the demo clock by one calendar month and process every charge in between */
 function fastForward() {
   closeSheet(false);
-  setDemoOpen(false);
+  closeDemoOverlay();
   ui.addDraft = null;
   const from = state.today, to = addMonths(from, 1), fresh = [];
 
@@ -2569,7 +2654,7 @@ function addAlert(a) { a.id = 'a' + (++ui.seq); state.alerts.unshift(a); return 
 
 function resetDemo() {
   closeSheet(false);
-  setDemoOpen(false);
+  closeDemoOverlay();
   state = initialState();
   ui = initialUi();
   document.documentElement.lang = 'en';
@@ -2584,7 +2669,8 @@ function updateDemoBar() {
   const t = TASKS[ui.taskIndex], done = t.done();
   els.taskNum.textContent = `Task ${ui.taskIndex + 1} of ${TASKS.length}`;
   els.taskText.textContent = t.text;
-  els.taskHint.textContent = ui.taskIndex === 2 && state.today !== DAY0 && !done ? `Look at the top of the ${BANK.feature} tab.` : t.hint;
+  els.taskHint.textContent = done ? 'Done. Press Reset demo before the next tester.'
+    : ui.taskIndex === 2 && state.today !== DAY0 ? `Look at the top of the ${BANK.feature} tab.` : t.hint;
   els.taskDone.hidden = !done;
   els.taskPrev.disabled = ui.taskIndex === 0;
   els.taskNext.disabled = ui.taskIndex === TASKS.length - 1;
@@ -2602,14 +2688,37 @@ function updateTabbar() {
   });
 }
 
+/* Laptop view is used on screens ≥ 900px unless the presenter picks the phone frame */
+const isLaptop = () => demo.view === 'laptop' && window.innerWidth >= 900;
+/* Two-column hub and detail when the main area is wide enough */
+const isWide = () => isLaptop() && els.screen.clientWidth >= 760;
+
+function setView(view) {
+  demo.view = view;
+  document.body.classList.toggle('view-laptop', view === 'laptop');
+  document.body.classList.remove('demo-hidden');
+  els.viewBtns.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.value === view)));
+  fitDevice();
+  refresh();
+}
+
+/* Laptop: show/hide the right-hand panel. Phone sizes: open/close the floating panel. */
 function setDemoOpen(open) {
-  els.demo.classList.toggle('open', open);
+  if (isLaptop()) {
+    document.body.classList.toggle('demo-hidden', !open);
+    refresh();   // the main area changed width
+  } else {
+    els.demo.classList.toggle('open', open);
+  }
   els.fab.setAttribute('aria-expanded', String(open));
+}
+function closeDemoOverlay() {   // only the phone-size floating panel closes itself after an action
+  if (!isLaptop()) setDemoOpen(false);
 }
 
 /* Scale the phone frame to fit short desktop windows */
 function fitDevice() {
-  const s = window.innerWidth >= 900 ? Math.max(.6, Math.min(1, (window.innerHeight - 48) / 864)) : 1;
+  const s = window.innerWidth >= 900 && !isLaptop() ? Math.max(.6, Math.min(1, (window.innerHeight - 48) / 864)) : 1;
   document.documentElement.style.setProperty('--s', s.toFixed(3));
 }
 
@@ -2644,7 +2753,7 @@ function applyTheme(id) {
    --------------------------------------------------------------------- */
 let pageReturnFocus = null;
 function openPage(name) {
-  setDemoOpen(false);
+  closeDemoOverlay();
   pageReturnFocus = document.activeElement;
   demo.page = name;
   els.page.className = 'page ' + name;
@@ -3298,8 +3407,17 @@ function boot() {
   els.stage = document.querySelector('.stage');
   applyTheme(BANK.id);
 
+  els.viewBtns = document.getElementById('viewBtns');
+  document.body.classList.add('view-laptop');
   fitDevice();
-  window.addEventListener('resize', fitDevice);
+  /* Re-render when the window crosses between one and two columns */
+  let wasWide = null;
+  window.addEventListener('resize', () => {
+    fitDevice();
+    const wide = isWide();
+    if (wasWide !== null && wide !== wasWide) refresh();
+    wasWide = wide;
+  });
   /* The phone frame clips its content; never let focus or keyboard scrolling shift it */
   els.app.addEventListener('scroll', () => { els.app.scrollTop = 0; els.app.scrollLeft = 0; });
 
