@@ -19,6 +19,8 @@ University artefact for ICT Business Management (Artefact 3).
 3. **Points to the exit** — where each subscription is managed, its cancellation page, and the deadline.
 4. **Confirms it stopped** — next month it checks the charge really disappeared, and flags it if not.
 
+Bank-only extras in the prototype: balance warnings against upcoming charges, **cancellation proof** kept by the bank and attached to any dispute, and **split with friends** through payment requests.
+
 It never cancels anything for the customer, never blocks a payment, and gives no budgeting advice.
 
 ## Try it
@@ -34,6 +36,7 @@ Tester tasks (shown in the demo controls):
 2. Your music is billed by your phone's app store. Add it so the total is real.
 3. A month has passed. Check whether your cancellation worked. (Use **Fast-forward one month**.)
 4. Optional: jump one more month. A charge you stopped came back — sort it out.
+5. Optional: you share Streamview with two flatmates. Split the cost with them.
 
 Press **Reset demo** before each new tester.
 

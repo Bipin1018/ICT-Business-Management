@@ -886,6 +886,35 @@ body.view-laptop .cols > .col > .total:first-child,body.view-laptop .cols > .col
 }
 .total-link{display:inline-flex;align-items:center;min-height:36px;padding:0 2px;border:0;background:none;color:var(--gold-lite);font:700 13px var(--sans);text-decoration:underline;text-underline-offset:3px}
 .week-svg .halo{paint-order:stroke;stroke:var(--paper);stroke-width:4px;stroke-linejoin:round}
+
+/* =====================================================================
+   17. CANCELLATION PROOF + SPLIT WITH FRIENDS
+   ===================================================================== */
+.proof{margin-top:16px;padding:16px;border:1.5px dashed var(--moss);border-radius:16px;background:var(--paper)}
+.proof-head{display:flex;align-items:center;gap:10px}
+.proof-head .card-title{flex:1}
+.proof-ico{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--mint);color:var(--forest)}
+.proof-dl{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 0;padding-top:12px;border-top:1px dashed var(--line)}
+.proof-dl dt{font-size:12px;color:var(--slate)}
+.proof-dl dd{margin:2px 0 0;font-weight:700;font-size:14px;overflow-wrap:anywhere}
+.mono{font-family:var(--mono);font-weight:600}
+.proof-note{margin:12px 0 0;font-size:12.5px;color:var(--slate)}
+.evidence{margin-top:14px;padding:12px 14px;border-radius:12px;background:var(--mint)}
+.evidence .eyebrow{display:flex;align-items:center;gap:6px;color:var(--forest-2)}
+.evidence .bullets{margin-top:6px}
+.split-invite{display:flex;align-items:center;gap:12px;margin-top:16px;padding:14px;border:1px solid var(--line);border-radius:16px;background:var(--paper)}
+.split-invite p{margin:3px 0 0;font-size:13.5px;color:var(--slate)}
+.split-list{list-style:none;margin:10px 0 0;padding:0}
+.split-list li{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+.split-list b{display:block;font-size:14.5px}
+.split-list small{display:block;font-size:12.5px;color:var(--slate)}
+.avatar-sm{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;color:#fff;font:700 13px var(--sans)}
+.contact-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.contact-chip{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px 0 6px;border:1.5px solid var(--line);border-radius:999px;background:var(--paper);font:600 14.5px var(--sans)}
+.contact-chip[aria-pressed="true"]{border-color:var(--forest);background:var(--mint);box-shadow:inset 0 0 0 1px var(--forest)}
+.split-preview{display:flex;flex-direction:column;gap:2px;margin-top:14px;padding:14px;border-radius:14px;background:var(--cream-2)}
+.split-preview b{font:400 22px var(--serif)}
+.split-preview span{font-size:13.5px;color:var(--slate)}
 </style>
 </head>
 
@@ -1353,6 +1382,7 @@ const ICONS = {
   sliders:  '<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>',
   globe:    '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18"/>',
   belloff:  '<path d="M6 16v-5a6 6 0 0 1 9.5-4.9M18 11v5l1.5 2H8"/><path d="M4 4l16 16"/>',
+  users:    '<circle cx="9" cy="8" r="3.2"/><path d="M3 19c.6-3.3 3-5 6-5s5.4 1.7 6 5"/><circle cx="17" cy="9" r="2.6"/><path d="M16.5 14c2.4.2 4 1.7 4.5 4.5"/>',
 };
 const icon = (name, size = 20) =>
   `<svg class="i" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${ICONS[name]}</svg>`;
@@ -1632,7 +1662,7 @@ function renderSpendBars() {
           const m = monthly(x);
           const tag = x.status === 'stopping' ? ' · stopping' : x.trial ? ' · trial' : '';
           return `<li><button class="bar-row" data-action="open" data-id="${x.id}" aria-label="${esc(x.name)}: ${eur(inPeriod(m))} a ${perLabel()}${tag}">
-            <span class="bar-top"><span class="bar-name"><i style="background:${x.color}"></i>${esc(x.name)}${x.trial ? ' <span class="pill gold">Trial</span>' : ''}</span><span class="bar-val">${eur(inPeriod(m))}</span></span>
+            <span class="bar-top"><span class="bar-name"><i style="background:${x.color}"></i>${esc(x.name)}${x.trial ? ' <span class="pill gold">Trial</span>' : ''}${x.split ? ' <span class="pill moss">Split</span>' : ''}</span><span class="bar-val">${eur(inPeriod(m))}</span></span>
             <span class="bar-track" aria-hidden="true"><span class="bar-fill${x.trial ? ' trial' : ''}${x.status === 'stopping' ? ' stopping' : ''}" style="width:${Math.max(3, Math.round(m / max * 100))}%"></span></span>
           </button></li>`;
         }).join('')}
@@ -1835,6 +1865,25 @@ function attentionCards() {
   /* Student-plan detector: the audience is students; this is about this subscription, not budgeting */
   state.subs.filter(x => x.status === 'active' && x.studentCents && x.cents > x.studentCents && !x.studentSeen).forEach(x => cards.push(studentCard(x)));
 
+  /* Split: a friend hasn't paid an earlier request */
+  state.subs.filter(x => x.split && x.split.rounds.length > 1).forEach(x => {
+    const prev = x.split.rounds[x.split.rounds.length - 2];
+    const late = x.split.with.filter(n => !prev.paid[n]);
+    if (!late.length) return;
+    cards.push(`
+      <article class="att">
+        <span class="att-ico">${icon('users', 20)}</span>
+        <div class="att-body">
+          <h3 class="att-h">${late.join(' and ')} hasn't paid ${eur(x.split.share)} for ${esc(x.name)}</h3>
+          <p>From the request on ${fmtShort(prev.date)}. A friendly reminder usually does it.</p>
+          <div class="att-actions">
+            <button class="btn btn-ghost btn-sm" data-action="splitRemind" data-id="${x.id}" data-value="${late.join(' and ')}">Remind ${late.length === 1 ? late[0] : 'them'}</button>
+            <button class="link-btn" data-action="open" data-id="${x.id}">See ${esc(x.name)}</button>
+          </div>
+        </div>
+      </article>`);
+  });
+
   /* Feature 3 — price-change alert (a rise in the last 12 months) */
   state.subs.filter(s => isLive(s) && !s.riseSeen).forEach(s => {
     const r = priceRise(s);
@@ -1975,7 +2024,7 @@ function renderAlerts() {
         <span class="b-ico">${icon('alert')}</span>
         <div class="grow">
           <h2 class="banner-h">${esc(s.name)} charged ${eur(a.cents)} <em>after</em> you stopped it.</h2>
-          <p>We confirmed no charge on ${fmtShort(s.confirmedOn)}, but ${eur(a.cents)} arrived on ${fmtShort(a.date)}.</p>
+          <p>We confirmed no charge on ${fmtShort(s.confirmedOn)}, but ${eur(a.cents)} arrived on ${fmtShort(a.date)}.${s.proof ? ' Your cancellation proof is ready to attach.' : ''}</p>
           ${a.disputeRef
             ? `<p><span class="pill moss">${icon('check', 12)} Dispute opened · ${a.disputeRef}</span></p>`
             : `<div class="row"><button class="btn btn-danger btn-sm" data-action="dispute" data-id="${a.id}">Dispute this charge</button>
@@ -2151,6 +2200,7 @@ function subRow(s) {
   const rise = priceRise(s);
   const tag =
       s.ghost ? '<span class="pill danger">Charged after stopping</span>'
+    : s.split && isLive(s) ? `<span class="pill moss">Split ${s.split.with.length + 1} ways</span>`
     : s.status === 'active' && s.trial ? `<span class="pill gold">Trial ends ${fmtDM(s.next)}</span>`
     : zombie(s) ? '<span class="pill">Not used lately</span>'
     : rise && isLive(s) ? `<span class="pill">+${eur(rise.diff)} since ${rise.month}</span>`
@@ -2275,7 +2325,9 @@ function renderDetail(id) {
     </section>` : ''}
 
     ${s.status === 'active' && s.studentCents && s.cents > s.studentCents && !s.studentSeen ? studentCard(s) : ''}
+    ${renderSplit(s)}
     ${renderStatusBanner(s)}
+    ${renderProof(s)}
     ${active ? renderClash(s) : ''}
     ${s.trial && active ? renderRadar(s) : ''}
     ${s.cycle === 'yearly' && active ? renderAnnualNote(s) : ''}
@@ -2303,7 +2355,7 @@ function renderStatusBanner(s) {
       <span class="b-ico">${icon('check')}</span>
       <div class="grow">
         <h2 class="banner-h">Stopping — we'll check on ${fmtDM(s.checkOn)}.</h2>
-        <p>You cancelled on ${fmtShort(s.stoppedOn)}. On ${fmtShort(s.checkOn)} we'll look for a charge and tell you if one still arrives.</p>
+        <p>You cancelled on ${fmtShort(s.stoppedOn)}${s.proof ? ' and we saved the proof' : ''}. On ${fmtShort(s.checkOn)} we'll look for a charge and tell you if one still arrives.</p>
         <div class="row"><button class="link-btn" data-action="undoStop" data-id="${s.id}">I didn't cancel after all</button></div>
       </div>
     </section>`;
@@ -2655,7 +2707,7 @@ function renderProvider(id) {
     <div class="prov-done">${icon('check', 32)}</div>
     <h1 class="prov-h" tabindex="-1">Subscription cancelled</h1>
     <p class="prov-p">You can keep using ${esc(s.name)} until <strong>${fmtLong(access)}</strong>. You won't be charged again.</p>
-    <span class="prov-ref">Confirmation ${s.id.slice(0, 2).toUpperCase()}-48213</span>
+    <span class="prov-ref">Confirmation ${providerRef(s)}</span>
     <button class="prov-btn" data-action="provDone" data-id="${s.id}" data-autofocus>Return to ${BANK.name}</button>`;
 
   return `
@@ -2804,8 +2856,102 @@ function renderExitGuide(s) {
     ${s.pause ? `<div class="meta-row">${icon('clock', 18)}<span>Prefer a break? ${esc(s.name)} lets you <strong>pause for up to ${s.pause} months</strong> instead — in the same place.</span></div>` : ''}
 
     <button class="btn btn-gold btn-block mt" data-action="openCancel" data-id="${s.id}" data-autofocus>Open cancellation page ${icon('external', 18)}</button>
-    <p class="fine" style="margin-top:8px">Opens ${esc(s.name)}'s official page. We never cancel anything for you.</p>
-    <button class="btn btn-ghost btn-block mt" data-action="closeSheet">Not now</button>`;
+    <p class="fine" style="margin-top:8px">Opens ${esc(s.name)}'s official page. We never cancel anything for you — and when you're done, we keep proof of it.</p>
+    <button class="btn btn-ghost btn-block mt" data-action="proofManual" data-id="${s.id}">I already cancelled it another way</button>
+    <button class="link-btn" data-action="closeSheet" style="display:block;margin:6px auto 0">Not now</button>`;
+}
+
+/* Friends Aino can send payment requests to (invented) */
+const CONTACTS = [
+  { name: 'Eero', color: '#2563A8' }, { name: 'Sanni', color: '#9D2F7E' },
+  { name: 'Mikko', color: '#B45309' }, { name: 'Lotta', color: '#0F766E' },
+];
+const splitShare = (cents, n) => Math.round(cents / (n + 1));            // each friend's part
+const canSplit = s => isLive(s) && (s.channel === 'family' || s.group === 'entertainment');
+const lastRound = s => s.split && s.split.rounds[s.split.rounds.length - 1];
+function unpaidFriends(s) {
+  if (!s.split) return [];
+  const r = lastRound(s);
+  return s.split.with.filter(n => !r.paid[n]);
+}
+
+/* Split card on the subscription page: an invitation, or the live status of who has paid */
+function renderSplit(s) {
+  if (!canSplit(s) && !s.split) return '';
+  if (!s.split) return `
+    <section class="split-invite">
+      <span class="att-ico">${icon('users', 20)}</span>
+      <div class="grow"><h3 class="att-h">Share ${esc(s.name)} with someone?</h3>
+        <p>Split the cost with flatmates or family — we send the payment requests.</p></div>
+      <button class="btn btn-ghost btn-sm" data-action="splitOpen" data-id="${s.id}">Split</button>
+    </section>`;
+  const sp = s.split, r = lastRound(s), n = sp.with.length;
+  const mine = s.cents - sp.share * n;
+  return `
+    <section class="card split" aria-labelledby="split-h-${s.id}">
+      <div class="card-head"><h2 class="card-title" id="split-h-${s.id}">Shared ${n + 1} ways</h2><span class="pill moss">${icon('users', 12)} Split</span></div>
+      <p class="small" style="margin:6px 0 0">You pay <strong>${eur(mine)}</strong> of ${eur(s.cents)}. ${eur(sp.share * n)} comes back ${sp.monthly ? 'every month' : 'this time'}.</p>
+      <ul class="split-list">
+        ${sp.with.map(name => {
+          const c = CONTACTS.find(x => x.name === name) || { color: '#55606B' };
+          const paid = r.paid[name];
+          return `<li><span class="avatar-sm" style="background:${c.color}" aria-hidden="true">${name[0]}</span>
+            <span class="grow"><b>${name}</b><small>${eur(sp.share)} · requested ${fmtShort(r.date)}</small></span>
+            ${paid ? `<span class="pill moss">${icon('check', 12)} Paid</span>`
+                   : `<button class="link-btn" data-action="splitRemind" data-id="${s.id}" data-value="${name}">Remind</button>`}</li>`;
+        }).join('')}
+      </ul>
+      <p class="tiny muted" style="margin:8px 0 0">Requests go through ${BANK.name}. Nothing is ever taken from your friends automatically.
+        <button class="link-btn" data-action="splitStop" data-id="${s.id}">Stop splitting</button></p>
+    </section>`;
+}
+
+function renderSplitSheet(s) {
+  const d = ui.splitDraft;
+  const n = d.with.length, share = splitShare(s.cents, n), mine = s.cents - share * n;
+  return `
+    <p class="eyebrow">Split the cost</p>
+    <h2 class="sheet-title">Who shares <em>${esc(s.name)}</em> with you?</h2>
+    <div class="contact-chips" role="group" aria-label="Friends">
+      ${CONTACTS.map(c => `<button class="contact-chip" data-action="splitToggle" data-value="${c.name}" aria-pressed="${d.with.includes(c.name)}">
+        <span class="avatar-sm" style="background:${c.color}" aria-hidden="true">${c.name[0]}</span>${c.name}</button>`).join('')}
+    </div>
+    <div class="split-preview" aria-live="polite">
+      ${n ? `<b>${eur(s.cents)} ÷ ${n + 1} = ${eur(share)} each</b><span>You pay ${eur(mine)} · ${eur(share * n)} comes back</span>`
+          : `<span>Pick at least one person.</span>`}
+    </div>
+    <button class="check-toggle mt" data-action="splitMonthly" aria-pressed="${d.monthly}">
+      <span class="tick">${icon('check', 14)}</span>
+      <span><b>Ask again every month</b><small>A new request goes out each time ${esc(s.name)} charges</small></span>
+    </button>
+    <button class="btn btn-gold btn-block mt" data-action="splitSave" data-id="${s.id}" ${n ? '' : 'disabled'} data-autofocus>
+      Send ${n || ''} payment request${n === 1 ? '' : 's'}</button>
+    <p class="fine" style="margin-top:8px">Friends pay in one tap from their own bank. We never take money automatically.</p>`;
+}
+
+/* The provider's confirmation number shown on its (mock) cancellation page */
+const providerRef = s => `${s.id.slice(0, 2).toUpperCase()}-48213`;
+
+/* Cancellation proof: a receipt the bank keeps, ready for a dispute */
+function renderProof(s) {
+  const p = s.proof;
+  if (!p || (s.status !== 'stopping' && s.status !== 'stopped')) return '';
+  const done = s.status === 'stopped';
+  return `
+    <section class="proof" aria-labelledby="proof-h-${s.id}">
+      <div class="proof-head">
+        <span class="proof-ico">${icon('shield', 18)}</span>
+        <h2 class="card-title" id="proof-h-${s.id}">Cancellation proof</h2>
+        <span class="pill moss">${icon('check', 12)} Saved</span>
+      </div>
+      <dl class="proof-dl">
+        <div><dt>Cancelled</dt><dd>${fmtShort(p.on)} · ${p.time}</dd></div>
+        <div><dt>Confirmation</dt><dd class="mono">${esc(p.ref)}</dd></div>
+        <div><dt>Where</dt><dd>${esc(p.via)}</dd></div>
+        <div><dt>${done ? 'No charge on' : 'Must not charge on'}</dt><dd>${fmtShort(p.expected)}${done ? ' ✓' : ''}</dd></div>
+      </dl>
+      <p class="proof-note">Kept by ${BANK.name}. If a charge arrives anyway, this proof goes with your dispute.</p>
+    </section>`;
 }
 
 /* The bank's own dispute flow, reached from a ghost charge */
@@ -2817,17 +2963,27 @@ function renderDispute(a) {
     <h2 class="sheet-title">We've <em>got it</em> from here.</h2>
     <div class="banner ok"><span class="b-ico">${icon('check')}</span><div class="grow">
       <p style="margin:0"><strong>Reference ${a.disputeRef}</strong></p>
-      <p>We'll update you within 10 banking days. You don't need to do anything else.</p></div></div>
+      <p>${s.proof ? `Your cancellation proof (${esc(s.proof.ref)}) is attached. ` : ''}We'll update you within 10 banking days. You don't need to do anything else.</p></div></div>
     <button class="btn btn-gold btn-block mt" data-action="closeSheet" data-autofocus>Done</button>`;
   return `
     <p class="eyebrow">${BANK.name} · dispute a charge</p>
     <h2 class="sheet-title">This charge <em>shouldn't</em> be here.</h2>
     <div class="stmt"><span>${s.name.toUpperCase().replace(/\s+/g, '')}*MEMBERSHIP</span><span>${eurFi(a.cents)}</span><span>${fmtStmt(a.date)}</span></div>
+    ${s.proof ? `
+    <div class="evidence">
+      <p class="eyebrow">${icon('shield', 13)} Evidence we'll attach</p>
+      <ul class="bullets">
+        <li>Cancelled on ${fmtShort(s.proof.on)} at ${s.proof.time} — ${esc(s.proof.via)}</li>
+        <li>Confirmation number <span class="mono">${esc(s.proof.ref)}</span></li>
+        <li>We confirmed no charge on ${fmtShort(s.confirmedOn)}</li>
+        <li>${eur(a.cents)} arrived on ${fmtShort(a.date)} anyway</li>
+      </ul>
+    </div>` : `
     <ul class="bullets">
       <li>You stopped ${esc(s.name)} on ${fmtShort(s.stoppedOn)}.</li>
       <li>We confirmed no charge on ${fmtShort(s.confirmedOn)}.</li>
       <li>${eur(a.cents)} arrived on ${fmtShort(a.date)} anyway.</li>
-    </ul>
+    </ul>`}
     <p class="small">Contacting ${esc(s.name)} first is often fastest. If that doesn't work, we can dispute it with the card network for you.</p>
     <button class="btn btn-gold btn-block mt" data-action="disputeConfirm" data-id="${a.id}" data-autofocus>Start a dispute</button>
     <button class="btn btn-ghost btn-block mt" data-action="closeSheet">Not now</button>`;
@@ -2912,8 +3068,79 @@ const actions = {
   provDone(d) {
     const s = findSub(d.id);
     Object.assign(s, { status: 'stopping', decision: 'stop', remindOn: null, stoppedOn: state.today, checkOn: s.next });
+    /* keep proof: the provider's confirmation number, when, where, and the date that must stay charge-free */
+    s.proof = { ref: providerRef(s), on: state.today, time: '09:41', via: `${s.name}'s cancellation page`, expected: s.next };
     goBack('detail', d.id);
-    toast(`Marked as stopping — we'll check on ${fmtDM(s.checkOn)}.`);
+    toast(`Stopping — proof saved. We'll check on ${fmtDM(s.checkOn)}.`);
+  },
+  /* --- split with friends --- */
+  splitOpen(d) {
+    const s = findSub(d.id);
+    ui.splitDraft = { id: s.id, with: [], monthly: true };
+    openSheet(renderSplitSheet(s), `Split ${s.name}`);
+  },
+  splitToggle(d) {
+    const w = ui.splitDraft.with;
+    ui.splitDraft.with = w.includes(d.value) ? w.filter(x => x !== d.value) : w.concat(d.value);
+    setSheetContent(renderSplitSheet(findSub(ui.splitDraft.id)));
+    const b = els.sheet.querySelector(`[data-action="splitToggle"][data-value="${d.value}"]`);
+    if (b) b.focus({ preventScroll: true });
+  },
+  splitMonthly() {
+    ui.splitDraft.monthly = !ui.splitDraft.monthly;
+    setSheetContent(renderSplitSheet(findSub(ui.splitDraft.id)));
+  },
+  splitSave(d) {
+    const s = findSub(d.id), dr = ui.splitDraft;
+    if (!dr.with.length) return;
+    const paid = {};
+    dr.with.forEach(n => { paid[n] = false; });
+    s.split = { with: dr.with.slice(), share: splitShare(s.cents, dr.with.length), monthly: dr.monthly, rounds: [{ date: state.today, paid }] };
+    closeSheet(false);
+    refresh();
+    toast(`Requests sent to ${dr.with.join(' and ')} — ${eur(s.split.share)} each.`);
+    /* demo: the first friend pays a few seconds later, the rest by next month */
+    const session = ui, first = dr.with[0];
+    setTimeout(() => {
+      if (ui !== session || !s.split || !lastRound(s) || lastRound(s).paid[first] === undefined) return;
+      lastRound(s).paid[first] = true;
+      refresh();
+      toast(`${first} paid you ${eur(s.split.share)} for ${s.name}.`);
+    }, 4000);
+  },
+  splitRemind(d) { toast(`Reminder sent to ${d.value}.`); },
+  splitStop(d) {
+    const s = findSub(d.id), before = s.split;
+    s.split = null;
+    refresh();
+    toast(`${s.name} is no longer split.`, () => { s.split = before; refresh(); });
+  },
+
+  /* Cancelled somewhere else (PayPal, app store, email)? Add the confirmation yourself. */
+  proofManual(d) {
+    const s = findSub(d.id);
+    openSheet(`
+      <p class="eyebrow">Already cancelled?</p>
+      <h2 class="sheet-title">Save proof of your <em>cancellation</em></h2>
+      <p class="small" style="margin-top:10px">If ${esc(s.name)} ever charges again, this goes straight into your dispute.</p>
+      <div class="field"><label for="proofRef">Confirmation number (optional)</label>
+        <input class="input" id="proofRef" maxlength="30" autocomplete="off" placeholder="e.g. from the email you got" data-enter="proofSave"></div>
+      <div class="field"><label for="proofVia">Where did you cancel?</label>
+        <select class="input" id="proofVia">
+          <option>${esc(CHANNELS[s.channel].label === 'Debit card' ? s.name + "'s website" : CHANNELS[s.channel].label)}</option>
+          <option>PayPal</option><option>Phone app store</option><option>By email</option><option>Somewhere else</option>
+        </select></div>
+      <button class="btn btn-gold btn-block mt" data-action="proofSave" data-id="${s.id}" data-autofocus>Save proof and mark as stopping</button>`, 'Save cancellation proof');
+  },
+  proofSave(d) {
+    const s = findSub(d.id);
+    const ref = document.getElementById('proofRef').value.trim();
+    const via = document.getElementById('proofVia').value;
+    Object.assign(s, { status: 'stopping', decision: 'stop', remindOn: null, stoppedOn: state.today, checkOn: s.next });
+    s.proof = { ref: ref || 'Not given', on: state.today, time: '09:41', via, expected: s.next, manual: true };
+    closeSheet(false);
+    showScreen('detail', s.id);
+    toast(`Proof saved. We'll check on ${fmtDM(s.checkOn)} that ${s.name} doesn't charge.`);
   },
 
   /* --- add what the bank can't see --- */
@@ -3192,6 +3419,9 @@ const TASKS = [
   { text: 'Optional: jump one more month. A charge you stopped came back — sort it out.',
     hint: 'Fast-forward again, then look at the top of the screen.',
     done: () => state.alerts.some(a => a.type === 'ghost' && a.disputeRef) },
+  { text: 'Optional: you share Streamview with two flatmates. Split the cost with them.',
+    hint: 'Open Streamview — from the All tab or "Where it goes".',
+    done: () => state.subs.some(x => x.split) },
 ];
 
 /* Advance the demo clock by one calendar month and process every charge in between */
@@ -3255,6 +3485,15 @@ function processCharge(s, date, fresh) {
     if (date.startsWith('2026') && s.paid2026 !== null) s.paid2026 += s.cents;
     fresh.charged = (fresh.charged || 0) + 1;
     fresh.chargedCents = (fresh.chargedCents || 0) + s.cents;
+    if (s.split) {
+      const r = lastRound(s);
+      s.split.with.forEach((n, i) => { if (i < s.split.with.length - 1 || s.split.with.length === 1) r.paid[n] = true; });
+      if (s.split.monthly) {
+        const paid = {};
+        s.split.with.forEach(n => { paid[n] = false; });
+        s.split.rounds.push({ date, paid });
+      }
+    }
     s.trial = false;
     if (s.decision === 'unsure') s.decision = null;
     s.remindOn = null;
