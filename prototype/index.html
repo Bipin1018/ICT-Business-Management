@@ -395,7 +395,7 @@ button{cursor:pointer}
 .lock-hint{margin:40px 0 8px;text-align:center;font-size:12.5px;font-weight:600;opacity:.85}
 .notif{display:grid;grid-template-columns:38px 1fr;gap:10px;width:calc(100% - 24px);margin:0 12px;padding:12px 14px;border:0;border-radius:22px;text-align:left;
   background:rgba(251,248,241,.84);color:var(--ink);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
-  box-shadow:0 14px 34px -12px rgba(0,0,0,.45);animation:notifIn 420ms var(--ease)}
+  box-shadow:0 14px 34px -12px rgba(0,0,0,.45);animation:notifIn 520ms var(--ease) 250ms both}
 .notif:hover{background:rgba(251,248,241,.95)}
 .notif:focus-visible{outline-color:var(--gold-lite);outline-offset:3px}
 .notif-icon{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:var(--bank)}
@@ -667,7 +667,9 @@ button{cursor:pointer}
 @keyframes fade{from{opacity:0}to{opacity:1}}
 @keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
 @keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-@keyframes notifIn{from{transform:translateY(-12px) scale(.98)}to{transform:none}}   /* movement only: the card is visible from the first frame */
+@keyframes notifIn{from{opacity:0;transform:translateY(-18px) scale(.97)}to{opacity:1;transform:none}}
+/* Safety net: if a browser never runs the entrance animation (background tab, automation), show the card anyway */
+.notif.shown{animation:none}
 @keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
@@ -1510,7 +1512,9 @@ function render({ nav: isNav = false, focusTitle = false } = {}) {
   let overlay = '';
   if (ui.lockOn) overlay = renderLock();
   else if (route.name === 'cancel') overlay = renderProvider(route.param);
-  els.overlay.innerHTML = overlay;
+  /* only rebuild the overlay when it changes — otherwise the notification's entrance animation would replay
+     (and hide the card again) every time the app behind the lock screen redraws */
+  if (overlay !== els.overlay._html) { els.overlay.innerHTML = overlay; els.overlay._html = overlay; }
   els.overlay.classList.toggle('on', !!overlay);
   syncInert();
 
@@ -1561,6 +1565,10 @@ function afterRender() {
     });
     if (currentRoute().name === 'hub' && state.alerts.some(a => a.type === 'confirmed')) ui.sawConfirmation = true;
   }
+  if (ui.lockOn) setTimeout(() => {
+    const n = els.overlay.querySelector('.notif');
+    if (n && getComputedStyle(n).opacity !== '1') n.classList.add('shown');
+  }, 1000);
   updateTabbar();
   updateDemoBar();
   syncTicker();
@@ -2734,7 +2742,7 @@ function renderLock() {
         <div class="lock-time" aria-hidden="true">9:41</div>
       </div>
       ${n ? `
-        <p class="lock-hint">1 new notification</p>
+        <p class="lock-hint">1 new notification · tap to open</p>
         <button class="notif" data-action="openNotification" data-autofocus>
           <span class="notif-icon" aria-hidden="true">${bankLogo(26)}</span>
           <span>
