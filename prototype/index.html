@@ -312,6 +312,12 @@ button{cursor:pointer}
 .decide-btn .d-ico{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--cream-2);color:var(--forest)}
 .decide-btn small{font-weight:500;font-size:13px;line-height:1.3;color:var(--slate);text-align:center}
 .decide-btn[aria-pressed="true"]{border-color:var(--forest);box-shadow:inset 0 0 0 1px var(--forest);background:#F7FBF8}
+/* Detail: one primary action (Stop it), two quiet secondary ones */
+.stop-main{gap:8px}
+.stop-main small{margin-left:6px;font-weight:600;font-size:13px;opacity:.75}
+.decide-2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.decide-2 .btn{gap:6px;width:100%}
+.decide-2 .btn[aria-pressed="true"]{border-color:var(--forest);background:#F7FBF8}
 
 /* =====================================================================
    6. ADD FLOW
@@ -389,7 +395,7 @@ button{cursor:pointer}
 .lock-hint{margin:40px 0 8px;text-align:center;font-size:12.5px;font-weight:600;opacity:.85}
 .notif{display:grid;grid-template-columns:38px 1fr;gap:10px;width:calc(100% - 24px);margin:0 12px;padding:12px 14px;border:0;border-radius:22px;text-align:left;
   background:rgba(251,248,241,.84);color:var(--ink);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
-  box-shadow:0 14px 34px -12px rgba(0,0,0,.45);animation:notifIn 520ms var(--ease) 250ms both}
+  box-shadow:0 14px 34px -12px rgba(0,0,0,.45);animation:notifIn 420ms var(--ease)}
 .notif:hover{background:rgba(251,248,241,.95)}
 .notif:focus-visible{outline-color:var(--gold-lite);outline-offset:3px}
 .notif-icon{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:var(--bank)}
@@ -437,6 +443,10 @@ button{cursor:pointer}
 .task-done{font:700 12px var(--mono);color:var(--moss)}
 .task-q{margin:8px 0 4px;font:400 20px/1.22 var(--serif);}
 .task-hint{margin:0 0 8px;font-size:12.5px;color:var(--slate)}
+.task-setup{margin:0 0 10px;padding:8px 10px;border-radius:10px;background:var(--paper);font-size:13px;font-weight:600}
+.hint-link{display:block;margin:0 0 8px;padding:4px 0;border:0;background:none;color:var(--forest-2);font:600 12.5px var(--sans);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.task-done-note{color:var(--moss);font-weight:600}
+.hint-link[hidden]{display:none}
 .task-nav{display:flex;gap:6px}
 .demo-mini{flex:1;min-height:40px;border:1.5px solid var(--ink);border-radius:8px;background:var(--paper);font:700 12.5px var(--sans)}
 .demo-mini.hot{background:var(--ink);color:var(--cream)}
@@ -657,7 +667,7 @@ button{cursor:pointer}
 @keyframes fade{from{opacity:0}to{opacity:1}}
 @keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
 @keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-@keyframes notifIn{from{opacity:0;transform:translateY(-18px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes notifIn{from{transform:translateY(-12px) scale(.98)}to{transform:none}}   /* movement only: the card is visible from the first frame */
 @keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
@@ -865,6 +875,7 @@ body.view-laptop .cols > .col > .total:first-child,body.view-laptop .cols > .col
 
 .tab-intro{margin:16px 0 0;color:var(--slate);font-size:14.5px}
 .trial-grid{display:grid;gap:14px;margin-top:14px}
+.trial-card.ended{margin-top:14px;border-color:var(--line)}
 .trial-card{padding:16px;border:1px solid var(--gold-lite);border-radius:18px;background:var(--paper);box-shadow:0 1px 2px rgba(18,36,29,.05)}
 .trial-top{display:flex;align-items:center;gap:12px}
 .trial-name{margin:0;font:400 22px/1.1 var(--serif)}
@@ -888,7 +899,7 @@ body.view-laptop .cols > .col > .total:first-child,body.view-laptop .cols > .col
 .week-svg .halo{paint-order:stroke;stroke:var(--paper);stroke-width:4px;stroke-linejoin:round}
 
 /* =====================================================================
-   17. CANCELLATION PROOF + SPLIT WITH FRIENDS
+   17. CANCELLATION PROOF (the customer adds it; the bank keeps it)
    ===================================================================== */
 .proof{margin-top:16px;padding:16px;border:1.5px dashed var(--moss);border-radius:16px;background:var(--paper)}
 .proof-head{display:flex;align-items:center;gap:10px}
@@ -902,19 +913,11 @@ body.view-laptop .cols > .col > .total:first-child,body.view-laptop .cols > .col
 .evidence{margin-top:14px;padding:12px 14px;border-radius:12px;background:var(--mint)}
 .evidence .eyebrow{display:flex;align-items:center;gap:6px;color:var(--forest-2)}
 .evidence .bullets{margin-top:6px}
-.split-invite{display:flex;align-items:center;gap:12px;margin-top:16px;padding:14px;border:1px solid var(--line);border-radius:16px;background:var(--paper)}
-.split-invite p{margin:3px 0 0;font-size:13.5px;color:var(--slate)}
-.split-list{list-style:none;margin:10px 0 0;padding:0}
-.split-list li{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
-.split-list b{display:block;font-size:14.5px}
-.split-list small{display:block;font-size:12.5px;color:var(--slate)}
-.avatar-sm{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;color:#fff;font:700 13px var(--sans)}
-.contact-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
-.contact-chip{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px 0 6px;border:1.5px solid var(--line);border-radius:999px;background:var(--paper);font:600 14.5px var(--sans)}
-.contact-chip[aria-pressed="true"]{border-color:var(--forest);background:var(--mint);box-shadow:inset 0 0 0 1px var(--forest)}
-.split-preview{display:flex;flex-direction:column;gap:2px;margin-top:14px;padding:14px;border-radius:14px;background:var(--cream-2)}
-.split-preview b{font:400 22px var(--serif)}
-.split-preview span{font-size:13.5px;color:var(--slate)}
+.attach{display:flex;align-items:center;gap:10px;width:100%;min-height:52px;margin-top:10px;padding:10px 14px;border:1.5px dashed var(--line);border-radius:14px;background:var(--cream);font:600 14.5px var(--sans);text-align:left}
+.attach small{display:block;font-weight:500;font-size:12.5px;color:var(--slate)}
+.attach[aria-pressed="true"]{border-style:solid;border-color:var(--moss);background:var(--mint)}
+.attach .proof-ico{flex:none}
+.prov-copy{margin:0 0 0 8px;vertical-align:top;padding:0 12px;min-height:36px;border:1px solid var(--line);border-radius:999px;background:#fff;font:600 13px var(--sans)}
 </style>
 </head>
 
@@ -934,7 +937,9 @@ body.view-laptop .cols > .col > .total:first-child,body.view-laptop .cols > .col
     <section class="task" aria-labelledby="taskNum">
       <div class="task-top"><span class="tag" id="taskNum">Task 1 of 3</span><span class="task-done" id="taskDone" hidden>✓ DONE</span></div>
       <p class="task-q" id="taskText" aria-live="polite"></p>
-      <p class="task-hint" id="taskHint"></p>
+      <p class="task-setup" id="taskSetup" hidden></p>
+      <button class="hint-link" id="hintBtn" data-action="showHint" aria-expanded="false" aria-controls="taskHint">Stuck? Show a hint</button>
+      <p class="task-hint" id="taskHint" hidden></p>
       <div class="task-nav">
         <button class="demo-mini" id="taskPrev" data-action="taskPrev">‹ Previous</button>
         <button class="demo-mini" id="taskNext" data-action="taskNext">Next task ›</button>
@@ -1050,14 +1055,17 @@ let BANK = BANKS[0];   // the bank currently shown; switched from the demo contr
 const demo = { page: null, view: 'phone' };   // view: 'phone' frame (default) or 'laptop' app (screens ≥ 900px)
 
 /* Billing channels: label, where the subscription is managed, the exit
-   route and an honest effort estimate. */
+   route and an honest effort estimate. For card, PayPal and "other" the
+   route is the provider's own website — the same steps the (mock) page shows. */
+const WEB_ROUTE = n => [n, 'Your plan', 'Cancel subscription', 'Confirm'];
+const webExit = s => ['card', 'paypal', 'other'].includes(s.channel);
 const CHANNELS = {
   card:       { label: 'Debit card',  effort: 'about 3 minutes',
-                where: n => `Card subscriptions are stopped with ${n} directly, on their website or app.`,
-                route: n => [n, 'Account', 'Subscription', 'Cancel'] },
+                where: n => `Card subscriptions are stopped on ${n}'s own website.`,
+                route: WEB_ROUTE },
   paypal:     { label: 'PayPal',      effort: 'about 2 minutes',
-                where: n => `This one is paid through PayPal, so you can stop it there — or on ${n}'s own page.`,
-                route: n => ['Settings', 'Payments', 'Automatic payments', n] },
+                where: n => `It's paid through PayPal, but the plan itself is stopped on ${n}'s own website.`,
+                route: WEB_ROUTE },
   appstore:   { label: 'App store',   effort: 'about 1 minute',
                 where: () => 'App store subscriptions are stopped in your phone settings.',
                 route: n => ['Settings', 'Your name', 'Subscriptions', n] },
@@ -1069,7 +1077,7 @@ const CHANNELS = {
                 route: n => [`${n} family settings`, 'Members', 'Leave plan'] },
   other:      { label: 'Other',       effort: 'about 5 minutes',
                 where: n => `Stopped on ${n}'s own website.`,
-                route: n => [n, 'Billing', 'Cancel plan'] },
+                route: WEB_ROUTE },
 };
 
 /* Feature 8 — how hard is the exit? Shown on the Stop button and in the exit guide. */
@@ -1079,7 +1087,7 @@ function exitHint(s, short) {
     case 'appstore':   return short ? 'In app store · 1 min' : "Must cancel in your phone's app store · about 1 minute";
     case 'googleplay': return short ? 'In Google Play · 1 min' : 'Must cancel in Google Play · about 1 minute';
     case 'family':     return short ? 'Ask plan owner' : 'The plan owner removes you — or you leave the family plan';
-    case 'paypal':     return short ? `2 min · ${steps} steps` : `About 2 minutes · ${steps} steps in PayPal`;
+    case 'paypal':     return short ? `2 min · ${steps} steps` : `About 2 minutes · ${steps} steps on ${s.name}'s website`;
     case 'card':       return short ? `3 min · ${steps} steps` : `About 3 minutes · ${steps} steps on ${s.name}'s website`;
     default:           return short ? `5 min · ${steps} steps` : `About 5 minutes · ${steps} steps on their website`;
   }
@@ -1095,7 +1103,7 @@ const SEGMENTS = [   /* light steps on the bank-coloured total card, so they fol
 
 /* Presets offered in the "add what the bank can't see" flow */
 const PRESETS = [
-  { id: 'tunely',     name: 'Tunely Music', category: 'Music streaming', color: '#C42D55', group: 'entertainment', studentCents: 549 },
+  { id: 'tunely',     name: 'Tunely Music', category: 'Music streaming', color: '#C42D55', group: 'entertainment' },
   { id: 'snapframe',  name: 'Snapframe',    category: 'Photo filters',   color: '#2F5DB8' },
   { id: 'questly',    name: 'Questly',      category: 'Mobile games',    color: '#6D3FB8' },
   { id: 'pocketnote', name: 'Pocketnote',   category: 'Notes app',       color: '#8A5A12' },
@@ -1115,9 +1123,8 @@ const SEED = {
   subs: [
     { id: 'pixelcraft', name: 'Pixelcraft Pro', category: 'Design app', color: '#5B3FC4',
       cents: 2300, cycle: 'monthly', channel: 'paypal', source: 'detected', next: '2026-11-06',
-      since: '2025-01', paid2026: 23000, lastOpened: '2 months ago', lastOpenedDays: 61,
+      since: '2025-01', paid2026: 23000,
       priceHistory: [{ from: '2025-01', cents: 2300 }],
-      studentCents: 1150,   // provider's student plan (feature: student-plan detector)
       pause: 3,             // provider lets you pause for up to 3 months
       statement: [
         ['PAYPAL *PIXELCRAFT 4029357733', '€23,00', '06.10.2026'],
@@ -1125,24 +1132,24 @@ const SEED = {
         ['PIXELCRAFT.COM/BILL EUR',       '€23,00', '06.08.2026'] ] },
     { id: 'streamview', name: 'Streamview', category: 'Video streaming', color: '#B42318',
       cents: 1299, cycle: 'monthly', channel: 'card', source: 'detected', next: '2026-11-09',
-      since: '2024-06', paid2026: 12590, lastOpened: 'yesterday', lastOpenedDays: 1, group: 'entertainment',
+      since: '2024-06', paid2026: 12590, group: 'entertainment',
       priceHistory: [{ from: '2024-06', cents: 1099 }, { from: '2026-03', cents: 1299 }] },
     { id: 'nimbus', name: 'Nimbus Cloud', category: 'Cloud storage', color: '#2563A8',
       cents: 299, cycle: 'monthly', channel: 'card', source: 'detected', next: '2026-11-15',
-      since: '2023-09', paid2026: 2990, lastOpened: 'today', lastOpenedDays: 0,
+      since: '2023-09', paid2026: 2990,
       priceHistory: [{ from: '2023-09', cents: 299 }] },
     { id: 'gamepass', name: 'Gamepass+', category: 'Games', color: '#0F766E',
       cents: 899, cycle: 'monthly', channel: 'card', source: 'detected', next: '2026-11-21',
-      since: '2026-07', paid2026: 3596, lastOpened: '5 days ago', lastOpenedDays: 5, group: 'entertainment',
+      since: '2026-07', paid2026: 3596, group: 'entertainment',
       priceHistory: [{ from: '2026-07', cents: 899 }] },
     { id: 'fitflow', name: 'FitFlow', category: 'Fitness app', color: '#B45309',
       cents: 1499, cycle: 'monthly', channel: 'card', source: 'detected', next: '2026-11-08',
-      trial: true, trialStart: '2026-10-08', since: '2026-10', paid2026: 0, lastOpened: '3 weeks ago', lastOpenedDays: 21,
+      trial: true, trialStart: '2026-10-08', since: '2026-10', paid2026: 0,
       statement: [['FITFLOW*TRIAL VERIFY', '€0,00', '08.10.2026']],
       priceHistory: null },
     { id: 'lingo', name: 'Lingo Daily', category: 'Language learning', color: '#9D2F7E',
       cents: 7188, cycle: 'yearly', channel: 'paypal', source: 'detected', next: '2026-11-28',
-      since: '2024-11', paid2026: 0, lastOpened: '4 days ago', lastOpenedDays: 4,
+      since: '2024-11', paid2026: 0,
       priceHistory: [{ from: '2024-11', cents: 7188 }] },
   ],
   /* Payments the bank sees but cannot name. Tunely Music hides in here. */
@@ -1162,7 +1169,7 @@ const SUB_DEFAULTS = {
   stoppedOn: null, checkOn: null, confirmedOn: null,
   ghostArmed: false, ghost: null,
   notify: 'smart',       // warning setting: 'smart' | '3' | '7' | 'both' | 'off'
-  nudgeLater: false,     // "Ask me later" on the unused-app question (asks again next month)
+  nudgeLater: false,     // "Ask me later" on the "Still using it?" question (asks again next month)
   riseSeen: false,       // price-change alert acknowledged
 };
 
@@ -1244,21 +1251,21 @@ function priceRise(s) {
   return { diff: last.cents - prev.cents, from: prev.cents, to: last.cents, since: last.from, month: MO[Number(last.from.slice(5, 7)) - 1] };
 }
 
-/* Zombie detection: paying for something that isn't used. The usage check-in can switch it on or off. */
+/* "Still using it?" — built only from what a bank really knows: the payments themselves,
+   and the customer's own answers. A bank can't see whether an app is opened, so we never claim it.
+   Asked about monthly subscriptions of €20 or more that the customer hasn't told us about yet. */
+const STILL_USING_FROM = 2000;   // cents a month
 function zombie(s) {
-  if (s.status !== 'active' || s.usage === 'yes' || s.usage === 'little') return null;
-  if (s.lastOpenedDays >= 45) {
-    const since = addDays(state.today, -s.lastOpenedDays);
-    let n = 0;
-    for (let k = 1; k < 36; k++) {
-      const d = addMonths(s.next, -k * cycleMonths(s));
-      if (d <= since) break;
-      if (d <= state.today) n++;
-    }
-    if (n) return { cents: n * s.cents, text: `You've paid ${eurShort(n * s.cents)} since you last opened this.` };
-  }
-  if (s.usage === 'no') return { cents: s.cents, text: `You said you didn't use it last month. That month cost ${eurShort(s.cents)}.` };
-  return null;
+  if (s.status !== 'active' || s.trial || s.usage === 'yes' || s.usage === 'little') return null;
+  if (s.usage === 'no') return { cents: s.cents, own: true,
+    title: `You said you didn't use ${esc(s.name)} last month`,
+    text: `That month cost ${eurShort(s.cents)}.` };
+  if (s.decision === 'keep' || s.cycle !== 'monthly' || s.cents < STILL_USING_FROM || s.source !== 'detected') return null;
+  /* the last two charges before today, straight from the statement */
+  const first = addMonths(s.next, -2), n = 2;
+  return { cents: n * s.cents, own: false,
+    title: `You've paid ${eurShort(n * s.cents)} for ${esc(s.name)} since ${MO[toDate(first).getMonth()]}`,
+    text: `You've paid ${eurShort(n * s.cents)} since ${MO[toDate(first).getMonth()]}.` };
 }
 
 /* Balance clash — only possible inside the bank: add up charges due before the next income
@@ -1564,15 +1571,22 @@ function afterRender() {
     if (tc) { tc.scrollIntoView({ block: 'center', behavior: reduceMotion() ? 'auto' : 'smooth' }); tc.classList.add('pulse'); }
   }
 
-  /* First visit to the hub this session: ask for a guess before showing the real total */
   const r = currentRoute();
+  if (ui.pendingProof && r.name === 'detail' && r.param === ui.pendingProof && !ui.lockOn && !els.sheet.innerHTML) {
+    const s = findSub(ui.pendingProof);
+    ui.pendingProof = null;
+    if (s) openSheet(renderProofSheet(s), 'Save cancellation proof');
+  }
   if (ui.pendingStop && r.name === 'detail' && r.param === ui.pendingStop && !ui.lockOn) {
     const s = findSub(ui.pendingStop);
     ui.pendingStop = null;
     if (s && s.status === 'active') openSheet(renderExitGuide(s), `How to stop ${s.name}`);
   }
-  if (!ui.lockOn && ui.detected && !ui.guessShown && r.name === 'hub' && !els.sheet.innerHTML) {
-    ui.guessShown = true;
+  /* Guess-your-total: only when she opens the tab herself (Skip to app, or the tab bar) and no task
+     is under way. Arriving through a notification means she is in the middle of something — then it never pops up
+     (it stays in Settings). */
+  if (ui.guessPending && !ui.lockOn && ui.detected && !ui.guessShown && r.name === 'hub' && !els.sheet.innerHTML && !taskUnderway()) {
+    ui.guessShown = true; ui.guessPending = false;
     ui.guessRevealed = false;
     openSheet(renderGuess(), 'Guess your total');
   }
@@ -1625,7 +1639,7 @@ const next7 = () => chargesBetween(addDays(state.today, 1), addDays(state.today,
 
 function renderHubTabs(tab) {
   const tabs = [['overview', t('tabOverview')], ['upcoming', t('tabUpcoming')], ['trials', t('tabTrials')], ['all', t('tabAll')]];
-  const counts = { trials: activeTrials().length, upcoming: next7().length };
+  const counts = { trials: activeTrials().length + converted().length, upcoming: next7().length };
   return `
     <nav class="hub-tabs" aria-label="Subscription views">
       ${tabs.map(([id, label]) => `
@@ -1662,7 +1676,7 @@ function renderSpendBars() {
           const m = monthly(x);
           const tag = x.status === 'stopping' ? ' · stopping' : x.trial ? ' · trial' : '';
           return `<li><button class="bar-row" data-action="open" data-id="${x.id}" aria-label="${esc(x.name)}: ${eur(inPeriod(m))} a ${perLabel()}${tag}">
-            <span class="bar-top"><span class="bar-name"><i style="background:${x.color}"></i>${esc(x.name)}${x.trial ? ' <span class="pill gold">Trial</span>' : ''}${x.split ? ' <span class="pill moss">Split</span>' : ''}</span><span class="bar-val">${eur(inPeriod(m))}</span></span>
+            <span class="bar-top"><span class="bar-name"><i style="background:${x.color}"></i>${esc(x.name)}${x.trial ? ' <span class="pill gold">Trial</span>' : ''}</span><span class="bar-val">${eur(inPeriod(m))}</span></span>
             <span class="bar-track" aria-hidden="true"><span class="bar-fill${x.trial ? ' trial' : ''}${x.status === 'stopping' ? ' stopping' : ''}" style="width:${Math.max(3, Math.round(m / max * 100))}%"></span></span>
           </button></li>`;
         }).join('')}
@@ -1696,7 +1710,7 @@ function renderTiles() {
   const soon = next7(), trials = activeTrials(), sv = savings();
   const soonSum = soon.reduce((x, c) => x + c.cents, 0);
   const due = state.checkupMonth !== state.today.slice(0, 7) && state.subs.some(x => x.status === 'active');
-  const tr = trials[0];
+  const tr = trials[0], conv = converted()[0];
   return `
     <div class="tiles">
       <button class="tile" data-action="hubTab" data-value="upcoming">
@@ -1705,11 +1719,11 @@ function renderTiles() {
         <b class="tile-big">${eur(soonSum)}</b>
         <span class="tile-sub">${soon.length} charge${soon.length === 1 ? '' : 's'}</span>
       </button>
-      <button class="tile${tr ? ' hot' : ''}" data-action="hubTab" data-value="trials">
+      <button class="tile${tr || conv ? ' hot' : ''}" data-action="hubTab" data-value="trials">
         <span class="tile-ico">${icon('radar', 18)}</span>
         <span class="tile-label">${t('tabTrials')}</span>
-        <b class="tile-big">${tr ? `<span data-countdown="${tr.next}" data-short>${countdownText(tr.next, true)}</span>` : '0'}</b>
-        <span class="tile-sub">${tr ? `${esc(tr.name)} → ${eur(tr.cents)}` : 'None running'}</span>
+        <b class="tile-big">${tr ? `<span data-countdown="${tr.next}" data-short>${countdownText(tr.next, true)}</span>` : conv ? 'Ended' : '0'}</b>
+        <span class="tile-sub">${tr ? `${esc(tr.name)} → ${eur(tr.cents)}` : conv ? `${esc(conv.name)} now ${eur(conv.cents)}/mo` : 'None running'}</span>
       </button>
       <button class="tile" data-action="go" data-value="review">
         <span class="tile-ico">${icon('coin', 18)}</span>
@@ -1779,6 +1793,7 @@ function renderTrialsTab() {
   const past = state.subs.filter(x => x.trialStart && (!x.trial || x.status !== 'active') && x.status !== 'notsub');
   return `
     <p class="tab-intro">Free trials turn into paid subscriptions on their own. We count down so you can decide in time.</p>
+    ${converted().map(trialEndedCard).join('')}
     ${trials.length ? `<div class="trial-grid">${trials.map(trialCard).join('')}</div>` : `
       <div class="empty-card">
         <span class="tile-ico">${icon('radar', 22)}</span>
@@ -1793,6 +1808,25 @@ function renderTrialsTab() {
           <span class="sub-main"><span class="sub-name">${esc(x.name)}</span>
           <span class="sub-meta">${x.status === 'stopping' ? "Stopping — it won't charge" : x.status === 'stopped' ? 'Stopped before it charged' : `Now paid · ${eur(x.cents)} / ${t('month')}`}</span></span>
         </button></li>`).join('')}</ul></section>` : ''}`;
+}
+/* Trials that became paid since the last fast-forward, until the customer has looked at them */
+const converted = () => state.subs.filter(x => x.status === 'active' && x.trialEnded && !x.trialEndedSeen);
+function trialEndedCard(x) {
+  const e = x.trialEnded;
+  return `
+    <article class="trial-card ended">
+      <div class="trial-top">${logo(x)}<div class="grow"><h3 class="trial-name">${esc(x.name)}'s free trial ended</h3>
+        <p class="trial-meta">Now ${eur(e.cents)} / ${t('month')} · first charge ${fmtShort(e.date)}</p></div></div>
+      <p class="mini-h" style="margin-top:14px">The warning we sent you</p>
+      <div class="notif-mini"><span class="notif-icon" aria-hidden="true">${bankLogo(22)}</span>
+        <span><span class="notif-app"><span>${BANK.name}</span><span>${fmtDM(e.warnedOn)}</span></span>
+        <span class="notif-title">${esc(x.name)} free trial ends in ${e.days} days — then ${eur(e.cents)} a month.</span></span></div>
+      <p class="small" style="margin:10px 0 0">You didn't stop it, so it's now a paid subscription. Changed your mind? You can still stop it before the next charge on ${fmtShort(x.next)}.</p>
+      <div class="att-actions">
+        <button class="btn btn-ghost btn-sm" data-action="stop" data-id="${x.id}">Stop it</button>
+        <button class="btn btn-ghost btn-sm" data-action="trialEndedKeep" data-id="${x.id}">Keep it</button>
+      </div>
+    </article>`;
 }
 function trialCard(x) {
   return `
@@ -1828,6 +1862,7 @@ function renderAllTab() {
    "Needs your attention": one plain card per thing worth acting on,
    each with one obvious button. At most three show until you ask for more.
    --------------------------------------------------------------------- */
+const MAX_NUDGES = 3;
 function attentionCards() {
   const cards = [];
   const c = balanceClash();
@@ -1848,21 +1883,6 @@ function attentionCards() {
           <div class="att-actions"><button class="btn btn-gold btn-sm" data-action="addStart" data-from="lump">Identify this payment</button></div>
         </div>
       </article>`);
-  /* Split suggestion: the priciest shareable subscription that isn't split yet (one card only) */
-  const shareable = state.subs.some(x => x.split) ? null
-    : state.subs.filter(x => x.status === 'active' && canSplit(x) && !x.splitSeen).sort((a, b) => b.cents - a.cents)[0];
-  if (shareable) cards.push(`
-      <article class="att">
-        <span class="att-ico">${icon('users', 20)}</span>
-        <div class="att-body">
-          <h3 class="att-h">Share ${esc(shareable.name)} with flatmates?</h3>
-          <p>Split ${eur(shareable.cents)} — for example ${eur(splitShare(shareable.cents, 2))} each between three. We send the payment requests; nothing is taken automatically.</p>
-          <div class="att-actions">
-            <button class="btn btn-ghost btn-sm" data-action="splitOpen" data-id="${shareable.id}">Split the cost</button>
-            <button class="link-btn" data-action="splitSeen" data-id="${shareable.id}">I don't share it</button>
-          </div>
-        </div>
-      </article>`);
   if (c && !merged) {
     const sub = c.item.sub;
     const name = sub ? esc(sub.name) : 'An app store payment';
@@ -1877,28 +1897,6 @@ function attentionCards() {
         </div>
       </article>`);
   }
-  /* Student-plan detector: the audience is students; this is about this subscription, not budgeting */
-  state.subs.filter(x => x.status === 'active' && x.studentCents && x.cents > x.studentCents && !x.studentSeen).forEach(x => cards.push(studentCard(x)));
-
-  /* Split: a friend hasn't paid an earlier request */
-  state.subs.filter(x => x.split && x.split.rounds.length > 1).forEach(x => {
-    const prev = x.split.rounds[x.split.rounds.length - 2];
-    const late = x.split.with.filter(n => !prev.paid[n]);
-    if (!late.length) return;
-    cards.push(`
-      <article class="att">
-        <span class="att-ico">${icon('users', 20)}</span>
-        <div class="att-body">
-          <h3 class="att-h">${late.join(' and ')} hasn't paid ${eur(x.split.share)} for ${esc(x.name)}</h3>
-          <p>From the request on ${fmtShort(prev.date)}. A friendly reminder usually does it.</p>
-          <div class="att-actions">
-            <button class="btn btn-ghost btn-sm" data-action="splitRemind" data-id="${x.id}" data-value="${late.join(' and ')}">Remind ${late.length === 1 ? late[0] : 'them'}</button>
-            <button class="link-btn" data-action="open" data-id="${x.id}">See ${esc(x.name)}</button>
-          </div>
-        </div>
-      </article>`);
-  });
-
   /* Feature 3 — price-change alert (a rise in the last 12 months) */
   state.subs.filter(s => isLive(s) && !s.riseSeen).forEach(s => {
     const r = priceRise(s);
@@ -1958,43 +1956,25 @@ function attentionCards() {
   }
 
   /* (the monthly check-up is offered by the "Ready" badge on its tool button, not as another card here) */
-  return cards;
-}
-function studentCard(s) {
-  return `
-      <article class="att">
-        <span class="att-ico">${icon('sparkle', 20)}</span>
-        <div class="att-body">
-          <h3 class="att-h">${esc(s.name)} has a student plan at ${eur(s.studentCents)}</h3>
-          <p>You're on the full ${eur(s.cents)} a month. The student plan would keep ${eur((s.cents - s.studentCents) * 12)} a year.</p>
-          <div class="att-actions">
-            <button class="btn btn-ghost btn-sm" data-action="student" data-id="${s.id}">How to switch</button>
-            <button class="link-btn" data-action="studentSeen" data-id="${s.id}">I'm not a student</button>
-          </div>
-        </div>
-      </article>`;
+  return cards.slice(0, MAX_NUDGES);   /* a few nudges at a time — the most important first */
 }
 
-/* "You haven't used this app — do you want to cancel it?" */
+/* "You've paid €46 for Pixelcraft Pro since September. Still using it?" — Overview card only */
 function renderUnusedPrompt(s, clash) {
   if (s.status !== 'active' || s.nudgeLater) return '';
   const z = zombie(s);
   if (!z) return '';
-  const name = esc(s.name);
-  const byDays = s.lastOpenedDays >= 45;
-  const title = byDays ? `You haven't used ${name} for ${s.lastOpened.replace(/ ago$/, '')}` : `You said you didn't use ${name} last month`;
-  const body = byDays ? z.text : `That month cost ${eurShort(s.cents)}.`;
   return `
     <article class="att unused">
-      <span class="att-ico">${icon('moon', 20)}</span>
+      <span class="att-ico">${icon('help', 20)}</span>
       <div class="att-body">
-        <h3 class="att-h">${title}</h3>
-        <p>${body} <strong>Do you want to cancel it?</strong></p>
-        ${clash ? `<p>It charges ${eur(clash.cents)} ${weekday(clash.date)} — more than your ${eur(state.balanceCents)} balance.</p>
+        <h3 class="att-h">${z.title}. ${z.own ? 'Stop it?' : 'Still using it?'}</h3>
+        ${z.own ? `<p>${z.text}</p>` : `<p class="tiny muted">From your payments — we can't see how often you open an app.</p>`}
+        ${clash ? `<p>The next ${eur(clash.cents)} charges ${weekday(clash.date)} — more than your ${eur(state.balanceCents)} balance.</p>
         <p class="bank-tag">${icon('shield', 13)} Only your bank can see this</p>` : ''}
         <div class="att-actions">
-          <button class="btn btn-gold btn-sm" data-action="nudgeCancel" data-id="${s.id}">Yes, help me cancel</button>
-          <button class="btn btn-ghost btn-sm" data-action="nudgeKeep" data-id="${s.id}">No, I still use it</button>
+          <button class="btn btn-ghost btn-sm" data-action="nudgeKeep" data-id="${s.id}">Yes, I use it</button>
+          <button class="btn btn-ghost btn-sm" data-action="open" data-id="${s.id}">No — look at it</button>
           <button class="link-btn" data-action="nudgeLater" data-id="${s.id}">Ask me later</button>
         </div>
       </div>
@@ -2018,7 +1998,8 @@ function renderAlerts() {
         <span class="b-ico">${icon('calendar', 18)}</span>
         <div class="grow">
           <h2 class="banner-h">Your ${a.month} in one look</h2>
-          <p>${a.charged} charge${a.charged === 1 ? '' : 's'} · ${eur(a.cents)} paid${a.stopped ? ` · ${a.stopped} stopped · ${eur(a.kept)} kept` : ''}.</p>
+          <p>${a.charged} charge${a.charged === 1 ? '' : 's'} · ${eur(a.cents)} paid${a.stopped ? ` · ${a.stopped} stopped · ${eur(a.kept)} kept` : ''}${a.trials ? ` · ${a.trials} free trial${a.trials === 1 ? '' : 's'} became paid` : ''}.</p>
+          ${a.trials ? `<button class="link-btn" data-action="hubTab" data-value="trials">See what we warned you</button>` : ''}
         </div>
         <button class="icon-btn" data-action="dismissAlert" data-id="${a.id}" aria-label="Dismiss">${icon('x', 18)}</button>
       </section>`;
@@ -2215,9 +2196,8 @@ function subRow(s) {
   const rise = priceRise(s);
   const tag =
       s.ghost ? '<span class="pill danger">Charged after stopping</span>'
-    : s.split && isLive(s) ? `<span class="pill moss">Split ${s.split.with.length + 1} ways</span>`
     : s.status === 'active' && s.trial ? `<span class="pill gold">Trial ends ${fmtDM(s.next)}</span>`
-    : zombie(s) ? '<span class="pill">Not used lately</span>'
+    : zombie(s) ? `<span class="pill">${zombie(s).own ? 'Not used, you said' : 'Still using it?'}</span>`
     : rise && isLive(s) ? `<span class="pill">+${eur(rise.diff)} since ${rise.month}</span>`
     : s.status === 'active' && s.decision === 'unsure' ? '<span class="pill">Deciding</span>'
     : s.status === 'active' && s.decision === 'keep' ? '<span class="pill moss">Keeping</span>'
@@ -2287,7 +2267,7 @@ function renderDetail(id) {
         <div><dt>${t('paid')}</dt><dd class="num">${s.paid2026 === null ? '—' : eur(s.paid2026)}</dd></div>
         <div><dt>${t('billedVia')}</dt><dd>${chLabel(s.channel)}</dd></div>
         <div><dt>${s.source === 'manual' ? 'Source' : t('since')}</dt><dd>${s.source === 'manual' ? 'Added by you' : monthYear(s.since)}</dd></div>
-        <div><dt>${t('lastOpened')}</dt><dd>${s.lastOpened || 'Not known'}</dd></div>
+        <div><dt>Warning</dt><dd>${live && s.status === 'active' ? warnText(s).replace(/^warns/, 'Warns') : '—'}</dd></div>
       </dl>
     </section>`;
   const usageHtml = `
@@ -2325,22 +2305,18 @@ function renderDetail(id) {
     ${keepCost}
     ${chip}
 
-    ${renderUnusedPrompt(s)}
     ${active ? `
     <section class="card" aria-labelledby="dec-h">
-      <h2 class="card-title" id="dec-h">${t('decideH')}</h2>
-      <div class="decide">
-        <button class="decide-btn" data-action="keep" data-id="${s.id}" aria-pressed="${s.decision === 'keep'}">
-          <span class="d-ico">${icon('check')}</span>${t('keep')}<small>${t('keepS')}</small></button>
-        <button class="decide-btn" data-action="unsure" data-id="${s.id}" aria-pressed="${s.decision === 'unsure'}">
-          <span class="d-ico">${icon('help')}</span>${t('unsure')}<small>${ui.lang === 'fi' ? 'Muistutus' : 'Remind me'} ${fmtShort(addDays(s.next, -1) < state.today ? state.today : addDays(s.next, -1))}</small></button>
-        <button class="decide-btn" data-action="stop" data-id="${s.id}">
-          <span class="d-ico">${icon('exit')}</span>${t('stop')}<small>${exitHint(s, true)}</small></button>
+      <h2 class="card-title" id="dec-h">${zombie(s) && !zombie(s).own ? 'Still using it?' : t('decideH')}</h2>
+      ${zombie(s) ? `<p class="small" style="margin:2px 0 0">${zombie(s).text}</p>` : ''}
+      <button class="btn btn-gold btn-block mt stop-main" data-action="stop" data-id="${s.id}">
+        ${icon('exit', 18)} ${s.trial ? 'Stop before it charges' : t('stop')}<small>${exitHint(s, true)}</small></button>
+      <div class="decide-2">
+        <button class="btn btn-ghost btn-sm" data-action="keep" data-id="${s.id}" aria-pressed="${s.decision === 'keep'}">${icon('check', 16)} ${t('keep')}</button>
+        <button class="btn btn-ghost btn-sm" data-action="unsure" data-id="${s.id}" aria-pressed="${s.decision === 'unsure'}">${icon('bell', 16)} ${t('unsure')}</button>
       </div>
     </section>` : ''}
 
-    ${s.status === 'active' && s.studentCents && s.cents > s.studentCents && !s.studentSeen ? studentCard(s) : ''}
-    ${renderSplit(s)}
     ${renderStatusBanner(s)}
     ${renderProof(s)}
     ${active ? renderClash(s) : ''}
@@ -2370,8 +2346,9 @@ function renderStatusBanner(s) {
       <span class="b-ico">${icon('check')}</span>
       <div class="grow">
         <h2 class="banner-h">Stopping — we'll check on ${fmtDM(s.checkOn)}.</h2>
-        <p>You cancelled on ${fmtShort(s.stoppedOn)}${s.proof ? ' and we saved the proof' : ''}. On ${fmtShort(s.checkOn)} we'll look for a charge and tell you if one still arrives.</p>
-        <div class="row"><button class="link-btn" data-action="undoStop" data-id="${s.id}">I didn't cancel after all</button></div>
+        <p>You cancelled on ${fmtShort(s.stoppedOn)}${s.proof ? ' and saved your proof' : ''}. On ${fmtShort(s.checkOn)} we'll look for a charge and tell you if one still arrives.</p>
+        <div class="row">${s.proof ? '' : `<button class="link-btn" data-action="proofManual" data-id="${s.id}">Add cancellation proof</button>`}
+          <button class="link-btn" data-action="undoStop" data-id="${s.id}">I didn't cancel after all</button></div>
       </div>
     </section>`;
   if (s.status === 'stopped' && s.ghost) {
@@ -2395,6 +2372,14 @@ function renderStatusBanner(s) {
         <h2 class="banner-h">Stopped. No charge on ${fmtDM(s.confirmedOn)}.</h2>
         <p>You're keeping ${eur(monthly(s))} a month — ${eur(monthly(s) * 12)} a year.</p>
         <div class="row"><button class="btn btn-ghost btn-sm" data-action="rejoin" data-id="${s.id}">Rejoin ${esc(s.name)}</button></div>
+      </div>
+    </section>`;
+  if (s.status === 'active' && s.trialEnded && !s.trialEndedSeen) return `
+    <section class="banner warn">
+      <span class="b-ico">${icon('bell', 18)}</span>
+      <div class="grow">
+        <h2 class="banner-h">Free trial ended ${fmtShort(s.trialEnded.date)} — now ${eur(s.trialEnded.cents)} a month.</h2>
+        <p>We warned you on ${fmtShort(s.trialEnded.warnedOn)}, ${s.trialEnded.days} days before it became paid.</p>
       </div>
     </section>`;
   if (s.status === 'active' && s.decision === 'unsure' && s.remindOn) return `
@@ -2723,6 +2708,7 @@ function renderProvider(id) {
     <h1 class="prov-h" tabindex="-1">Subscription cancelled</h1>
     <p class="prov-p">You can keep using ${esc(s.name)} until <strong>${fmtLong(access)}</strong>. You won't be charged again.</p>
     <span class="prov-ref">Confirmation ${providerRef(s)}</span>
+    <button class="prov-copy" data-action="provCopy" data-id="${s.id}">Copy</button>
     <button class="prov-btn" data-action="provDone" data-id="${s.id}" data-autofocus>Return to ${BANK.name}</button>`;
 
   return `
@@ -2748,7 +2734,7 @@ function renderLock() {
         <div class="lock-time" aria-hidden="true">9:41</div>
       </div>
       ${n ? `
-        <p class="lock-hint">1 new notification · tap to open</p>
+        <p class="lock-hint">1 new notification</p>
         <button class="notif" data-action="openNotification" data-autofocus>
           <span class="notif-icon" aria-hidden="true">${bankLogo(26)}</span>
           <span>
@@ -2870,82 +2856,42 @@ function renderExitGuide(s) {
     <div class="meta-row">${icon('shield', 18)}<span>On ${fmtShort(s.next)} we'll check that no charge arrives, and tell you.</span></div>
     ${s.pause ? `<div class="meta-row">${icon('clock', 18)}<span>Prefer a break? ${esc(s.name)} lets you <strong>pause for up to ${s.pause} months</strong> instead — in the same place.</span></div>` : ''}
 
-    <button class="btn btn-gold btn-block mt" data-action="openCancel" data-id="${s.id}" data-autofocus>Open cancellation page ${icon('external', 18)}</button>
-    <p class="fine" style="margin-top:8px">Opens ${esc(s.name)}'s official page. We never cancel anything for you — and when you're done, we keep proof of it.</p>
-    <button class="btn btn-ghost btn-block mt" data-action="proofManual" data-id="${s.id}">I already cancelled it another way</button>
+    ${webExit(s) ? `
+    <button class="btn btn-gold btn-block mt" data-action="openCancel" data-id="${s.id}" data-autofocus>Open ${esc(s.name)}'s page ${icon('external', 18)}</button>
+    <p class="fine" style="margin-top:8px">We never cancel anything for you. When you're done, add the confirmation and we'll keep it.</p>
+    <button class="btn btn-ghost btn-block mt" data-action="proofManual" data-id="${s.id}">I already cancelled it another way</button>` : `
+    <button class="btn btn-gold btn-block mt" data-action="proofManual" data-id="${s.id}" data-autofocus>I've cancelled it — add the confirmation</button>
+    <p class="fine" style="margin-top:8px">Follow the steps above on your phone. We never cancel anything for you.</p>`}
     <button class="link-btn" data-action="closeSheet" style="display:block;margin:6px auto 0">Not now</button>`;
-}
-
-/* Friends Aino can send payment requests to (invented) */
-const CONTACTS = [
-  { name: 'Eero', color: '#2563A8' }, { name: 'Sanni', color: '#9D2F7E' },
-  { name: 'Mikko', color: '#B45309' }, { name: 'Lotta', color: '#0F766E' },
-];
-const splitShare = (cents, n) => Math.round(cents / (n + 1));            // each friend's part
-const canSplit = s => isLive(s) && (s.channel === 'family' || s.group === 'entertainment');
-const lastRound = s => s.split && s.split.rounds[s.split.rounds.length - 1];
-function unpaidFriends(s) {
-  if (!s.split) return [];
-  const r = lastRound(s);
-  return s.split.with.filter(n => !r.paid[n]);
-}
-
-/* Split card on the subscription page: an invitation, or the live status of who has paid */
-function renderSplit(s) {
-  if (!canSplit(s) && !s.split) return '';
-  if (!s.split) return `
-    <section class="split-invite">
-      <span class="att-ico">${icon('users', 20)}</span>
-      <div class="grow"><h3 class="att-h">Share ${esc(s.name)} with someone?</h3>
-        <p>Split the cost with flatmates or family — we send the payment requests.</p></div>
-      <button class="btn btn-ghost btn-sm" data-action="splitOpen" data-id="${s.id}">Split</button>
-    </section>`;
-  const sp = s.split, r = lastRound(s), n = sp.with.length;
-  const mine = s.cents - sp.share * n;
-  return `
-    <section class="card split" aria-labelledby="split-h-${s.id}">
-      <div class="card-head"><h2 class="card-title" id="split-h-${s.id}">Shared ${n + 1} ways</h2><span class="pill moss">${icon('users', 12)} Split</span></div>
-      <p class="small" style="margin:6px 0 0">You pay <strong>${eur(mine)}</strong> of ${eur(s.cents)}. ${eur(sp.share * n)} comes back ${sp.monthly ? 'every month' : 'this time'}.</p>
-      <ul class="split-list">
-        ${sp.with.map(name => {
-          const c = CONTACTS.find(x => x.name === name) || { color: '#55606B' };
-          const paid = r.paid[name];
-          return `<li><span class="avatar-sm" style="background:${c.color}" aria-hidden="true">${name[0]}</span>
-            <span class="grow"><b>${name}</b><small>${eur(sp.share)} · requested ${fmtShort(r.date)}</small></span>
-            ${paid ? `<span class="pill moss">${icon('check', 12)} Paid</span>`
-                   : `<button class="link-btn" data-action="splitRemind" data-id="${s.id}" data-value="${name}">Remind</button>`}</li>`;
-        }).join('')}
-      </ul>
-      <p class="tiny muted" style="margin:8px 0 0">Requests go through ${BANK.name}. Nothing is ever taken from your friends automatically.
-        <button class="link-btn" data-action="splitStop" data-id="${s.id}">Stop splitting</button></p>
-    </section>`;
-}
-
-function renderSplitSheet(s) {
-  const d = ui.splitDraft;
-  const n = d.with.length, share = splitShare(s.cents, n), mine = s.cents - share * n;
-  return `
-    <p class="eyebrow">Split the cost</p>
-    <h2 class="sheet-title">Who shares <em>${esc(s.name)}</em> with you?</h2>
-    <div class="contact-chips" role="group" aria-label="Friends">
-      ${CONTACTS.map(c => `<button class="contact-chip" data-action="splitToggle" data-value="${c.name}" aria-pressed="${d.with.includes(c.name)}">
-        <span class="avatar-sm" style="background:${c.color}" aria-hidden="true">${c.name[0]}</span>${c.name}</button>`).join('')}
-    </div>
-    <div class="split-preview" aria-live="polite">
-      ${n ? `<b>${eur(s.cents)} ÷ ${n + 1} = ${eur(share)} each</b><span>You pay ${eur(mine)} · ${eur(share * n)} comes back</span>`
-          : `<span>Pick at least one person.</span>`}
-    </div>
-    <button class="check-toggle mt" data-action="splitMonthly" aria-pressed="${d.monthly}">
-      <span class="tick">${icon('check', 14)}</span>
-      <span><b>Ask again every month</b><small>A new request goes out each time ${esc(s.name)} charges</small></span>
-    </button>
-    <button class="btn btn-gold btn-block mt" data-action="splitSave" data-id="${s.id}" ${n ? '' : 'disabled'} data-autofocus>
-      Send ${n || ''} payment request${n === 1 ? '' : 's'}</button>
-    <p class="fine" style="margin-top:8px">Friends pay in one tap from their own bank. We never take money automatically.</p>`;
 }
 
 /* The provider's confirmation number shown on its (mock) cancellation page */
 const providerRef = s => `${s.id.slice(0, 2).toUpperCase()}-48213`;
+
+/* Ask for the proof. The bank never sees the provider's page, so the customer types or pastes
+   the confirmation number, or attaches a screenshot. */
+function renderProofSheet(s) {
+  const dr = ui.proofDraft || { shot: false, fromProvider: false };
+  const stopping = s.status === 'stopping';
+  return `
+    <p class="eyebrow">${dr.fromProvider ? `Back in ${BANK.name}` : 'Already cancelled?'}</p>
+    <h2 class="sheet-title">Keep proof that you <em>cancelled</em></h2>
+    <p class="small" style="margin-top:10px">We can't see ${esc(s.name)}'s page, so add what it showed you. If a charge arrives anyway, this goes with your dispute.</p>
+    <div class="field"><label for="proofRef">Confirmation number</label>
+      <input class="input" id="proofRef" maxlength="30" autocomplete="off" placeholder="Type or paste it" data-enter="proofSave" data-autofocus></div>
+    <button class="attach" data-action="proofShot" aria-pressed="${dr.shot}">
+      <span class="proof-ico">${icon(dr.shot ? 'check' : 'plus', 18)}</span>
+      <span>${dr.shot ? 'Screenshot attached' : 'Or attach a screenshot'}<small>${dr.shot ? 'Tap to remove' : 'Of the confirmation page or email'}</small></span>
+    </button>
+    ${dr.fromProvider ? '' : `<div class="field"><label for="proofVia">Where did you cancel?</label>
+      <select class="input" id="proofVia">
+        ${[webExit(s) ? `${s.name}'s website` : CHANNELS[s.channel].label, 'PayPal', 'Phone app store', 'By email', 'Somewhere else']
+          .filter((v, i, a) => a.indexOf(v) === i).map(v => `<option>${esc(v)}</option>`).join('')}
+      </select></div>`}
+    <p class="tiny" id="proofErr" role="alert" hidden style="color:var(--danger);margin:8px 0 0">Add the number or a screenshot — or skip for now.</p>
+    <button class="btn btn-gold btn-block mt" data-action="proofSave" data-id="${s.id}">Save proof</button>
+    <button class="link-btn" data-action="proofSkip" data-id="${s.id}" style="display:block;margin:10px auto 0">${stopping ? 'Skip — I have nothing to add' : "Skip — mark it as stopping without proof"}</button>`;
+}
 
 /* Cancellation proof: a receipt the bank keeps, ready for a dispute */
 function renderProof(s) {
@@ -2960,12 +2906,13 @@ function renderProof(s) {
         <span class="pill moss">${icon('check', 12)} Saved</span>
       </div>
       <dl class="proof-dl">
-        <div><dt>Cancelled</dt><dd>${fmtShort(p.on)} · ${p.time}</dd></div>
-        <div><dt>Confirmation</dt><dd class="mono">${esc(p.ref)}</dd></div>
+        <div><dt>Added</dt><dd>${fmtShort(p.on)} · ${p.time}</dd></div>
+        <div><dt>Confirmation</dt><dd class="mono">${p.ref ? esc(p.ref) : '—'}</dd></div>
+        <div><dt>Screenshot</dt><dd>${p.shot ? 'Attached' : '—'}</dd></div>
         <div><dt>Where</dt><dd>${esc(p.via)}</dd></div>
         <div><dt>${done ? 'No charge on' : 'Must not charge on'}</dt><dd>${fmtShort(p.expected)}${done ? ' ✓' : ''}</dd></div>
       </dl>
-      <p class="proof-note">Kept by ${BANK.name}. If a charge arrives anyway, this proof goes with your dispute.</p>
+      <p class="proof-note">Added by you, kept by ${BANK.name}. If a charge arrives anyway, this proof goes with your dispute.</p>
     </section>`;
 }
 
@@ -2978,7 +2925,7 @@ function renderDispute(a) {
     <h2 class="sheet-title">We've <em>got it</em> from here.</h2>
     <div class="banner ok"><span class="b-ico">${icon('check')}</span><div class="grow">
       <p style="margin:0"><strong>Reference ${a.disputeRef}</strong></p>
-      <p>${s.proof ? `Your cancellation proof (${esc(s.proof.ref)}) is attached. ` : ''}We'll update you within 10 banking days. You don't need to do anything else.</p></div></div>
+      <p>${s.proof ? `Your cancellation proof (${s.proof.ref ? esc(s.proof.ref) : 'screenshot'}) is attached. ` : ''}We'll update you within 10 banking days. You don't need to do anything else.</p></div></div>
     <button class="btn btn-gold btn-block mt" data-action="closeSheet" data-autofocus>Done</button>`;
   return `
     <p class="eyebrow">${BANK.name} · dispute a charge</p>
@@ -2988,8 +2935,9 @@ function renderDispute(a) {
     <div class="evidence">
       <p class="eyebrow">${icon('shield', 13)} Evidence we'll attach</p>
       <ul class="bullets">
-        <li>Cancelled on ${fmtShort(s.proof.on)} at ${s.proof.time} — ${esc(s.proof.via)}</li>
-        <li>Confirmation number <span class="mono">${esc(s.proof.ref)}</span></li>
+        <li>You added it on ${fmtShort(s.proof.on)} at ${s.proof.time} — cancelled via ${esc(s.proof.via)}</li>
+        ${s.proof.ref ? `<li>Confirmation number <span class="mono">${esc(s.proof.ref)}</span></li>` : ''}
+        ${s.proof.shot ? '<li>Your screenshot of the confirmation</li>' : ''}
         <li>We confirmed no charge on ${fmtShort(s.confirmedOn)}</li>
         <li>${eur(a.cents)} arrived on ${fmtShort(a.date)} anyway</li>
       </ul>
@@ -3012,17 +2960,19 @@ const actions = {
   openNotification() {
     const target = ui.lockNote && ui.lockNote.target;
     ui.lockOn = false;
+    if (!ui.guessShown) { ui.guessShown = true; ui.guessPending = false; }   // came in for a task: no guess pop-up
     els.overlay.classList.remove('on');   // hide the lock at once, before the route change renders
     syncInert();
     if (target) showScreen('detail', target);
     else refresh({ focusTitle: true });
   },
-  skipLock() { ui.lockOn = false; refresh({ focusTitle: true }); },
+  skipLock() { ui.lockOn = false; if (!ui.guessShown) ui.guessPending = true; refresh({ focusTitle: true }); },
 
   /* --- bank shell (inert on purpose) --- */
   inert(d) { toast(`${d.label || 'That'} isn't part of this prototype — only the ${feat()} tab works here.`); },
   tab(d) {
     if (d.value !== 'mohar') return toast(`${d.label} isn't part of this prototype — only the ${feat()} tab works here.`);
+    if (!ui.guessShown) ui.guessPending = true;
     if (location.hash === '#/hub') els.screen.scrollTo({ top: 0, behavior: reduceMotion() ? 'auto' : 'smooth' });
     else goHome();
   },
@@ -3082,81 +3032,52 @@ const actions = {
   },
   provDone(d) {
     const s = findSub(d.id);
-    Object.assign(s, { status: 'stopping', decision: 'stop', remindOn: null, stoppedOn: state.today, checkOn: s.next });
-    /* keep proof: the provider's confirmation number, when, where, and the date that must stay charge-free */
-    s.proof = { ref: providerRef(s), on: state.today, time: '09:41', via: `${s.name}'s cancellation page`, expected: s.next };
+    /* Back in the bank. It never saw the provider's page, so it can't know the confirmation number:
+       mark it as stopping (we'll check the charge date) and ask the customer to add the proof. */
+    Object.assign(s, { status: 'stopping', decision: 'stop', remindOn: null, stoppedOn: state.today, checkOn: s.next, proof: null });
+    ui.proofDraft = { id: s.id, shot: false, fromProvider: true };
+    ui.pendingProof = s.id;   // opened by afterRender once the detail screen is back
     goBack('detail', d.id);
-    toast(`Stopping — proof saved. We'll check on ${fmtDM(s.checkOn)}.`);
   },
-  /* --- split with friends --- */
-  splitOpen(d) {
-    const s = findSub(d.id);
-    ui.splitDraft = { id: s.id, with: [], monthly: true };
-    openSheet(renderSplitSheet(s), `Split ${s.name}`);
-  },
-  splitToggle(d) {
-    const w = ui.splitDraft.with;
-    ui.splitDraft.with = w.includes(d.value) ? w.filter(x => x !== d.value) : w.concat(d.value);
-    setSheetContent(renderSplitSheet(findSub(ui.splitDraft.id)));
-    const b = els.sheet.querySelector(`[data-action="splitToggle"][data-value="${d.value}"]`);
-    if (b) b.focus({ preventScroll: true });
-  },
-  splitMonthly() {
-    ui.splitDraft.monthly = !ui.splitDraft.monthly;
-    setSheetContent(renderSplitSheet(findSub(ui.splitDraft.id)));
-  },
-  splitSave(d) {
-    const s = findSub(d.id), dr = ui.splitDraft;
-    if (!dr.with.length) return;
-    const paid = {};
-    dr.with.forEach(n => { paid[n] = false; });
-    s.split = { with: dr.with.slice(), share: splitShare(s.cents, dr.with.length), monthly: dr.monthly, rounds: [{ date: state.today, paid }] };
-    closeSheet(false);
-    refresh();
-    toast(`Requests sent to ${dr.with.join(' and ')} — ${eur(s.split.share)} each.`);
-    /* demo: the first friend pays a few seconds later, the rest by next month */
-    const session = ui, first = dr.with[0];
-    setTimeout(() => {
-      if (ui !== session || !s.split || !lastRound(s) || lastRound(s).paid[first] === undefined) return;
-      lastRound(s).paid[first] = true;
-      refresh();
-      toast(`${first} paid you ${eur(s.split.share)} for ${s.name}.`);
-    }, 4000);
-  },
-  splitRemind(d) { toast(`Reminder sent to ${d.value}.`); },
-  splitSeen(d) { findSub(d.id).splitSeen = true; refresh(); },
-  splitStop(d) {
-    const s = findSub(d.id), before = s.split;
-    s.split = null;
-    refresh();
-    toast(`${s.name} is no longer split.`, () => { s.split = before; refresh(); });
+  provCopy(d) {
+    const ref = providerRef(findSub(d.id));
+    try { navigator.clipboard.writeText(ref).then(() => toast(`Copied ${ref}.`), () => toast(`Confirmation ${ref} — write it down or take a screenshot.`)); }
+    catch (e) { toast(`Confirmation ${ref} — write it down or take a screenshot.`); }
   },
 
-  /* Cancelled somewhere else (PayPal, app store, email)? Add the confirmation yourself. */
+  /* The customer adds the proof: a confirmation number and/or a screenshot. The bank keeps it. */
   proofManual(d) {
     const s = findSub(d.id);
-    openSheet(`
-      <p class="eyebrow">Already cancelled?</p>
-      <h2 class="sheet-title">Save proof of your <em>cancellation</em></h2>
-      <p class="small" style="margin-top:10px">If ${esc(s.name)} ever charges again, this goes straight into your dispute.</p>
-      <div class="field"><label for="proofRef">Confirmation number (optional)</label>
-        <input class="input" id="proofRef" maxlength="30" autocomplete="off" placeholder="e.g. from the email you got" data-enter="proofSave"></div>
-      <div class="field"><label for="proofVia">Where did you cancel?</label>
-        <select class="input" id="proofVia">
-          <option>${esc(CHANNELS[s.channel].label === 'Debit card' ? s.name + "'s website" : CHANNELS[s.channel].label)}</option>
-          <option>PayPal</option><option>Phone app store</option><option>By email</option><option>Somewhere else</option>
-        </select></div>
-      <button class="btn btn-gold btn-block mt" data-action="proofSave" data-id="${s.id}" data-autofocus>Save proof and mark as stopping</button>`, 'Save cancellation proof');
+    ui.proofDraft = { id: s.id, shot: false, fromProvider: false };
+    openSheet(renderProofSheet(s), 'Save cancellation proof');
+  },
+  proofShot() {
+    ui.proofDraft.shot = !ui.proofDraft.shot;
+    const ref = document.getElementById('proofRef').value;
+    setSheetContent(renderProofSheet(findSub(ui.proofDraft.id)));
+    document.getElementById('proofRef').value = ref;
+    const b = els.sheet.querySelector('[data-action="proofShot"]'); if (b) b.focus({ preventScroll: true });
   },
   proofSave(d) {
-    const s = findSub(d.id);
+    const s = findSub(d.id), dr = ui.proofDraft || {};
     const ref = document.getElementById('proofRef').value.trim();
-    const via = document.getElementById('proofVia').value;
-    Object.assign(s, { status: 'stopping', decision: 'stop', remindOn: null, stoppedOn: state.today, checkOn: s.next });
-    s.proof = { ref: ref || 'Not given', on: state.today, time: '09:41', via, expected: s.next, manual: true };
+    const viaEl = document.getElementById('proofVia');
+    const via = viaEl ? viaEl.value : `${s.name}'s website`;
+    if (!ref && !dr.shot) { document.getElementById('proofErr').hidden = false; document.getElementById('proofRef').focus(); return; }
+    if (s.status === 'active') Object.assign(s, { status: 'stopping', decision: 'stop', remindOn: null, stoppedOn: state.today, checkOn: s.next });
+    s.proof = { ref, shot: !!dr.shot, on: state.today, time: '09:41', via, expected: s.next };
+    ui.proofDraft = null;
     closeSheet(false);
-    showScreen('detail', s.id);
+    if (currentRoute().name === 'detail' && currentRoute().param === s.id) refresh(); else showScreen('detail', s.id);
     toast(`Proof saved. We'll check on ${fmtDM(s.checkOn)} that ${s.name} doesn't charge.`);
+  },
+  proofSkip(d) {
+    const s = findSub(d.id);
+    if (s.status === 'active') Object.assign(s, { status: 'stopping', decision: 'stop', remindOn: null, stoppedOn: state.today, checkOn: s.next });
+    ui.proofDraft = null;
+    closeSheet(false);
+    if (currentRoute().name === 'detail' && currentRoute().param === s.id) refresh(); else showScreen('detail', s.id);
+    toast(`Stopping. We'll check on ${fmtDM(s.checkOn)} that no charge arrives.`);
   },
 
   /* --- add what the bank can't see --- */
@@ -3188,12 +3109,11 @@ const actions = {
     state.subs.push(Object.assign({}, SUB_DEFAULTS, {
       id, name: draftName(d),
       category: preset ? preset.category : 'Added by you',
-      color: preset ? preset.color : '#55606B', group: preset ? preset.group : null, lastOpenedDays: null,
+      color: preset ? preset.color : '#55606B', group: preset ? preset.group : null,
       cents: parseAmount(d.amount), cycle: d.cycle, channel: d.channel, source: 'manual',
-      next: d.next, since: null, lastOpened: null, priceHistory: null,
+      next: d.next, since: null, priceHistory: null,
       paid2026: lump ? lump.paid2026 : null,
       trial: d.trial, trialStart: d.trial ? state.today : undefined,
-      studentCents: preset ? preset.studentCents : undefined,
     }));
     if (lump) { lump.resolved = true; lump.resolvedTo = id; }
     ui.addDraft = null;
@@ -3262,22 +3182,10 @@ const actions = {
     toast(`Rejoined ${s.name} — we'll track it again. Next charge ${fmtShort(s.next)}.`);
   },
   dismissOverlap() { ui.overlapDismissed = true; refresh(); },
+  trialEndedKeep(d) { const s = findSub(d.id); s.trialEndedSeen = true; s.decision = 'keep'; refresh(); toast(`Keeping ${s.name}. We'll still warn you before each charge.`); },
   toggleAttention() { ui.attAll = !ui.attAll; refresh(); },
   riseSeen(d) { findSub(d.id).riseSeen = true; refresh(); },
   introSeen() { ui.introSeen = true; refresh(); },
-  studentSeen(d) { findSub(d.id).studentSeen = true; refresh(); toast("OK — we won't mention the student plan again."); },
-  student(d) {
-    const s = findSub(d.id);
-    openSheet(`
-      <p class="eyebrow">Student plan</p>
-      <h2 class="sheet-title">Same ${esc(s.name)}, <em>${eur(s.studentCents)}</em> a month</h2>
-      <p class="small" style="margin-top:10px">You pay ${eur(s.cents)} a month now. The student plan keeps ${eur((s.cents - s.studentCents) * 12)} a year in your account.</p>
-      <h3 class="mini-h">How to switch</h3>
-      <div class="crumbs" aria-label="Route">${[s.name, 'Account', 'Plan', 'Student plan'].map(x => `<span>${esc(x)}</span>`).join('<i aria-hidden="true">›</i>')}</div>
-      <div class="meta-row">${icon('check', 18)}<span>You'll usually confirm with your student email or student card.</span></div>
-      <div class="meta-row">${icon('shield', 18)}<span>We don't switch it for you — and we'll show the new price here once it changes.</span></div>
-      <button class="btn btn-gold btn-block mt" data-action="closeSheet" data-autofocus>Got it</button>`, 'Student plan');
-  },
   exportCsv() {
     const rows = [['Name', 'Price (EUR)', 'Billed', 'Billed via', 'Next charge', 'Status']].concat(
       state.subs.filter(x => x.status !== 'notsub').map(x => [x.name, (x.cents / 100).toFixed(2), x.cycle, CHANNELS[x.channel].label, x.status === 'stopped' ? '' : x.next, x.status]));
@@ -3294,8 +3202,7 @@ const actions = {
   toggleTimeline() { ui.tlAll = !ui.tlAll; refresh(); },
   toggleListTools() { ui.listTools = true; refresh(); const i = document.getElementById('subSearch'); if (i) i.focus({ preventScroll: true }); },
 
-  /* --- the unused-app question --- */
-  nudgeCancel(d) { const s = findSub(d.id); openSheet(renderExitGuide(s), `How to stop ${s.name}`); },
+  /* --- the "Still using it?" question --- */
   nudgeKeep(d) {
     const s = findSub(d.id);
     s.usage = 'yes'; s.decision = 'keep';
@@ -3342,8 +3249,9 @@ const actions = {
   closePage() { closePage(); },
   ff() { fastForward(); },
   reset() { resetDemo(); },
-  taskPrev() { ui.taskIndex = Math.max(0, ui.taskIndex - 1); updateDemoBar(); },
-  taskNext() { ui.taskIndex = Math.min(TASKS.length - 1, ui.taskIndex + 1); updateDemoBar(); },
+  taskPrev() { ui.taskIndex = Math.max(0, ui.taskIndex - 1); ui.hintOpen = false; updateDemoBar(); },
+  taskNext() { ui.taskIndex = Math.min(TASKS.length - 1, ui.taskIndex + 1); ui.hintOpen = false; updateDemoBar(); },
+  showHint() { ui.hintOpen = true; updateDemoBar(); els.taskHint.setAttribute('tabindex', '-1'); els.taskHint.focus(); },
   demoToggle() { setDemoOpen(isLaptop() ? document.body.classList.contains('demo-hidden') : !els.demo.classList.contains('open')); },
   setView(d) { setView(d.value); },
 };
@@ -3422,23 +3330,26 @@ document.addEventListener('keydown', e => {
 /* ---------------------------------------------------------------------
    9. DEMO HARNESS
    --------------------------------------------------------------------- */
+/* Three tasks, each the critical journey. "setup" is something the tester must do to play the scene (always shown);
+   "hint" gives the answer away, so it stays hidden until the tester asks for it. */
 const TASKS = [
   { text: "You've been notified about a charge. Stop it before Friday.",
-    hint: 'Start with the notification — click or tap it.',
+    hint: 'Start with the notification on the lock screen — click or tap it.',
     done: () => { const s = findSub('pixelcraft'); return !!s && (s.status === 'stopping' || s.status === 'stopped'); } },
   { text: "Your music is billed by your phone's app store. Add it so the total is real.",
     hint: 'Look for the payment your bank can’t identify.',
     done: () => state.unknown.every(u => u.resolved) },
   { text: 'A month has passed. Check whether your cancellation worked.',
-    hint: 'First use ⏩ Fast-forward one month.',
+    setup: 'First press ⏩ Fast-forward one month in this guide.',
+    hint: `Look at the top of the ${'Subscriptions'} tab.`,
     done: () => ui.sawConfirmation },
-  { text: 'Optional: jump one more month. A charge you stopped came back — sort it out.',
-    hint: 'Fast-forward again, then look at the top of the screen.',
-    done: () => state.alerts.some(a => a.type === 'ghost' && a.disputeRef) },
-  { text: 'Optional: you share Streamview with two flatmates. Split the cost with them.',
-    hint: 'Open Streamview — from the All tab or "Where it goes".',
-    done: () => state.subs.some(x => x.split) },
 ];
+
+/* Is a tester task in progress? (Task 1 not yet finished but started, or any later task.) */
+function taskUnderway() {
+  const s = findSub('pixelcraft');
+  return ui.taskIndex > 0 || state.today !== DAY0 || (s && s.status !== 'active') || state.unknown.some(u => u.resolved);
+}
 
 /* Advance the demo clock by one calendar month and process every charge in between */
 function fastForward() {
@@ -3465,11 +3376,11 @@ function fastForward() {
   state.alerts.forEach(a => { if (a.type === 'digest') a.dismissed = true; });
   const stoppedNow = fresh.filter(a => a.type === 'confirmed');
   addAlert({ type: 'digest', subId: null, month: MO[toDate(from).getMonth()], charged: fresh.charged || 0, cents: fresh.chargedCents || 0,
-             stopped: stoppedNow.length, kept: stoppedNow.reduce((x, a) => x + a.monthly, 0) });
+             stopped: stoppedNow.length, kept: stoppedNow.reduce((x, a) => x + a.monthly, 0), trials: fresh.trials || 0 });
 
   state.today = to;
   ui.clockStart = Date.now();
-  ui.taskIndex = fresh.some(a => a.type === 'ghost') ? 3 : Math.max(ui.taskIndex, 2);
+  if (ui.taskIndex < 2) { ui.taskIndex = 2; ui.hintOpen = false; }
   ui.lockNote = buildLockNote(fresh);
   ui.lockOn = !!ui.lockNote;
   refresh();
@@ -3501,14 +3412,10 @@ function processCharge(s, date, fresh) {
     if (date.startsWith('2026') && s.paid2026 !== null) s.paid2026 += s.cents;
     fresh.charged = (fresh.charged || 0) + 1;
     fresh.chargedCents = (fresh.chargedCents || 0) + s.cents;
-    if (s.split) {
-      const r = lastRound(s);
-      s.split.with.forEach((n, i) => { if (i < s.split.with.length - 1 || s.split.with.length === 1) r.paid[n] = true; });
-      if (s.split.monthly) {
-        const paid = {};
-        s.split.with.forEach(n => { paid[n] = false; });
-        s.split.rounds.push({ date, paid });
-      }
+    if (s.trial) {
+      /* a free trial just became paid: remember the warning we sent before it did */
+      s.trialEnded = { date, cents: s.cents, warnedOn: addDays(date, -warnDays(s)), days: warnDays(s) };
+      fresh.trials = (fresh.trials || 0) + 1;
     }
     s.trial = false;
     if (s.decision === 'unsure') s.decision = null;
@@ -3520,7 +3427,7 @@ function addAlert(a) { a.id = 'a' + (++ui.seq); state.alerts.unshift(a); return 
 
 /* Session snapshot: an accidental refresh keeps the tester's progress. Reset clears it. */
 const SNAP_KEY = 'mohar-demo-v1';
-const UI_KEEP = ['lockOn', 'lockNote', 'taskIndex', 'period', 'lang', 'guessShown', 'detected', 'sawConfirmation',
+const UI_KEEP = ['lockOn', 'lockNote', 'taskIndex', 'period', 'lang', 'guessShown', 'guessPending', 'detected', 'sawConfirmation', 'hintOpen',
                  'seq', 'overlapDismissed', 'dupDismissed', 'introSeen'];
 function saveSnapshot() {
   try {
@@ -3562,9 +3469,17 @@ function updateDemoBar() {
   const ffOn = !ui.lockOn && (state.subs.some(s => s.status === 'stopping') || ui.taskIndex >= 2);
   document.getElementById('ffFab').hidden = !ffOn;
   document.body.classList.toggle('ff-on', ffOn);
-  els.taskHint.textContent = done ? 'Done. Press Reset demo before the next tester.'
-    : ui.taskIndex === 2 && state.today !== DAY0 ? `Look at the top of the ${BANK.feature} tab.`
-    : ui.taskIndex === 3 && state.alerts.some(a => a.type === 'ghost') ? 'Open the red card at the top and dispute the charge.' : t.hint;
+  const setup = t.setup && !(ui.taskIndex === 2 && state.today !== DAY0) ? t.setup : '';
+  els.taskSetup.textContent = setup;
+  els.taskSetup.hidden = !setup || done;
+  const hintBtn = document.getElementById('hintBtn');
+  hintBtn.hidden = done || ui.hintOpen;
+  hintBtn.setAttribute('aria-expanded', String(!!ui.hintOpen));
+  els.taskHint.hidden = !done && !ui.hintOpen;
+  els.taskHint.classList.toggle('task-done-note', done);
+  els.taskHint.textContent = done
+    ? (ui.taskIndex < TASKS.length - 1 ? 'Done. Go on to the next task.' : 'All done — thank you! Press Reset demo before the next tester.')
+    : t.hint.replace('Subscriptions', BANK.feature);
   els.taskDone.hidden = !done;
   els.taskPrev.disabled = ui.taskIndex === 0;
   els.taskNext.disabled = ui.taskIndex === TASKS.length - 1;
@@ -3814,7 +3729,6 @@ function renderAbout() {
             <li>The passage of time (fast-forward)</li>
             <li>Provider cancellation pages (mock)</li>
             <li>Partner dashboard metrics (illustrative)</li>
-            <li>Usage data (invented)</li>
             <li>Account balance (fixed at €18.40)</li>
           </ul>
         </section>
@@ -3857,7 +3771,7 @@ const STR = {
     keepS: "Stay subscribed", unsureS: 'Remind me the day before', stopS: 'Show me the way out', askNext: 'Ask me next month',
     nextCharge: 'Next charge', trialEnds: 'Free trial ends', back: 'Subscriptions', nextWord: 'next',
     priceHist: 'Price history', usageQ: 'Did you use this in the last month?', yes: 'Yes', little: 'A little', no: 'No',
-    recog: 'How we recognised this', paid: 'Paid in 2026', billedVia: 'Billed via', since: 'Customer since', lastOpened: 'Last opened',
+    recog: 'How we recognised this', paid: 'Paid in 2026', billedVia: 'Billed via', since: 'Customer since',
     calendar: 'Calendar', checkup: 'Check-up', review: 'Your year', settings: 'Settings', tools: 'Tools',
     search: 'Search by name or amount', sortBy: 'Sort by', sortNext: 'Next charge', sortCost: 'Cost', sortChannel: 'Billed via', sortName: 'Name',
     filter: "Filter by how it's billed", fAll: 'All', fCard: 'Card', fApp: 'App store', fOther: 'Other',
@@ -3881,7 +3795,7 @@ const STR = {
     keepS: 'Jatkan tilausta', unsureS: 'Muistuta edellisenä päivänä', stopS: 'Näytä miten', askNext: 'Kysy ensi kuussa',
     nextCharge: 'Seuraava veloitus', trialEnds: 'Kokeilu päättyy', back: 'Tilaukset', nextWord: 'seuraava',
     priceHist: 'Hintahistoria', usageQ: 'Käytitkö tätä viime kuussa?', yes: 'Kyllä', little: 'Vähän', no: 'En',
-    recog: 'Miten tunnistimme tämän', paid: 'Maksettu 2026', billedVia: 'Maksutapa', since: 'Asiakkaana alkaen', lastOpened: 'Viimeksi avattu',
+    recog: 'Miten tunnistimme tämän', paid: 'Maksettu 2026', billedVia: 'Maksutapa', since: 'Asiakkaana alkaen',
     calendar: 'Kalenteri', checkup: 'Tarkistus', review: 'Vuotesi', settings: 'Asetukset', tools: 'Työkalut',
     search: 'Hae nimellä tai summalla', sortBy: 'Järjestys', sortNext: 'Seuraava veloitus', sortCost: 'Hinta', sortChannel: 'Maksutapa', sortName: 'Nimi',
     filter: 'Suodata maksutavan mukaan', fAll: 'Kaikki', fCard: 'Kortti', fApp: 'Sovelluskauppa', fOther: 'Muut',
@@ -4195,7 +4109,7 @@ function renderCheckup() {
   const insight = z ? z.text
     : s.trial ? `Free trial — becomes ${eur(s.cents)} a month on ${fmtShort(s.next)}.`
     : rise ? `The price went up ${eur(rise.diff)} in ${rise.month}.`
-    : s.lastOpened ? `Last opened ${s.lastOpened}.`
+    : s.paid2026 ? `${eur(s.paid2026)} paid so far in 2026.`
     : 'Added by you.';
   return `${head}
     <h1 class="h-title" tabindex="-1">${t('checkupTitle')}</h1>
@@ -4276,11 +4190,10 @@ function renderReview() {
   const lumpPaid = state.unknown.filter(u => !u.resolved).reduce((a, u) => a + u.paid2026, 0);
   const total = all.reduce((a, s) => a + (s.paid2026 || 0), 0) + lumpPaid;
   const biggest = all.filter(s => s.paid2026).sort((a, b) => b.paid2026 - a.paid2026)[0];
-  const unused = s => s.usage === 'no' ? 999 : s.usage === 'yes' ? -1 : (s.lastOpenedDays == null ? -2 : s.lastOpenedDays);
-  const least = all.slice().sort((a, b) => unused(b) - unused(a))[0];
+  /* the biggest price rise this year — straight from the statements */
+  const rises = all.map(s => ({ s, r: priceRise(s) })).filter(x => x.r && x.r.since.startsWith('2026')).sort((a, b) => b.r.diff - a.r.diff);
+  const rose = rises[0];
   const stoppedN = all.filter(s => s.status === 'stopped').length;
-  /* "used": opened in the last ~6 weeks, or said so in the check-in */
-  const usedIt = s => s.usage === 'no' ? false : s.usage ? true : s.lastOpenedDays == null ? true : s.lastOpenedDays < 45;
   const manualN = all.filter(s => s.source === 'manual').length;
   return `
     <button class="back" data-action="back">${icon('back')} ${t('back')}</button>
@@ -4289,11 +4202,11 @@ function renderReview() {
       <div class="yir-top"><span>${bankLogo(24)} ${BANK.name}</span><span>2026</span></div>
       <p class="yir-kicker">Your year in subscriptions</p>
       <p class="yir-big">${eur(total)}</p>
-      <p class="yir-line">You paid for ${all.length} services, used ${all.filter(usedIt).length}, and stopped ${stoppedN}.</p>
+      <p class="yir-line">You paid for ${all.length} services and stopped ${stoppedN}.</p>
       <p class="yir-sub">paid for subscriptions so far in 2026${lumpPaid ? ` — including ${eur(lumpPaid)} in app store payments you haven't named yet` : ''}</p>
       <dl class="yir-grid">
         <div><dt>Biggest</dt><dd>${biggest ? esc(biggest.name) : '—'}</dd><span>${biggest ? eur(biggest.paid2026) + ' this year' : ''}</span></div>
-        <div><dt>Used least</dt><dd>${least ? esc(least.name) : '—'}</dd><span>${least ? (least.usage === 'no' ? "you said you didn't use it" : least.lastOpened ? 'last opened ' + least.lastOpened : '') : ''}</span></div>
+        <div><dt>Price went up</dt><dd>${rose ? esc(rose.s.name) : '—'}</dd><span>${rose ? `+${eur(rose.r.diff)} a month since ${rose.r.month}` : 'no rises this year'}</span></div>
         <div><dt>Saved so far</dt><dd>${eur(state.savedCents)}</dd><span>${state.savedCents ? `by stopping ${stoppedN}` : 'stop one and this starts counting'}</span></div>
         <div><dt>Tracked</dt><dd>${all.length}</dd><span>subscriptions${manualN ? `, ${manualN} added by you` : ''}</span></div>
       </dl>
@@ -4306,7 +4219,7 @@ function renderReview() {
    10. BOOT
    --------------------------------------------------------------------- */
 function boot() {
-  ['app', 'shell', 'screen', 'overlay', 'tabbar', 'demo', 'taskNum', 'taskText', 'taskHint', 'taskDone',
+  ['app', 'shell', 'screen', 'overlay', 'tabbar', 'demo', 'taskNum', 'taskText', 'taskHint', 'taskSetup', 'taskDone',
    'taskPrev', 'taskNext', 'demoDate', 'ffTo'].forEach(id => { els[id] = document.getElementById(id); });
   els.sheet = document.getElementById('sheetRoot');
   els.toast = document.getElementById('toastRoot');

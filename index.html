@@ -138,6 +138,8 @@ header{position:sticky;top:0;z-index:50;background:rgba(245,248,245,.92);-webkit
 .benefits li{display:flex;gap:16px;align-items:flex-start}
 .benefits .ico{flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:var(--gold-wash);color:var(--gold-ink)}
 .benefits p{margin-top:4px;font-size:15.5px;color:var(--slate)}
+.roadmap{margin:24px 0 0;padding:14px 16px;border-radius:14px;border:1px dashed var(--line);font-size:14.5px;color:var(--slate)}
+.roadmap b{color:var(--ink)}
 .clash{margin:0;padding:24px;border-radius:20px;background:var(--paper);border:1px solid var(--line);box-shadow:0 30px 60px -36px rgba(14,59,46,.4)}
 .clash .phone{max-width:300px;margin:0 auto}
 .clash figcaption{margin-top:16px;font-size:14px;color:var(--slate);text-align:center}
@@ -217,8 +219,8 @@ footer{padding:64px 0 48px;font-size:14.5px;color:var(--slate)}
     <nav class="nav-links" aria-label="Page sections">
       <a href="#how">How it works</a>
       <a href="#evidence">Evidence</a>
-      <a href="#features">Features</a>
       <a href="#banks">For banks</a>
+      <a href="#features">Features</a>
     </nav>
     <div class="nav-cta">
       <a class="btn btn-line btn-sm" href="prototype/">Try the demo</a>
@@ -258,26 +260,8 @@ footer{padding:64px 0 48px;font-size:14.5px;color:var(--slate)}
   </div>
 </section>
 
-<!-- ============================ EVIDENCE ============================ -->
-<section class="band" id="evidence" aria-labelledby="ev-h">
-  <div class="wrap">
-    <span class="eyebrow" style="color:var(--gold-lite)">The problem, in numbers</span>
-    <h2 id="ev-h" style="margin-top:12px">Small recurring charges add up to money your customers never decided to spend.</h2>
-    <div class="stats">
-      <div class="stat rv"><b>44%</b><p>of people in Finland pay for subscriptions they rarely or never use.<sup class="ref"><a href="#src1" aria-label="Source 1">1</a></sup></p><small>Revolut survey by Dynata, 1,000 people in Finland, late 2025</small></div>
-      <div class="stat rv"><b>€100M+</b><p>a year spent in Finland on subscriptions people barely use.<sup class="ref"><a href="#src2" aria-label="Source 2">2</a></sup></p><small>Revolut estimate, reported May 2026</small></div>
-      <div class="stat rv"><b>29%</b><p>of EU consumers often had a free trial turn into a paid subscription.<sup class="ref"><a href="#src3" aria-label="Source 3">3</a></sup></p><small>European Commission consumer survey, 2024</small></div>
-      <div class="stat rv"><b>40%</b><p>of EU consumers said the website or app made cancelling very difficult.<sup class="ref"><a href="#src3" aria-label="Source 3">3</a></sup></p><small>European Commission consumer survey, 2024</small></div>
-    </div>
-    <div class="stats-2">
-      <div class="stat rv"><b>3.6M</b><p>unwanted UK subscriptions came from free or discounted trials that rolled over — part of £1.6bn a year spent on unwanted subscriptions.<sup class="ref"><a href="#src4" aria-label="Source 4">4</a></sup></p></div>
-      <div class="stat rv"><b>74%</b><p>of US consumers say it is easy to forget recurring monthly charges; 42% kept paying for one they had stopped using.<sup class="ref"><a href="#src5" aria-label="Source 5">5</a></sup></p></div>
-    </div>
-  </div>
-</section>
-
 <!-- ============================ HOW IT WORKS ============================ -->
-<section class="sec" id="how" aria-labelledby="how-h">
+<section class="sec" id="how" aria-labelledby="how-h" style="padding-top:64px">
   <div class="wrap">
     <div class="sec-head center">
       <span class="eyebrow">How it works</span>
@@ -286,7 +270,7 @@ footer{padding:64px 0 48px;font-size:14.5px;color:var(--slate)}
     </div>
     <div class="promises">
       <article class="promise rv">
-        <div class="phone"><img src="assets/p-hub.webp" width="780" height="1688" loading="lazy" alt="Overview: the monthly total of €68.95, one card worth a look, and shortcuts for the next 7 days, free trials, money kept and the check-up."></div>
+        <div class="phone"><img src="assets/p-hub.webp" width="780" height="1688" loading="lazy" alt="Overview: the monthly total of €68.95 and where it goes, by card, PayPal and app store."></div>
         <div><span class="num">1</span><h3>Warns before the money leaves</h3>
         <p>A push 3 days before every renewal, 7 before a free trial converts, 14 before a yearly charge — and one calm overview, not a wall of data.</p></div>
       </article>
@@ -296,80 +280,33 @@ footer{padding:64px 0 48px;font-size:14.5px;color:var(--slate)}
         <p>App store, PayPal and family plans hide inside lump sums. Customers name them in a few taps, starting from the payment the bank can see.</p></div>
       </article>
       <article class="promise rv">
-        <div class="phone"><img src="assets/p-exit.webp" width="780" height="1688" loading="lazy" alt="Exit guide: stop before Thursday 5 November to avoid Friday's €23.00 charge, about 2 minutes, 4 steps in PayPal."></div>
+        <div class="phone"><img src="assets/p-exit.webp" width="780" height="1688" loading="lazy" alt="Exit guide: stop before Thursday 5 November to avoid Friday's €23.00 charge, about 2 minutes, 4 steps on Pixelcraft Pro's website."></div>
         <div><span class="num">3</span><h3>Points to the exit</h3>
         <p>The deadline, where it's managed, how hard it is — “about 2 minutes, 4 steps” — and the official cancellation page. The customer decides; Mohar never cancels for them.</p></div>
       </article>
       <article class="promise rv">
         <div class="phone"><img src="assets/p-confirmed.webp" width="780" height="1688" loading="lazy" alt="Confirmation card: No charge from Pixelcraft Pro. You saved €23.00 — €276.00 a year."></div>
         <div><span class="num">4</span><h3>Confirms it stopped</h3>
-        <p>Next month Mohar checks that the charge really disappeared. If one arrives anyway, it is flagged and routed to your dispute flow.</p></div>
+        <p>Next month Mohar checks that the charge really disappeared. If one arrives anyway, it is flagged — with the customer's cancellation proof — and routed to your dispute flow.</p></div>
       </article>
     </div>
   </div>
 </section>
 
-<!-- ============================ FEATURES ============================ -->
-<section class="sec features" id="features" aria-labelledby="feat-h">
+<!-- ============================ EVIDENCE ============================ -->
+<section class="band" id="evidence" aria-labelledby="ev-h">
   <div class="wrap">
-    <div class="sec-head">
-      <span class="eyebrow">Features</span>
-      <h2 id="feat-h" style="margin-top:12px">Every feature answers something the evidence shows</h2>
-      <p class="lead">Built for 18–28-year-olds who open their bank app a few times a week to check the balance.</p>
+    <span class="eyebrow" style="color:var(--gold-lite)">The problem, in numbers</span>
+    <h2 id="ev-h" style="margin-top:12px">Small recurring charges add up to money your customers never decided to spend.</h2>
+    <div class="stats">
+      <div class="stat rv"><b>44%</b><p>of people in Finland pay for subscriptions they rarely or never use.<sup class="ref"><a href="#src2" aria-label="Source 2">2</a></sup></p><small>Revolut survey by Dynata, 1,000 people in Finland, late 2025</small></div>
+      <div class="stat rv"><b>€100M+</b><p>a year spent in Finland on subscriptions people barely use.<sup class="ref"><a href="#src2" aria-label="Source 2">2</a></sup></p><small>Revolut estimate, reported May 2026</small></div>
+      <div class="stat rv"><b>62%</b><p>of EU consultation respondents saw an inactive subscription renew without any reminder.<sup class="ref"><a href="#src8" aria-label="Source 8">8</a></sup></p><small>EU Digital Fairness Fitness Check</small></div>
+      <div class="stat rv"><b>69%</b><p>of EU consumers found it technically difficult to cancel a subscription.<sup class="ref"><a href="#src8" aria-label="Source 8">8</a></sup></p><small>EU Digital Fairness Fitness Check</small></div>
     </div>
-    <div class="feat-grid">
-      <article class="feat rv">
-        <span class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span>
-        <h3>Free-trial countdown</h3>
-        <p>Free trials get their own tab: a live countdown to the first charge, for detected trials and ones customers add themselves.</p>
-        <div class="shot"><img src="assets/p-trials.webp" width="780" height="1688" loading="lazy" alt="The Free trials tab: FitFlow becomes €14.99 a month in 4 days 14 hours, with Stop before it charges and Keep after trial buttons."></div>
-        <p class="why">3.6M unwanted UK subscriptions began as trials.<sup class="ref"><a href="#src4">4</a></sup></p>
-      </article>
-      <article class="feat rv">
-        <span class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12.5 9.5 17 19 7.5"/></svg></span>
-        <h3>“Still using it?” check-up</h3>
-        <p>Once a month, one card per subscription: Keep, Stop, or Ask me next month. Postponing becomes a deliberate choice.</p>
-        <div class="shot"><img src="assets/p-checkup.webp" width="780" height="1688" loading="lazy" alt="Monthly check-up card for Pixelcraft Pro with Keep it, Ask me next month and Stop it buttons."></div>
-        <p class="why">Over a quarter of Finns put off cancelling in case they need it later.<sup class="ref"><a href="#src1">1</a></sup></p>
-      </article>
-      <article class="feat rv">
-        <span class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 17l6-6 4 4 6-6"/><path d="M14 9h6v6"/></svg></span>
-        <h3>Price-change alert</h3>
-        <p>“Streamview went up from €10.99 to €12.99” — spotted from the bank's own transactions, with a twelve-month price history.</p>
-        <div class="shot"><img src="assets/p-price.webp" width="780" height="1688" loading="lazy" style="object-position:center 58%" alt="Streamview price history chart showing a €2.00 rise in March 2026."></div>
-        <p class="why">Only about a third of Finns check subscription spending monthly.<sup class="ref"><a href="#src1">1</a></sup></p>
-      </article>
-      <article class="feat rv">
-        <span class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3l2 5.5 5.5 1.5-5.5 2-2 5.5-2-5.5-5.5-2 5.5-1.5z"/></svg></span>
-        <h3>Year in review</h3>
-        <p>A shareable card: what the year cost, the biggest and least-used subscriptions, and what stopping saved.</p>
-        <div class="shot"><img src="assets/p-review.webp" width="780" height="1688" loading="lazy" alt="Year in review card: €654.49 paid in 2026, paid for 6 services, used 5, stopped 1."></div>
-        <p class="why">US consumers underestimate their subscription spend by $133 a month on average.<sup class="ref"><a href="#src5">5</a></sup></p>
-      </article>
-      <article class="feat rv">
-        <span class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17"/></svg></span>
-        <h3>Yearly cost, side by side</h3>
-        <p>“€23/month = €276/year” on every subscription, so small charges feel as large as they really are.</p>
-        <p class="why">Costly in total, trivial one by one.</p>
-      </article>
-      <article class="feat rv">
-        <span class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3 2 8l10 5 10-5z"/><path d="M2 13l10 5 10-5"/></svg></span>
-        <h3>Duplicate spotting</h3>
-        <p>Flags two services of the same kind — or a personal plan next to a family plan the customer already shares.</p>
-        <p class="why">“Do you need both?” — never “you must cancel”.</p>
-      </article>
-      <article class="feat rv">
-        <span class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/></svg></span>
-        <h3>Saved-so-far counter</h3>
-        <p>“You've saved €23.00 since stopping 1 subscription” — the reward after the confirmation, and a figure your bank can report.</p>
-        <p class="why">Celebrates, never scolds.</p>
-      </article>
-      <article class="feat rv">
-        <span class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 4h5a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-5"/><path d="M10 16l4-4-4-4M14 12H4"/></svg></span>
-        <h3>Exit difficulty hint</h3>
-        <p>“About 2 minutes · 4 steps in PayPal” or “Must cancel in your phone's app store” — before the customer even starts.</p>
-        <p class="why">40% of EU consumers found cancelling very difficult.<sup class="ref"><a href="#src3">3</a></sup></p>
-      </article>
+    <div class="stats-2">
+      <div class="stat rv"><b>3.6M</b><p>unwanted UK subscriptions came from free or discounted trials that rolled over — part of £1.6bn a year spent on unwanted subscriptions.<sup class="ref"><a href="#src4" aria-label="Source 4">4</a></sup></p></div>
+      <div class="stat rv"><b>74%</b><p>of US consumers say it is easy to forget recurring monthly charges; 42% kept paying for one they had stopped using.<sup class="ref"><a href="#src5" aria-label="Source 5">5</a></sup></p></div>
     </div>
   </div>
 </section>
@@ -383,13 +320,13 @@ footer{padding:64px 0 48px;font-size:14.5px;color:var(--slate)}
       <ul class="benefits">
         <li><span class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3.5 21.5 20h-19z"/><path d="M12 10v4.5M12 17.5h.01"/></svg></span>
           <div><h3>Balance-clash warnings</h3><p>“€23.00 charges Friday. Your balance is €18.40.” No third-party tracker knows the balance — your bank does.</p></div></li>
-        <li><span class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 16v-5a6 6 0 1 1 12 0v5l1.5 2h-15z"/></svg></span>
-          <div><h3>Split it with friends</h3><p>Shared a streaming or family plan? Customers send payment requests through your bank — “€12.99 ÷ 3 = €4.33 each” — and see who has paid.</p></div></li>
         <li><span class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/></svg></span>
-          <div><h3>Proof of every cancellation</h3><p>When a customer cancels, the bank keeps the confirmation number, date and place. If the charge comes back anyway, that proof is attached to the dispute automatically.</p></div></li>
+          <div><h3>Proof of every cancellation</h3><p>After cancelling on the provider's page, the customer pastes the confirmation number or adds a screenshot. Your bank keeps it with the date — and if the charge comes back anyway, it goes straight into the dispute.</p></div></li>
         <li><span class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg></span>
-          <div><h3>Ahead of the rules</h3><p>The EU's Digital Fairness Act proposal, covering subscription renewals and free trials, is expected in Q4 2026.<sup class="ref"><a href="#src6">6</a></sup> The UK plans to require renewal reminders and easy exits from spring 2027.<sup class="ref"><a href="#src7">7</a></sup></p></div></li>
+          <div><h3>Ahead of the rules</h3><p>The European Commission has tentatively scheduled its Digital Fairness Act proposal — covering subscription renewals, free trials and cancellation — for 11 November 2026; the date may still move.<sup class="ref"><a href="#src9">9</a></sup><sup class="ref"><a href="#src6">6</a></sup> The UK plans to require renewal reminders and easy exits from spring 2027.<sup class="ref"><a href="#src7">7</a></sup></p></div></li>
+          <!-- TODO after 11 Nov 2026: check whether the proposal was adopted and update this line. -->
       </ul>
+      <p class="roadmap"><b>On our roadmap, not in the pilot:</b> splitting a shared plan with friends through your bank's payment requests.</p>
     </div>
     <figure class="clash rv">
       <div class="phone"><img src="assets/p-upcoming.webp" width="780" height="1688" loading="lazy" alt="Upcoming tab: four weekly bars of charges with a dashed line at the €18.40 balance; this week and week 4 go over it."></div>
@@ -398,8 +335,49 @@ footer{padding:64px 0 48px;font-size:14.5px;color:var(--slate)}
   </div>
 </section>
 
+<!-- ============================ FEATURES ============================ -->
+<section class="sec features" id="features" aria-labelledby="feat-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Features</span>
+      <h2 id="feat-h" style="margin-top:12px">Four extras, each answering the evidence</h2>
+      <p class="lead">Built on the four promises for 18–28-year-olds who open their bank app a few times a week to check the balance.</p>
+    </div>
+    <div class="feat-grid">
+      <article class="feat rv">
+        <span class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span>
+        <h3>Free-trial countdown</h3>
+        <p>Free trials get their own tab: a live countdown to the first charge, for detected trials and ones customers add themselves.</p>
+        <div class="shot"><img src="assets/p-trials.webp" width="780" height="1688" loading="lazy" alt="The Free trials tab: FitFlow becomes €14.99 a month in 4 days 14 hours, with Stop before it charges and Keep after trial buttons."></div>
+        <p class="why">3.6M unwanted UK subscriptions began as trials.<sup class="ref"><a href="#src4">4</a></sup></p>
+      </article>
+      <article class="feat rv">
+        <span class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12.5 9.5 17 19 7.5"/></svg></span>
+        <h3>“Still using it?” check-up</h3>
+        <p>Once a month, one card per subscription: Keep, Stop, or Ask me next month. Based on payments and the customer's own answers — postponing becomes a deliberate choice.</p>
+        <div class="shot"><img src="assets/p-checkup.webp" width="780" height="1688" loading="lazy" alt="Monthly check-up card for Pixelcraft Pro: €23.00 a month, you've paid €46 since September, with Keep it, Ask me next month and Stop it buttons."></div>
+        <p class="why">Over a quarter of Finns put off cancelling in case they need it later.<sup class="ref"><a href="#src1">1</a></sup></p>
+      </article>
+      <article class="feat rv">
+        <span class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 17l6-6 4 4 6-6"/><path d="M14 9h6v6"/></svg></span>
+        <h3>Price-change alert</h3>
+        <p>“Streamview went up from €10.99 to €12.99” — spotted from the bank's own transactions, with a twelve-month price history.</p>
+        <div class="shot"><img src="assets/p-price.webp" width="780" height="1688" loading="lazy" style="object-position:center 58%" alt="Streamview price history chart showing a €2.00 rise in March 2026."></div>
+        <p class="why">Only about a third of Finns check subscription spending monthly.<sup class="ref"><a href="#src1">1</a></sup></p>
+      </article>
+      <article class="feat rv">
+        <span class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3l2 5.5 5.5 1.5-5.5 2-2 5.5-2-5.5-5.5-2 5.5-1.5z"/></svg></span>
+        <h3>Year in review</h3>
+        <p>A shareable card: what the year cost, the biggest and least-used subscriptions, and what stopping saved.</p>
+        <div class="shot"><img src="assets/p-review.webp" width="780" height="1688" loading="lazy" alt="Year in review card: what 2026 cost, the biggest subscription, the biggest price rise and money saved."></div>
+        <p class="why">US consumers underestimate their subscription spend by $133 a month on average.<sup class="ref"><a href="#src5">5</a></sup></p>
+      </article>
+    </div>
+  </div>
+</section>
+
 <!-- ============================ WHITE LABEL ============================ -->
-<section class="sec" style="padding-top:0" aria-labelledby="wl-h">
+<section class="sec" aria-labelledby="wl-h">
   <div class="wrap">
     <div class="sec-head center">
       <span class="eyebrow">White-label</span>
@@ -444,6 +422,7 @@ footer{padding:64px 0 48px;font-size:14.5px;color:var(--slate)}
       <div>
         <span class="eyebrow">See it work</span>
         <h2 id="demo-h" style="margin-top:12px;font-size:clamp(1.6rem,3vw,2.1rem)">Try the interactive prototype</h2>
+        <!-- After the peer test: add ONE real quote from a tester here (with their permission). Never an invented one. -->
         <p class="lead" style="margin-top:12px">Works on a phone or a laptop, no sign-up. Three tasks, about five minutes:</p>
         <ol>
           <li>You've been notified about a charge. Stop it before Friday.</li>
@@ -454,7 +433,7 @@ footer{padding:64px 0 48px;font-size:14.5px;color:var(--slate)}
       </div>
       <div class="browser">
         <div class="browser-bar" aria-hidden="true"><i></i><i></i><i></i><span>Pixelcraft Pro</span></div>
-        <img src="assets/l-detail.webp" width="1600" height="900" loading="lazy" alt="Subscription detail in the laptop view: Pixelcraft Pro at €23.00 a month, a question asking whether to cancel an unused app, and Keep it, Decide later and Stop it buttons.">
+        <img src="assets/l-detail.webp" width="1600" height="900" loading="lazy" alt="Subscription detail in the laptop view: Pixelcraft Pro at €23.00 a month, you've paid €46 since September, a Stop it button with Keep it and Decide later beside it.">
       </div>
     </div>
   </div>
@@ -514,11 +493,13 @@ footer{padding:64px 0 48px;font-size:14.5px;color:var(--slate)}
       <ol class="sources">
         <li id="src1">Taloustaito (1 June 2026), reporting a Revolut survey carried out by Dynata among 1,000 people in Finland in late 2025. <a href="https://www.taloustaito.fi/Rahat/2026/poltatko-rahaa-tilauspalveluihin-joita-et-kayta-et-ole-yksin/">taloustaito.fi</a></li>
         <li id="src2">Verkkouutiset (27 May 2026), “Suomalaisilta kuluu yli 100 miljoonaa euroa turhiin tilauksiin” (Revolut estimate). <a href="https://www.verkkouutiset.fi/a/suomalaisilta-kuluu-yli-100-miljoonaa-euroa-turhiin-tilauksiin/">verkkouutiset.fi</a></li>
-        <li id="src3">European Commission (3 October 2024), Questions and Answers on the Digital Fairness Fitness Check — consumer survey results. <a href="https://ec.europa.eu/commission/presscorner/api/files/document/print/lv/qanda_24_4909/QANDA_24_4909_EN.pdf">ec.europa.eu</a></li>
+        <li id="src3">European Commission (3 October 2024), Questions and Answers on the Digital Fairness Fitness Check. <a href="https://ec.europa.eu/commission/presscorner/api/files/document/print/lv/qanda_24_4909/QANDA_24_4909_EN.pdf">ec.europa.eu</a></li>
         <li id="src4">UK Department for Business and Trade (18 November 2024), Consultation on the implementation of the new subscription contracts regime. <a href="https://www.gov.uk/government/consultations/consultation-on-the-implementation-of-the-new-subscription-contracts-regime/consultation-on-the-implementation-of-the-new-subscription-contracts-regime-web-accessible-version">gov.uk</a></li>
         <li id="src5">C+R Research, subscription survey of 1,000 US consumers (fielded April–May 2022). <a href="https://www.crresearch.com/blog/subscription-service-statistics-and-costs/">crresearch.com</a></li>
         <li id="src6">European Parliamentary Research Service (2026), “Towards a digital fairness act”. <a href="https://eprs.europarl.europa.eu/contents/publications/EPRS/2026/10/EPRS_BRI(2026)791529.html">europarl.europa.eu</a></li>
         <li id="src7">UK Government response to the subscription contracts consultation (updated 2 April 2026). <a href="https://www.gov.uk/government/consultations/consultation-on-the-implementation-of-the-new-subscription-contracts-regime/outcome/government-response-to-consultation-on-the-implementation-of-the-new-subscription-contracts-regime-web-accessible-version">gov.uk</a></li>
+        <li id="src8">Freshfields (9 July 2025), “Digital Fitness Check and Digital Fairness Act — Part 7: contract cancellations”, summarising the European Commission's Fitness Check consultation and surveys. <a href="https://technologyquotient.freshfields.com/post/102krzt/digital-fitness-check-and-digital-fairness-act-part-7-contract-cancellations-and">freshfields.com</a></li>
+        <li id="src9">MLex (29 September 2026), “Digital Fairness, Quantum acts appear on EU Commission's November agenda” — tentative date, subject to change. <a href="https://www.mlex.com/mlex/data-privacy-security/articles/2531216">mlex.com</a></li>
       </ol>
     </div>
   </div>

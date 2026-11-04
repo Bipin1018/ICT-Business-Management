@@ -19,9 +19,10 @@ University artefact for ICT Business Management (Artefact 3).
 3. **Points to the exit** — where each subscription is managed, its cancellation page, and the deadline.
 4. **Confirms it stopped** — next month it checks the charge really disappeared, and flags it if not.
 
-Bank-only extras in the prototype: balance warnings against upcoming charges, **cancellation proof** kept by the bank and attached to any dispute, and **split with friends** through payment requests.
+Bank-only extras in the prototype: balance warnings against upcoming charges, and **cancellation proof** — the customer pastes the provider's confirmation number or adds a screenshot, and the bank keeps it for any dispute.
 
-It never cancels anything for the customer, never blocks a payment, and gives no budgeting advice.
+It only uses what a bank can actually know: payments, the balance, and the customer's own answers. It never claims to know whether an app is used, never cancels anything for the customer, never blocks a payment, and gives no budgeting or saving advice.
+Splitting a shared plan with friends is on the roadmap, not in the prototype.
 
 ## Try it
 
@@ -30,14 +31,13 @@ On a computer it opens as a phone in a frame, with the tester guide beside it (a
 on a phone it fills the screen, the tester guide sits behind the **Test guide** button, and a **Demo: jump a month ahead** button appears when task 3 needs it.
 Progress survives an accidental refresh (sessionStorage); **Reset demo** clears it.
 
-Tester tasks (shown in the demo controls):
+Tester tasks (shown in the demo controls) — three tasks, about five minutes:
 
 1. You've been notified about a charge. Stop it before Friday.
 2. Your music is billed by your phone's app store. Add it so the total is real.
-3. A month has passed. Check whether your cancellation worked. (Use **Fast-forward one month**.)
-4. Optional: jump one more month. A charge you stopped came back — sort it out.
-5. Optional: you share Streamview with two flatmates. Split the cost with them.
+3. A month has passed. Check whether your cancellation worked. (Setup: press **Fast-forward one month** first.)
 
+Hints are hidden behind **Stuck? Show a hint**, so the test shows whether people find things on their own.
 Press **Reset demo** before each new tester.
 
 ## How the code is organised
