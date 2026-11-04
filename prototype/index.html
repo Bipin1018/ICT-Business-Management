@@ -236,7 +236,7 @@ button{cursor:pointer}
 .radar-ring span{display:grid;place-items:center;align-content:center;width:60px;height:60px;border-radius:50%;background:var(--paper);font:400 24px/1 var(--serif);}
 .radar-ring small{font:800 9px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--slate)}
 .radar-h{margin:4px 0 0;font:700 14px var(--sans)}
-.radar-count{margin:2px 0 6px;font:700 21px var(--mono);color:var(--gold-ink);font-variant-numeric:tabular-nums}
+.radar-count{margin:2px 0 6px;font:400 22px/1.15 var(--serif);color:var(--gold-ink);font-variant-numeric:tabular-nums}
 
 /* Price sparkline */
 .spark{display:block;width:100%;height:auto;margin-top:10px}
@@ -805,10 +805,12 @@ body.view-laptop .cols > .col > .total:first-child,body.view-laptop .cols > .col
 .demo-btn .emo svg,.theme-btn .emo svg{display:block;margin:0 auto}
 .theme-btn .emo{flex:none;width:20px}
 .ff-fab{display:none}
+body.layer-open .ff-fab{display:none!important}   /* never on top of a sheet's or the provider page's buttons */
 @media (max-width:899px){
   .ff-fab:not([hidden]){display:flex;align-items:center;gap:8px;position:fixed;left:50%;transform:translateX(-50%);bottom:84px;z-index:140;min-height:44px;padding:0 16px;
     border:1.5px dashed #B3A88E;border-radius:10px;background:var(--paper);color:var(--ink);font:700 13px var(--sans);white-space:nowrap;box-shadow:0 6px 20px rgba(0,0,0,.18)}
   body.ff-on .toast-root{bottom:140px}
+  body.ff-on .view{padding-bottom:64px}                    /* the floating demo button never hides the end of a screen */
 }
 @media (min-width:900px){
   body.view-laptop.demo-hidden .ff-fab:not([hidden]){display:flex;align-items:center;gap:8px;position:fixed;right:16px;bottom:72px;z-index:140;min-height:44px;padding:0 16px;
@@ -920,6 +922,97 @@ body.view-laptop .cols > .col > .total:first-child,body.view-laptop .cols > .col
 .attach[aria-pressed="true"]{border-style:solid;border-color:var(--moss);background:var(--mint)}
 .attach .proof-ico{flex:none}
 .prov-copy{margin:0 0 0 8px;vertical-align:top;padding:0 12px;min-height:36px;border:1px solid var(--line);border-radius:999px;background:#fff;font:600 13px var(--sans)}
+
+/* =====================================================================
+   18. PAYMENT BARS on every subscription page
+   ===================================================================== */
+.pc-svg{display:block;width:100%;height:auto;margin-top:10px;overflow:visible}
+.pb-axis{stroke:var(--line);stroke-width:1}
+.pb-paid{fill:var(--forest-2)}
+.pb-paid.rise{fill:var(--forest)}
+.pb-next{fill:var(--gold-wash);stroke:var(--gold);stroke-width:1.5;stroke-dasharray:4 3}
+.pb-ghost{fill:var(--danger)}
+.pb-free{fill:var(--gold)}
+.pb-stop{fill:var(--moss)}
+.pb-val{font:700 11.5px var(--sans);fill:var(--ink)}
+.pb-val.next{fill:var(--gold-ink)}
+.pb-val.soft{font-weight:600;fill:var(--slate)}
+.pb-rise{font:800 10.5px var(--sans);fill:var(--forest)}
+.pb-lab{font:600 11px var(--sans);fill:var(--slate)}
+.pb-lab.next{fill:var(--gold-ink);font-weight:800}
+.pb-sub{font:600 9.5px var(--sans);fill:var(--gold-ink);text-transform:uppercase;letter-spacing:.06em}
+.pb-year{font:600 9.5px var(--sans);fill:var(--slate);opacity:.8}
+.pb-used{font:700 10px var(--sans);fill:var(--forest-2)}
+.pb-used.no{fill:var(--danger)}
+.pc-legend{display:flex;flex-wrap:wrap;gap:6px 14px;list-style:none;margin:6px 0 0;padding:0;font-size:12.5px;color:var(--slate)}
+.pc-legend li{display:flex;align-items:center;gap:6px}
+.pc-legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.lg-paid{background:var(--forest-2)}
+.lg-next{background:var(--gold-wash);border:1.5px dashed var(--gold)}
+.lg-free{background:var(--gold);height:4px!important}
+.lg-stop{background:var(--moss);height:4px!important}
+.lg-ghost{background:var(--danger)}
+.lg-rise{background:var(--forest)}
+.pc-sum{margin:12px 0 0;font-size:14.5px}
+.danger-t{color:var(--danger);font-weight:700}
+.pc-use{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.pc-use > p:first-child{margin:0 0 8px;font-weight:700;font-size:14.5px}
+.pc-list{margin-top:12px;font-size:13.5px}
+.pc-list summary{cursor:pointer;font-weight:700;color:var(--forest-2);min-height:32px;display:flex;align-items:center}
+.pc-list table{width:100%;border-collapse:collapse;margin-top:6px}
+.pc-list th{text-align:left;font-size:12px;color:var(--slate);font-weight:600;padding:6px 4px;border-bottom:1px solid var(--line)}
+.pc-list td{padding:7px 4px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.pc-list td:last-child,.pc-list th:last-child{text-align:right}
+
+/* =====================================================================
+   19. THE BANK APP AROUND THE FEATURE — home, payments, cards, notifications
+   ===================================================================== */
+.acct{margin-top:16px;padding:20px;border-radius:18px;background:var(--bank);color:#fff}
+.acct-label{margin:0;font:700 12px var(--sans);letter-spacing:.08em;text-transform:uppercase;opacity:.8}
+.acct-bal{margin:6px 0 4px;font:400 44px/1 var(--serif)}
+.acct-sub{margin:2px 0 0;font-size:13.5px;opacity:.85}
+.feat-card{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;padding:16px;border:1px solid var(--line);border-radius:18px;background:var(--paper);text-align:left;box-shadow:0 1px 2px rgba(18,36,29,.05)}
+.feat-card:hover{border-color:var(--forest-2)}
+.fc-h{display:block;font-weight:800;font-size:15px}
+.fc-big{display:block;margin-top:2px;font:400 26px/1.15 var(--serif)}
+.fc-big small{font:500 13px var(--sans);color:var(--slate)}
+.fc-line{display:block;margin-top:3px;font-size:13.5px;color:var(--slate)}
+.fc-line.gold{color:var(--gold-ink);font-weight:700}
+.sec-row{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.sec-row .link-btn{white-space:nowrap}
+.card.tight{padding:4px 14px 8px}
+.tx-day{margin:14px 0 0;font:700 12px var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--slate)}
+.list.tx{margin-top:2px}
+.tx-row{width:100%;display:flex;align-items:center;gap:12px;min-height:58px;padding:8px 0;border:0;border-bottom:1px solid var(--line);background:none;text-align:left;font:inherit;color:inherit}
+.list.tx li:last-child .tx-row{border-bottom:0}
+button.tx-row:hover .tx-text{text-decoration:underline;text-underline-offset:3px}
+.tx-ico{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--cream-2);color:var(--slate)}
+.tx-text{display:block;font:600 13.5px var(--mono);overflow-wrap:anywhere}
+.tx-meta{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}
+.tx-sub{font-size:12.5px;color:var(--slate)}
+.tx-amt{flex:none;font-weight:700;font-variant-numeric:tabular-nums}
+.tx-amt.in{color:var(--moss)}
+.pay-filter{margin-top:14px}
+.pay-filter button{flex:1;min-height:40px;border:0;border-radius:999px;background:none;font:700 13.5px var(--sans);color:var(--slate)}
+.pay-filter button[aria-pressed="true"]{background:var(--paper);color:var(--ink);box-shadow:0 1px 3px rgba(18,36,29,.15)}
+.bankcard{margin-top:16px;padding:20px;border-radius:18px;aspect-ratio:1.586;max-width:380px;display:flex;flex-direction:column;justify-content:space-between;color:#fff;
+  background:linear-gradient(135deg,var(--bank),var(--bank-2));box-shadow:0 18px 40px -20px rgba(0,0,0,.5)}
+.bc-top{display:flex;align-items:center;gap:8px}
+.bc-top b{flex:1}
+.bc-type{font:700 11px var(--sans);letter-spacing:.1em;text-transform:uppercase;opacity:.8}
+.bc-num{margin:0;font:600 19px var(--mono);letter-spacing:.06em}
+.bc-bot{display:flex;justify-content:space-between;font:600 12px var(--sans);letter-spacing:.08em;opacity:.9}
+.list.ib{margin-top:8px}
+.ib-row{width:100%;display:grid;grid-template-columns:34px 1fr;gap:10px;margin-top:8px;padding:12px;border:1px solid var(--line);border-radius:16px;background:var(--paper);text-align:left;font:inherit;color:inherit}
+.ib-row:hover{border-color:var(--forest-2)}
+.ib-row.bad{border-color:var(--danger)}
+.ib-row.good{background:var(--mint)}
+.ib-row .notif-icon{width:34px;height:34px}
+.ib-top{display:flex;justify-content:space-between;font:700 11px var(--sans);letter-spacing:.04em;text-transform:uppercase;color:var(--slate)}
+.ib-title{display:block;margin-top:2px;font-weight:700;font-size:14px;line-height:1.3}
+.ib-body{display:block;margin-top:2px;font-size:13px;color:var(--slate)}
+.prof{display:flex;align-items:center;gap:14px;margin-top:6px}
+.avatar.big{flex:none;width:56px;height:56px;margin:0;display:grid;place-items:center;font-size:22px}
 </style>
 </head>
 
@@ -988,8 +1081,8 @@ body.view-laptop .cols > .col > .total:first-child,body.view-laptop .cols > .col
           <header class="bankbar">
             <span id="bankLogo"></span>
             <span class="bank-name" id="bankName"></span>
-            <button class="icon-btn" data-action="inert" data-label="Notifications" aria-label="Notifications (not part of this prototype)" id="bellBtn"></button>
-            <button class="avatar" data-action="inert" data-label="Profile" aria-label="Profile (not part of this prototype)">A</button>
+            <button class="icon-btn" data-action="go" data-value="inbox" aria-label="Notifications" id="bellBtn"></button>
+            <button class="avatar" data-action="profile" aria-label="Your profile">A</button>
           </header>
           <main class="screen" id="screen" aria-live="off"></main>
           <nav class="tabbar" id="tabbar" aria-label="Bank app"></nav>
@@ -1313,7 +1406,8 @@ function countdownText(iso, short) {
   if (ms <= 0) return 'now';
   const t = Math.floor(ms / 1000);
   const d = Math.floor(t / 86400), h = Math.floor(t % 86400 / 3600), m = Math.floor(t % 3600 / 60), s = t % 60;
-  return short ? `${d}d ${h}h` : `${d}d ${pad(h)}h ${pad(m)}m ${pad(s)}s`;
+  if (short) return `${d}d ${h}h`;
+  return d ? `${d} day${d === 1 ? '' : 's'}, ${h} hour${h === 1 ? '' : 's'}` : `${h} hour${h === 1 ? '' : 's'}, ${m} min`;
 }
 
 /* ---------------------------------------------------------------------
@@ -1438,7 +1532,7 @@ const logo = s => `<span class="logo" style="background:${s.color}" aria-hidden=
    buttons can call history.back() and stay in sync with the browser's.
    The lock screen is an overlay flag (ui.lockOn), not a route.
    --------------------------------------------------------------------- */
-const ROUTES = { hub: 1, detail: 2, add: 2, cancel: 3, calendar: 2, checkup: 2, review: 2, settings: 2 };   // value = depth, used for slide direction
+const ROUTES = { hub: 1, detail: 2, add: 2, cancel: 3, calendar: 2, checkup: 2, review: 2, settings: 2, home: 1, cards: 1, payments: 1, inbox: 2 };   // value = depth, used for slide direction
 const nav = { stack: [], lastHash: null, lastDepth: 1 };
 
 function currentRoute() {
@@ -1504,8 +1598,12 @@ function render({ nav: isNav = false, focusTitle = false } = {}) {
   else if (route.name === 'checkup') html = renderCheckup();
   else if (route.name === 'review') html = renderReview();
   else if (route.name === 'settings') html = renderSettings();
+  else if (route.name === 'home') html = renderHome();
+  else if (route.name === 'cards') html = renderCards();
+  else if (route.name === 'payments') html = renderPayments();
+  else if (route.name === 'inbox') html = renderInbox();
   else html = renderHub();
-  const narrow = ['add', 'calendar', 'checkup', 'review', 'settings'].includes(route.name);
+  const narrow = ['add', 'calendar', 'checkup', 'review', 'settings', 'home', 'cards', 'payments', 'inbox'].includes(route.name);
   els.screen.innerHTML = `<div class="view${narrow ? ' narrow' : ''}">${html}</div>`;
 
   /* 2. overlays on top of the bank app: lock screen or the provider's website */
@@ -2252,11 +2350,14 @@ function renderDetail(id) {
   if (s.trial && active) {
     amount = `€0.00<small>now</small>`;
     sub = `Then ${eur(inPeriod(s.cents))} a ${perLabel()}, from ${fmtShort(s.next)}.`;
+  } else if (s.cycle === 'yearly') {
+    /* a yearly plan shows what is really charged — never a monthly figure nobody pays */
+    amount = `<span data-count="amt-${s.id}" data-value="${s.cents}">${eur(s.cents)}</span><small>/ ${t('year')}</small>`;
+    sub = `Charged once a year — about ${eur(monthly(s))} a month.`;
   } else {
     amount = `<span data-count="amt-${s.id}" data-value="${inPeriod(monthly(s))}">${eur(inPeriod(monthly(s)))}</span><small>/ ${perUnit()}</small>`;
-    if (s.cycle === 'yearly') sub = ui.period === 'month' ? `Billed ${eur(s.cents)} once a year.` : 'Billed once a year.';
   }
-  const keepCost = active
+  const keepCost = active && s.cycle !== 'yearly'
     ? `<p class="reframe"><strong>${eurShort(monthly(s))}/month = ${eurShort(monthly(s) * 12)}/year</strong> — ${s.trial ? 'what keeping it after the trial costs' : 'what keeping this costs'}.</p>` : '';
 
   /* Next-charge chip */
@@ -2278,17 +2379,6 @@ function renderDetail(id) {
         <div><dt>Warning</dt><dd>${live && s.status === 'active' ? warnText(s).replace(/^warns/, 'Warns') : '—'}</dd></div>
       </dl>
     </section>`;
-  const usageHtml = `
-    ${live ? `
-    <section class="card" aria-labelledby="use-h">
-      <h2 class="card-title" id="use-h">${t('usageQ')}</h2>
-      <div class="choices" role="group" aria-labelledby="use-h">
-        ${[['yes', t('yes')], ['little', t('little')], ['no', t('no')]].map(([v, l]) =>
-          `<button class="choice" data-action="usage" data-id="${s.id}" data-value="${v}" aria-pressed="${s.usage === v}">${l}</button>`).join('')}
-      </div>
-      ${s.usage ? `<p class="tiny muted" style="margin:8px 0 0">Noted — only you and your bank see this.</p>` : ''}
-    </section>` : ''}`;
-
   return `
     <div class="top-row">
       <button class="back" data-action="back">${icon('back')} ${t('back')}</button>
@@ -2313,34 +2403,31 @@ function renderDetail(id) {
     ${keepCost}
     ${chip}
 
+    ${renderStatusBanner(s)}
     ${active ? `
     <section class="card" aria-labelledby="dec-h">
-      <h2 class="card-title" id="dec-h">${zombie(s) && !zombie(s).own ? 'Still using it?' : t('decideH')}</h2>
+      <h2 class="card-title" id="dec-h">${zombie(s) ? (zombie(s).own ? "You said you didn't use it last month" : 'Still using it?') : t('decideH')}</h2>
       ${zombie(s) ? `<p class="small" style="margin:2px 0 0">${zombie(s).text}</p>` : ''}
       <button class="btn btn-gold btn-block mt stop-main" data-action="stop" data-id="${s.id}">
-        ${icon('exit', 18)} ${s.trial ? 'Stop before it charges' : t('stop')}<small>${exitHint(s, true)}</small></button>
+        ${icon('exit', 18)} ${t('stop')}<small>${exitHint(s, true)}</small></button>
       <div class="decide-2">
         <button class="btn btn-ghost btn-sm" data-action="keep" data-id="${s.id}" aria-pressed="${s.decision === 'keep'}">${icon('check', 16)} ${t('keep')}</button>
         <button class="btn btn-ghost btn-sm" data-action="unsure" data-id="${s.id}" aria-pressed="${s.decision === 'unsure'}">${icon('bell', 16)} ${t('unsure')}</button>
       </div>
     </section>` : ''}
 
-    ${renderStatusBanner(s)}
     ${renderProof(s)}
     ${active ? renderClash(s) : ''}
     ${s.trial && active ? renderRadar(s) : ''}
     ${s.cycle === 'yearly' && active ? renderAnnualNote(s) : ''}
 
-    ${wide ? usageHtml + '</div><div class="col">' : `
+    ${wide ? '</div><div class="col">' : ''}
+    ${renderPayChart(s)}
+    ${wide ? '' : `
     <button class="more-toggle" data-action="detailMore" aria-expanded="${!!ui.detailMore}">
       <span>${ui.detailMore ? 'Hide details' : `More about ${esc(s.name)}`}</span>${icon('down', 18)}</button>`}
     ${wide || ui.detailMore ? `
     ${factsHtml}
-    ${wide ? '' : usageHtml}
-    <section class="card" aria-labelledby="ph-h">
-      <h2 class="card-title" id="ph-h">${t('priceHist')}</h2>
-      ${priceHistory(s)}
-    </section>
     ${renderRecognised(s)}` : ''}
     ${wide ? '</div></div>' : ''}
 
@@ -2410,10 +2497,10 @@ function renderRadar(s) {
     <section class="radar" aria-labelledby="radar-h-${s.id}">
       <div class="radar-ring" style="--p:${used}" aria-hidden="true"><span>${left}<small>${left === 1 ? 'day' : 'days'}</small></span></div>
       <div class="grow">
-        <p class="eyebrow">${icon('radar', 13)} Trial radar</p>
+        <p class="eyebrow">${icon('radar', 13)} Free trial countdown</p>
         <h2 class="radar-h" id="radar-h-${s.id}">Becomes ${eur(s.cents)} a month in</h2>
         <p class="radar-count" data-countdown="${s.next}" aria-live="off">${countdownText(s.next)}</p>
-        <p class="small" style="margin:0">Stop before ${fmtLong(addDays(s.next, -1))} and you pay nothing. ${used}% of the trial is used.</p>
+        <p class="small" style="margin:0">Stop before ${fmtLong(addDays(s.next, -1))} and you pay nothing. ${used}% of the free period has gone.</p>
       </div>
     </section>`;
 }
@@ -2470,46 +2557,145 @@ function renderRecognised(s) {
     </section>`;
 }
 
-function priceHistory(s) {
-  if (s.source === 'manual') return `<p class="small muted" style="margin:8px 0 0">You added this yourself, so we only know what you told us: ${eur(s.cents)} / ${s.cycle === 'yearly' ? 'year' : 'month'}.</p>`;
-  if (!s.priceHistory) return `<p class="small" style="margin:8px 0 0">Free trial since ${monthYear(s.since)}. ${s.status === 'active' && s.trial ? `Becomes ${eur(s.cents)} a month on ${fmtShort(s.next)}.` : `${eur(s.cents)} a month after the trial.`}</p>`;
-  const h = s.priceHistory;
-  if (h.length === 1) return `<p class="small" style="margin:8px 0 0">${eur(h[0].cents)} since ${monthYear(h[0].from)} — no price changes.</p>`;
-  const rows = h.map((p, i) => {
-    const until = h[i + 1] ? monthYear(addMonths(h[i + 1].from + '-01', -1).slice(0, 7)) : 'now';
-    const diff = i > 0 ? p.cents - h[i - 1].cents : 0;
-    return `<li><span>${monthYear(p.from)} – ${until}</span><span class="num"><strong>${eur(p.cents)}</strong>${diff > 0 ? ` <span class="pill gold">+${eur(diff)}</span>` : ''}</span></li>`;
-  }).reverse();
-  return `${sparkline(s)}<ul class="ph">${rows.join('')}</ul>`;
+/* ---------------------------------------------------------------------
+   PAYMENT BARS — "What you've paid", on every subscription page.
+   One bar per charge (per month, or per year for yearly plans), built only
+   from what the bank can see: its own statement. A bank can't see how much
+   an app is used, so "usage" is the customer's own answer, shown under the
+   month it is about.
+   --------------------------------------------------------------------- */
+function priceAt(s, ym) {
+  let c = s.cents;
+  if (s.priceHistory) { c = s.priceHistory[0].cents; s.priceHistory.forEach(p => { if (p.from <= ym) c = p.cents; }); }
+  return c;
 }
-
-/* A small step chart of the price over the last 12 months */
-function sparkline(s) {
-  const pts = [];
-  for (let i = 11; i >= 0; i--) {
-    const ym = addMonths(state.today, -i).slice(0, 7);
-    let c = null;
-    s.priceHistory.forEach(p => { if (p.from <= ym) c = p.cents; });
-    if (c !== null) pts.push({ ym, c });
+/* When did the customer start paying? For one added by hand from an unnamed app-store payment, work it out from what was paid. */
+function firstMonth(s) {
+  if (s.since) return s.since;
+  const lump = state.unknown.find(u => u.resolvedTo === s.id);
+  if (lump && lump.paid2026) return addMonths(lump.last, -(Math.round(lump.paid2026 / lump.cents) - 1)).slice(0, 7);
+  return null;   // added by hand: we only know the next charge
+}
+function payHistory(s) {
+  const step = cycleMonths(s), start = firstMonth(s), max = s.cycle === 'yearly' ? 4 : 12;
+  const trialEnd = s.trialEnded ? s.trialEnded.date : (s.trial ? s.next : null);
+  const out = [];
+  for (let k = 0; k < max; k++) {
+    const date = addMonths(s.next, -k * step), ym = date.slice(0, 7);
+    if (k > 0 && (!start || ym < start)) break;
+    const bar = { date, ym, cents: 0, kind: 'paid' };
+    if (date > state.today) {
+      if (s.status === 'active') { bar.kind = 'next'; bar.cents = s.cents; bar.first = !!s.trial; }
+      else if (s.status === 'stopping') bar.kind = 'wont';
+      else if (s.status === 'stopped') bar.kind = 'stopped';
+      else continue;
+    } else if (s.ghost && s.ghost.date === date) { bar.kind = 'ghost'; bar.cents = s.ghost.cents; }
+    else if (s.confirmedOn && date >= s.confirmedOn) bar.kind = 'stopped';
+    else if (s.trialStart && trialEnd && date < trialEnd && date >= s.trialStart.slice(0, 7) + '-01') bar.kind = 'free';
+    else bar.cents = priceAt(s, ym);
+    out.push(bar);
   }
-  if (pts.length < 2) return '';
-  const W = 300, H = 70;
-  const min = Math.min(...pts.map(p => p.c)), max = Math.max(...pts.map(p => p.c));
-  const x = i => 10 + i * (W - 20) / (pts.length - 1);
-  const y = c => max === min ? H / 2 : H - 18 - (c - min) / (max - min) * (H - 40);
-  let d = `M${x(0)},${y(pts[0].c)}`;
-  pts.forEach((p, i) => { if (i) d += ` H${x(i)} V${y(p.c)}`; });
-  const ch = pts.findIndex((p, i) => i > 0 && p.c > pts[i - 1].c);
-  const label = pts.map(p => p.c).filter((c, i, a) => i === 0 || c !== a[i - 1]).map(eur).join(' then ');
+  return out.reverse();
+}
+const monLabel = (ym, withYear) => { const [y, m] = ym.split('-').map(Number); const n = ui.lang === 'fi' ? MO_FI[m - 1].slice(0, 3) : MO[m - 1].slice(0, 3); return withYear ? `${n} ’${String(y).slice(2)}` : n; };
+
+function renderPayChart(s) {
+  const bars = payHistory(s);
+  const yearly = s.cycle === 'yearly';
+  const paid = bars.filter(b => b.kind === 'paid' || b.kind === 'ghost');
+  const paidSum = paid.reduce((a, b) => a + b.cents, 0);
+  const live = isLive(s);
+
+  /* geometry */
+  const W = 340, H = 196, T = 30, B = 46, L = 4, R = 4;
+  const n = Math.max(bars.length, yearly ? 3 : 4);
+  const slot = (W - L - R) / n, bw = Math.min(34, slot * .62), r = 5;
+  const top = Math.max(...bars.map(b => b.cents), 1) * 1.15;
+  const y = v => T + (H - T - B) * (1 - v / top), base = y(0);
+  const off = (n - bars.length) * slot;   // few bars: keep them to the right, next to "now"
+  let prevPrice = null;
+
+  const g = bars.map((b, i) => {
+    const x = L + off + i * slot + (slot - bw) / 2, cx = x + bw / 2;
+    const h = b.cents ? Math.max(4, base - y(b.cents)) : 0, ty = base - h;
+    const d = h ? `M${x},${base} V${ty + r} Q${x},${ty} ${x + r},${ty} H${x + bw - r} Q${x + bw},${ty} ${x + bw},${ty + r} V${base} Z` : '';
+    const rise = b.kind === 'paid' && prevPrice !== null && b.cents > prevPrice;
+    if (b.kind === 'paid') prevPrice = b.cents;
+    const showVal = bars.length <= 6 || i === 0 || rise || b.kind !== 'paid';
+    let shape = '', val = '', say = '';
+    if (b.kind === 'paid') { shape = `<path d="${d}" class="pb-paid${rise ? ' rise' : ''}"/>`; val = eurShort(b.cents); say = `paid ${eur(b.cents)}`; }
+    if (b.kind === 'ghost') { shape = `<path d="${d}" class="pb-ghost"/>`; val = eurShort(b.cents); say = `charged ${eur(b.cents)} after you stopped it`; }
+    if (b.kind === 'next') { shape = `<path d="${d}" class="pb-next"/>`; val = eurShort(b.cents); say = `${b.first ? 'first charge' : 'next charge'} ${eur(b.cents)} on ${fmtShort(b.date)}`; }
+    if (b.kind === 'free') { shape = `<rect x="${x}" y="${base - 3}" width="${bw}" height="3" rx="1.5" class="pb-free"/>`; val = 'Free'; say = 'free trial, nothing paid'; }
+    if (b.kind === 'stopped' || b.kind === 'wont') { shape = `<rect x="${x}" y="${base - 3}" width="${bw}" height="3" rx="1.5" class="pb-stop"/>`; val = '€0'; say = b.kind === 'wont' ? 'should not charge — we will check' : 'nothing charged — stopped'; }
+    const valY = (h ? ty : base - 3) - 7;
+    const lab = yearly ? b.ym.slice(0, 4) : monLabel(b.ym);
+    const yearMark = !yearly && (i === 0 || b.ym.endsWith('-01')) && b.kind !== 'next' && b.kind !== 'wont' ? b.ym.slice(0, 4) : '';
+    return `<g role="listitem" aria-label="${yearly ? b.ym.slice(0, 4) : monthYear(b.ym)}: ${say}">
+      ${shape}
+      ${showVal ? `<text x="${cx}" y="${valY}" text-anchor="middle" class="pb-val${b.kind === 'next' ? ' next' : ''}${b.kind === 'stopped' || b.kind === 'wont' || b.kind === 'free' ? ' soft' : ''}">${val}</text>` : ''}
+      ${rise ? `<text x="${cx}" y="${valY - 13}" text-anchor="middle" class="pb-rise">+${eurShort(b.cents - bars.slice(0, i).filter(x => x.kind === 'paid').slice(-1)[0].cents)}</text>` : ''}
+      <text x="${cx}" y="${H - 28}" text-anchor="middle" class="pb-lab${b.kind === 'next' || b.kind === 'wont' ? ' next' : ''}">${lab}</text>
+      ${b.kind === 'next' || b.kind === 'wont' ? `<text x="${cx}" y="${H - 15}" text-anchor="middle" class="pb-sub">${b.kind === 'wont' ? 'check' : 'next'}</text>` : ''}
+      ${yearMark ? `<text x="${cx}" y="${H - 15}" text-anchor="middle" class="pb-year">${yearMark}</text>` : ''}
+    </g>`;
+  }).join('');
+
+  /* the customer's own answer about last month, shown under the latest paid bar */
+  const lastPaidIdx = bars.map(b => b.kind).lastIndexOf('paid');
+  const used = s.usage && lastPaidIdx > -1 ? (() => {
+    const cx = L + off + lastPaidIdx * slot + slot / 2;
+    const word = { yes: 'Used', little: 'A little', no: 'Not used' }[s.usage];
+    return `<text x="${cx}" y="${H - 2}" text-anchor="middle" class="pb-used ${s.usage}">${word}</text>`;
+  })() : '';
+
+  /* one plain sentence under the chart */
+  const rises = bars.filter((b, i) => b.kind === 'paid' && i > 0 && bars.slice(0, i).filter(x => x.kind === 'paid').length && b.cents > bars.slice(0, i).filter(x => x.kind === 'paid').slice(-1)[0].cents);
+  let summary;
+  if (!paid.length && s.trial) summary = `Nothing paid yet — it's a free trial. The first charge is ${eur(s.cents)} on ${fmtShort(s.next)}.`;
+  else if (!paid.length) summary = s.source === 'manual' ? `You added this yourself, so the bars start with its next charge.` : 'Nothing paid yet.';
+  else {
+    summary = paid.length === 1 ? `<strong>${eur(paidSum)}</strong> paid so far — one charge.`
+      : `<strong>${eur(paidSum)}</strong> in the last ${paid.length} ${yearly ? 'yearly payments' : 'monthly charges'}.`;
+    if (rises.length) { const rb = rises[rises.length - 1]; summary += ` The price went up in ${MO[Number(rb.ym.slice(5)) - 1]}.`; }
+    else if (!yearly && paid.length > 1) summary += ' Same price every month.';
+    if (bars.some(b => b.kind === 'stopped')) summary += ` Since you stopped it: no charges.`;
+    if (bars.some(b => b.kind === 'ghost')) summary += ` <span class="danger-t">One charge came after you stopped it.</span>`;
+  }
+
+  const legend = [
+    paid.length && ['paid', 'Paid'], bars.some(b => b.kind === 'next') && ['next', 'Next charge'],
+    bars.some(b => b.kind === 'free') && ['free', 'Free trial'], bars.some(b => b.kind === 'stopped' || b.kind === 'wont') && ['stop', 'Stopped'],
+    bars.some(b => b.kind === 'ghost') && ['ghost', 'Unexpected charge'], rises.length && ['rise', 'Price went up'],
+  ].filter(Boolean);
+
   return `
-    <svg class="spark" viewBox="0 0 ${W} ${H}" role="img" aria-label="Price over the last 12 months: ${label}">
-      <path d="${d}" fill="none" style="stroke:var(--forest-2)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-      ${ch > 0 ? `
-        <circle cx="${x(ch)}" cy="${y(pts[ch].c)}" r="5.5" style="fill:var(--forest-2)" stroke="#fff" stroke-width="2"/>
-        <text x="${x(ch)}" y="${y(pts[ch].c) - 10}" text-anchor="middle" font-size="11" font-weight="700" style="fill:var(--forest-2)">+${eur(pts[ch].c - pts[ch - 1].c)}</text>` : ''}
-      <text x="10" y="${H - 2}" font-size="10" style="fill:var(--slate)">${monthYear(pts[0].ym)}</text>
-      <text x="${W - 10}" y="${H - 2}" font-size="10" text-anchor="end" style="fill:var(--slate)">${monthYear(pts[pts.length - 1].ym)}</text>
-    </svg>`;
+    <section class="card paychart" aria-labelledby="pc-h-${s.id}">
+      <div class="card-head"><h2 class="card-title" id="pc-h-${s.id}">What you've paid</h2>
+        <span class="muted small">${yearly ? 'per year' : 'per month'}</span></div>
+      <svg class="pc-svg" viewBox="0 0 ${W} ${H}" role="list" aria-label="${yearly ? 'Yearly' : 'Monthly'} charges for ${esc(s.name)}">
+        <line x1="${L}" x2="${W - R}" y1="${base}" y2="${base}" class="pb-axis"/>
+        ${g}${used}
+      </svg>
+      <ul class="pc-legend" aria-hidden="true">${legend.map(([k, l]) => `<li><i class="lg-${k}"></i>${l}</li>`).join('')}</ul>
+      <p class="pc-sum">${summary}</p>
+      ${live ? `
+      <div class="pc-use">
+        <p id="use-h-${s.id}">${t('usageQ')}</p>
+        <div class="choices" role="group" aria-labelledby="use-h-${s.id}">
+          ${[['yes', t('yes')], ['little', t('little')], ['no', t('no')]].map(([v, l]) =>
+            `<button class="choice" data-action="usage" data-id="${s.id}" data-value="${v}" aria-pressed="${s.usage === v}">${l}</button>`).join('')}
+        </div>
+        <p class="tiny muted" style="margin:8px 0 0">${s.usage ? 'Noted under the chart — only you and your bank see it.' : `Your bank sees payments, not how much you use ${esc(s.name)}. Your answer shows under the chart.`}</p>
+      </div>` : ''}
+      <details class="pc-list">
+        <summary>Show as a list</summary>
+        <table><thead><tr><th scope="col">${yearly ? 'Year' : 'Month'}</th><th scope="col">Date</th><th scope="col">Amount</th></tr></thead>
+          <tbody>${bars.slice().reverse().map(b => `<tr><td>${yearly ? b.ym.slice(0, 4) : monthYear(b.ym)}</td><td>${fmtShort(b.date)}</td><td>${
+            b.kind === 'paid' ? eur(b.cents) : b.kind === 'ghost' ? `${eur(b.cents)} — after you stopped it` : b.kind === 'next' ? `${eur(b.cents)} — ${b.first ? 'first charge' : 'next charge'}` :
+            b.kind === 'free' ? 'Free trial' : b.kind === 'wont' ? '€0 expected — we will check' : '€0 — stopped'}</td></tr>`).join('')}</tbody></table>
+      </details>
+    </section>`;
 }
 
 /* Guess-your-total: a slider, then the real number counts up from the guess */
@@ -2820,6 +3006,7 @@ function closeSheet(restoreFocus = true) {
 function syncInert() {
   const sheetOn = !!els.sheet.innerHTML;
   els.shell.inert = sheetOn || els.overlay.classList.contains('on');
+  document.body.classList.toggle('layer-open', sheetOn || els.overlay.classList.contains('on'));
   els.overlay.inert = sheetOn;
 }
 
@@ -2977,13 +3164,20 @@ const actions = {
   skipLock() { ui.lockOn = false; if (!ui.guessShown) ui.guessPending = true; refresh({ focusTitle: true }); },
 
   /* --- bank shell (inert on purpose) --- */
-  inert(d) { toast(`${d.label || 'That'} isn't part of this prototype — only the ${feat()} tab works here.`); },
   tab(d) {
-    if (d.value !== 'mohar') return toast(`${d.label} isn't part of this prototype — only the ${feat()} tab works here.`);
-    if (!ui.guessShown) ui.guessPending = true;
-    if (location.hash === '#/hub') els.screen.scrollTo({ top: 0, behavior: reduceMotion() ? 'auto' : 'smooth' });
-    else goHome();
+    closeSheet(false);
+    const here = currentRoute().name;
+    if (d.value === 'mohar') {
+      if (!ui.guessShown) ui.guessPending = true;
+      if (location.hash === '#/hub') els.screen.scrollTo({ top: 0, behavior: reduceMotion() ? 'auto' : 'smooth' });
+      else goHome();
+      return;
+    }
+    if (here === d.value) return els.screen.scrollTo({ top: 0, behavior: reduceMotion() ? 'auto' : 'smooth' });
+    showScreen(d.value, null, { replace: ['home', 'cards', 'payments'].includes(here) });
   },
+  profile() { openSheet(renderProfile(), 'Your profile'); },
+  payFilter(d) { ui.payFilter = d.value; refresh(); },
 
   /* --- navigation --- */
   open(d) { closeSheet(false); ui.detailMore = false; showScreen('detail', d.id); },
@@ -3032,7 +3226,7 @@ const actions = {
   closeSheet() { closeSheet(); },
   openCancel(d) { closeSheet(false); ui.cancelStep = 0; showScreen('cancel', d.id); },
   provStep(d) { ui.cancelStep = Number(d.step); refresh({ focusTitle: true }); },
-  provUpsell() { toast('Upgrades are not part of this prototype.'); },
+  provUpsell() { toast("That's the provider trying to keep you. This mock page won't change your plan."); },
   provClose(d) {
     if (ui.cancelStep === 2) return actions.provDone(d);
     goBack('detail', d.id);
@@ -3244,7 +3438,13 @@ const actions = {
   cuDecide(d) { checkupDecide(d.value); },
   cuStop(d) { ui.pendingStop = d.id; showScreen('detail', d.id); },
   restartCheckup() { startCheckup(); refresh({ focusTitle: true }); },
-  share() { toast('Sharing is not part of this prototype — but the card is made to be screenshotted.'); },
+  share() {
+    const card = document.querySelector('.yir');
+    const text = card ? card.innerText.replace(/\n+/g, ' · ') : '';
+    if (navigator.share) { navigator.share({ title: 'My year in subscriptions', text }).catch(() => {}); return; }
+    try { navigator.clipboard.writeText(text).then(() => toast('Copied your year — paste it anywhere.'), () => toast('Take a screenshot to share your year.')); }
+    catch (e) { toast('Take a screenshot to share your year.'); }
+  },
   toggleNotifyAll() {
     state.notifyAll = !state.notifyAll;
     refresh();
@@ -3498,9 +3698,10 @@ function updateDemoBar() {
 }
 
 function updateTabbar() {
-  const onHub = !ui.lockOn;
+  const r = currentRoute().name;
+  const section = ['home', 'cards', 'payments'].includes(r) ? r : r === 'inbox' ? 'home' : 'mohar';
   els.tabbar.querySelectorAll('.tab').forEach(t => {
-    if (t.dataset.value === 'mohar' && onHub) t.setAttribute('aria-current', 'page');
+    if (t.dataset.value === section && !ui.lockOn) t.setAttribute('aria-current', 'page');
     else t.removeAttribute('aria-current');
   });
 }
@@ -4076,6 +4277,187 @@ function renderCalendar() {
 }
 
 /* ---------------------------------------------------------------------
+   9g. THE BANK APP AROUND THE FEATURE — Home, Cards, Payments, notifications.
+   Simple on purpose: they show where subscriptions come from (the bank's own
+   payments) and lead back into the feature. Figures are fictional.
+   --------------------------------------------------------------------- */
+const PERSON = { first: 'Aino', name: 'Aino Virtanen', card: '4821', iban: 'FI21 1234 5600 0007 85' };
+
+/* The bank statement: subscription charges, unnamed app-store payments and ordinary spending */
+function statementDescriptor(s) {
+  if (s.source === 'manual') return state.unknown.some(u => u.resolvedTo === s.id) ? 'APP STORE' : s.name.toUpperCase();
+  return statementLines(s)[0][0];
+}
+function transactions() {
+  const from = addDays(state.today, -45), out = [];
+  state.subs.forEach(s => {
+    payHistory(s).forEach(b => {
+      if ((b.kind === 'paid' || b.kind === 'ghost') && b.date >= from && b.date <= state.today)
+        out.push({ date: b.date, text: statementDescriptor(s), cents: -b.cents, sub: s, ghost: b.kind === 'ghost' });
+    });
+    if (s.trialStart && s.trialStart >= from && s.trialStart <= state.today && s.statement)
+      out.push({ date: s.trialStart, text: s.statement[0][0], cents: 0, sub: s, check: true });
+  });
+  state.unknown.filter(u => !u.resolved).forEach(u => {
+    for (let d = u.last; d >= from; d = addMonths(d, -1)) out.push({ date: d, text: u.label, cents: -u.cents, lump: u });
+  });
+  /* everyday spending, placed relative to today so the list always looks lived-in */
+  [[-1, 'UNICAFE MIKKELI', -295, 'food'], [-4, 'K-MARKET MIKKELI', -1240, 'food'], [-6, 'MIKKELIN LIIKENNE', -300, 'bus'],
+   [-9, 'LIDL MIKKELI', -2316, 'food'], [-13, 'MOBILEPAY EERO K.', 1500, 'in'], [-17, 'K-MARKET MIKKELI', -864, 'food'],
+   [-22, 'R-KIOSKI MIKKELI', -450, 'food'], [-27, 'UNICAFE MIKKELI', -295, 'food'], [-33, 'LIDL MIKKELI', -1980, 'food']]
+    .forEach(([o, t, c, k]) => out.push({ date: addDays(state.today, o), text: t, cents: c, kind: k }));
+  for (let d = toISO(new Date(toDate(state.today).getFullYear(), toDate(state.today).getMonth() - 1, state.incomeDay)); d <= state.today; d = addMonths(d, 1))
+    if (d >= from) out.push({ date: d, text: 'KELA OPINTORAHA', cents: 27937, kind: 'in', income: true });
+  return out.sort((a, b) => b.date.localeCompare(a.date) || a.text.localeCompare(b.text));
+}
+function txRow(x) {
+  const amt = `<span class="tx-amt${x.cents > 0 ? ' in' : ''}">${x.cents > 0 ? '+' : x.cents < 0 ? '−' : ''}${eur(Math.abs(x.cents))}</span>`;
+  const ico = x.sub ? logo(x.sub) : `<span class="tx-ico" aria-hidden="true">${icon(x.lump ? 'help' : x.cents > 0 ? 'coin' : x.kind === 'bus' ? 'payments' : 'card', 18)}</span>`;
+  const meta = x.sub
+    ? (x.ghost ? `<span class="pill danger">Charged after you stopped it</span>` : x.check ? `<span class="pill gold">Free trial check</span>` : `<span class="pill moss">${icon('coin', 11)} ${esc(feat())} · ${esc(x.sub.name)}</span>`)
+    : x.lump ? `<span class="pill gold">Repeats monthly — not named yet</span>`
+    : x.income ? `<span class="tx-sub">Student allowance</span>` : '';
+  const body = `${ico}<span class="sub-main"><span class="tx-text">${esc(x.text)}</span>${meta ? `<span class="tx-meta">${meta}</span>` : ''}</span>${amt}`;
+  if (x.sub) return `<li><button class="tx-row" data-action="open" data-id="${x.sub.id}">${body}</button></li>`;
+  if (x.lump) return `<li><button class="tx-row" data-action="addStart" data-from="lump">${body}</button></li>`;
+  return `<li><div class="tx-row">${body}</div></li>`;
+}
+function txList(list) {
+  let day = null, html = '';
+  list.forEach(x => {
+    if (x.date !== day) { if (day) html += '</ul>'; day = x.date; html += `<p class="tx-day">${x.date === state.today ? 'Today' : fmtLong(x.date)}</p><ul class="list tx">`; }
+    html += txRow(x);
+  });
+  return html + (day ? '</ul>' : '');
+}
+
+/* Notifications the bank has sent about subscriptions, newest first */
+function inboxItems() {
+  const from = addDays(state.today, -31), out = [];
+  state.subs.filter(s => s.status !== 'notsub').forEach(s => {
+    payHistory(s).filter(b => b.kind === 'paid' || (b.kind === 'next' && s.status === 'active')).forEach(b => {
+      const days = s.trialEnded && b.date === s.trialEnded.date ? s.trialEnded.days : (b.first ? 7 : warnDays(s));
+      const on = addDays(b.date, -days);
+      if (on < from || on > state.today || !state.notifyAll || s.notify === 'off') return;
+      const trialish = b.first || (s.trialEnded && b.date === s.trialEnded.date);
+      out.push({ date: on, sub: s, title: trialish ? `${s.name} free trial ends in ${days} days — then ${eur(b.cents)} a month.` : `${s.name}, ${eur(b.cents)} — charges in ${days} days.`,
+                 body: b.date > state.today ? `On ${fmtShort(b.date)}.` : `It charged on ${fmtShort(b.date)}.` });
+    });
+    if (s.decision === 'unsure' && s.remindOn && s.remindOn <= state.today)
+      out.push({ date: s.remindOn, sub: s, title: `Reminder: decide about ${s.name}.`, body: `It charges ${eur(s.cents)} on ${fmtShort(s.next)}.` });
+  });
+  state.alerts.forEach(a => {
+    const s = findSub(a.subId); if (!s) return;
+    if (a.type === 'confirmed') out.push({ date: a.date, sub: s, good: true, title: `No charge from ${s.name}.`, body: `It worked — you kept ${eur(a.monthly)} this month.` });
+    if (a.type === 'ghost') out.push({ date: a.date, sub: s, bad: true, title: `${s.name} charged ${eur(a.cents)} after you stopped it.`, body: 'Tap to see what you can do.' });
+  });
+  state.unknown.filter(u => !u.resolved).forEach(u =>
+    out.push({ date: DAY0 <= state.today ? DAY0 : state.today, lump: u, title: `Which subscription costs ${eur(u.cents)}?`, body: 'An app store payment repeats every month. Tap to name it.' }));
+  return out.filter(x => x.date >= from && x.date <= state.today).sort((a, b) => b.date.localeCompare(a.date));
+}
+function inboxRow(x) {
+  const attrs = x.lump ? 'data-action="addStart" data-from="lump"' : `data-action="open" data-id="${x.sub.id}"`;
+  return `<li><button class="ib-row${x.bad ? ' bad' : x.good ? ' good' : ''}" ${attrs}>
+    <span class="notif-icon" aria-hidden="true">${bankLogo(22)}</span>
+    <span class="sub-main"><span class="ib-top"><b>${esc(feat())}</b><span>${x.date === state.today ? 'Today' : fmtDM(x.date)}</span></span>
+      <span class="ib-title">${esc(x.title)}</span><span class="ib-body">${esc(x.body)}</span></span></button></li>`;
+}
+
+function renderHome() {
+  const live = state.subs.filter(isLive);
+  const nextUp = timelineItems().find(it => (it.kind === 'charge' || it.kind === 'trial') && it.sub.status === 'active');
+  const nudges = attentionCards().length;
+  const inbox = inboxItems(), tx = transactions().filter(x => x.date <= state.today);
+  return `
+    <h1 class="h-title" tabindex="-1">Hi ${PERSON.first}</h1>
+    <p class="lead">${fmtLong(state.today)}</p>
+    <section class="acct" aria-label="Current account">
+      <p class="acct-label">Current account</p>
+      <p class="acct-bal">${eur(state.balanceCents)}</p>
+      <p class="acct-sub">${PERSON.iban}</p>
+      <p class="acct-sub">Your ${state.incomeLabel} arrives ${fmtShort(nextIncome())}.</p>
+    </section>
+    <button class="feat-card" data-action="tab" data-value="mohar">
+      <span class="tile-ico">${icon('coin', 20)}</span>
+      <span class="sub-main"><span class="fc-h">${esc(feat())}</span>
+        <span class="fc-big">${eur(totalMonthly())} <small>a month · ${live.length} active</small></span>
+        ${nextUp ? `<span class="fc-line">Next: ${esc(nextUp.sub.name)} ${eur(nextUp.sub.cents)} on ${fmtShort(nextUp.date)}</span>` : ''}
+        ${nudges ? `<span class="fc-line gold">${nudges} thing${nudges === 1 ? '' : 's'} worth a look</span>` : ''}</span>
+      ${icon('chev', 20)}
+    </button>
+    <div class="sec-row"><h2 class="section-title">Notifications</h2>${inbox.length > 2 ? `<button class="link-btn" data-action="go" data-value="inbox">See all ${inbox.length}</button>` : ''}</div>
+    ${inbox.length ? `<ul class="list ib">${inbox.slice(0, 2).map(inboxRow).join('')}</ul>` : `<p class="empty">No notifications.</p>`}
+    <div class="sec-row"><h2 class="section-title">Latest payments</h2><button class="link-btn" data-action="tab" data-value="payments">See all</button></div>
+    <section class="card tight">${txList(tx.slice(0, 5))}</section>
+    <p class="fine">A prototype: only ${esc(feat())} is fully built. Everything here is fictional.</p>`;
+}
+
+function renderPayments() {
+  const all = transactions().filter(x => x.date <= state.today);
+  const only = ui.payFilter === 'subs';
+  const list = only ? all.filter(x => x.sub || x.lump) : all;
+  const subsSum = all.filter(x => (x.sub || x.lump) && x.cents < 0).reduce((a, x) => a - x.cents, 0);
+  return `
+    <h1 class="h-title" tabindex="-1">Payments</h1>
+    <p class="lead">Balance ${eur(state.balanceCents)} · last 45 days</p>
+    <div class="segctl pay-filter" role="group" aria-label="Show">
+      <button data-action="payFilter" data-value="all" aria-pressed="${!only}">All payments</button>
+      <button data-action="payFilter" data-value="subs" aria-pressed="${only}">Subscriptions only</button>
+    </div>
+    ${only ? `<p class="small" style="margin:12px 2px 0">${eur(subsSum)} went to subscriptions in these 45 days. Tap one to see it in ${esc(feat())}.</p>` : ''}
+    <section class="card tight">${list.length ? txList(list) : '<p class="empty">No payments.</p>'}</section>
+    <p class="fine">Payments marked ${esc(feat())} repeat — that's how we find subscriptions. Unnamed ones can be named in a few taps.</p>`;
+}
+
+function renderCards() {
+  const live = state.subs.filter(isLive);
+  const group = (title, note, list) => list.length ? `
+    <h3 class="mini-h">${title}</h3>
+    ${note ? `<p class="tiny muted" style="margin:-2px 0 4px">${note}</p>` : ''}
+    <ul class="list">${list.map(s => `<li><button class="sub-row" data-action="open" data-id="${s.id}">${logo(s)}
+      <span class="sub-main"><span class="sub-name">${esc(s.name)}</span><span class="sub-meta">${s.status === 'stopping' ? 'Stopping' : `${t('nextWord')} ${fmtShort(s.next)}`}</span></span>
+      <span class="sub-amt">${eur(s.cents)}<small>/ ${s.cycle === 'yearly' ? t('year') : t('month')}</small></span></button></li>`).join('')}</ul>` : '';
+  const lump = openLump();
+  return `
+    <h1 class="h-title" tabindex="-1">Cards</h1>
+    <div class="bankcard" aria-label="Debit card ending ${PERSON.card}">
+      <div class="bc-top"><span>${bankLogo(26)}</span><b>${BANK.name}</b><span class="bc-type">Debit</span></div>
+      <p class="bc-num">•••• •••• •••• ${PERSON.card}</p>
+      <div class="bc-bot"><span>${PERSON.name.toUpperCase()}</span><span>09/29</span></div>
+    </div>
+    <section class="card">
+      <h2 class="card-title">Subscriptions paid with this card</h2>
+      <p class="small" style="margin:4px 0 0">Every subscription reaches this card — some directly, some through PayPal or your phone's app store.</p>
+      ${group('Charged directly', '', live.filter(s => s.channel === 'card'))}
+      ${group('Through PayPal', 'PayPal pays them, then takes the money from this card.', live.filter(s => s.channel === 'paypal'))}
+      ${group('Through the app store', 'They arrive as one “APP STORE” payment — name them so they count.', live.filter(s => s.channel === 'appstore' || s.channel === 'googleplay'))}
+      ${lump ? `<button class="btn btn-ghost btn-block mt" data-action="addStart" data-from="lump">${icon('help', 18)} Name the ${eur(lump.cents)} app store payment</button>` : ''}
+      <button class="btn btn-gold btn-block mt" data-action="tab" data-value="mohar">Open ${esc(feat())}</button>
+    </section>
+    <p class="fine">We never block or hold a payment. To stop a subscription, you cancel it with the provider — we show you how.</p>`;
+}
+
+function renderInbox() {
+  const items = inboxItems();
+  return `
+    <button class="back" data-action="back">${icon('back')} Back</button>
+    <h1 class="h-title" tabindex="-1">Notifications</h1>
+    <p class="lead">From ${esc(feat())} · last 30 days</p>
+    ${items.length ? `<ul class="list ib">${items.map(inboxRow).join('')}</ul>` : `<p class="empty">No notifications.</p>`}
+    <p class="fine"><button class="link-btn" data-action="go" data-value="settings">Change when we warn you</button></p>`;
+}
+
+function renderProfile() {
+  return `
+    <div class="prof"><span class="avatar big" aria-hidden="true">A</span>
+      <div><h2 class="sheet-title" style="margin:0">${PERSON.name}</h2><p class="small muted" style="margin:2px 0 0">${BANK.name} customer</p></div></div>
+    <button class="btn btn-ghost btn-block mt" data-action="go" data-value="inbox">${icon('bell', 18)} Notifications</button>
+    <button class="btn btn-ghost btn-block mt" data-action="go" data-value="settings">${icon('sliders', 18)} ${esc(feat())} settings</button>
+    <button class="btn btn-ghost btn-block mt" data-action="tab" data-value="cards">${icon('card', 18)} Cards</button>
+    <p class="fine">Prototype: login and personal details are left out on purpose.</p>`;
+}
+
+/* ---------------------------------------------------------------------
    9h. MONTHLY CHECK-UP — one big card per subscription: Keep / Not sure / Stop.
    Buttons work everywhere; on touch screens you can also swipe (right keep, left stop).
    --------------------------------------------------------------------- */
@@ -4210,7 +4592,7 @@ function renderReview() {
       <div class="yir-top"><span>${bankLogo(24)} ${BANK.name}</span><span>2026</span></div>
       <p class="yir-kicker">Your year in subscriptions</p>
       <p class="yir-big">${eur(total)}</p>
-      <p class="yir-line">You paid for ${all.length} services and stopped ${stoppedN}.</p>
+      <p class="yir-line">You paid for ${all.length} services${stoppedN ? ` and stopped ${stoppedN}` : ''}.</p>
       <p class="yir-sub">paid for subscriptions so far in 2026${lumpPaid ? ` — including ${eur(lumpPaid)} in app store payments you haven't named yet` : ''}</p>
       <dl class="yir-grid">
         <div><dt>Biggest</dt><dd>${biggest ? esc(biggest.name) : '—'}</dd><span>${biggest ? eur(biggest.paid2026) + ' this year' : ''}</span></div>

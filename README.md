@@ -24,6 +24,14 @@ Bank-only extras in the prototype: balance warnings against upcoming charges, an
 It only uses what a bank can actually know: payments, the balance, and the customer's own answers. It never claims to know whether an app is used, never cancels anything for the customer, never blocks a payment, and gives no budgeting or saving advice.
 Splitting a shared plan with friends is on the roadmap, not in the prototype.
 
+Every subscription page has **What you've paid**: one bar per monthly (or yearly) charge from the bank's own statement —
+paid, free trial, next charge, stopped, or charged after stopping — with price rises marked. A bank can't see how much an app is used,
+so "usage" is the customer's own answer ("Did you use this last month?"), shown under the chart.
+
+The bank app around the feature works too, simply: **Home** (balance, a Subscriptions summary, notifications, latest payments),
+**Payments** (the statement, with subscription payments marked and unnamed app-store payments ready to name),
+**Cards** (which subscriptions reach the card, directly or through PayPal or the app store), the **bell** (every warning sent) and the **profile**.
+
 ## Try it
 
 Open `prototype/index.html` in a browser — no build step, no server, no dependencies (one Google Fonts link).
